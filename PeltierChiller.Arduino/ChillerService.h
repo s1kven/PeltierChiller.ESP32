@@ -1,23 +1,18 @@
 #pragma once
 
 #include <LinkedList.h>
-#include "TemperatureSensor.h"
 #include "PeltierModule.h"
+#include "TemperatureService.h"
 
 namespace Services
 {
 	class ChillerService
 	{
 	private:
-		const uint8_t _temperaturePrecision = 12;
 		const uint32_t _delayForDisablePeltier = 30000;
 
 		LinkedList<Models::PeltierModule *> * _peltierModules;
-		LinkedList<Models::TemperatureSensor *> * _temperatureSensors;
-
-		float _targetTemperature;
-
-		float getColdCircuitTemperature();
+		Services::TemperatureService* _temperatureService;
 
 	protected:
 

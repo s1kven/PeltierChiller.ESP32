@@ -45,6 +45,9 @@
     <ClInclude Include="ChillerService.h">
       <Filter>Source Files\Services</Filter>
     </ClInclude>
+    <ClInclude Include="TemperatureService.h">
+      <Filter>Source Files\Services</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TemperatureSensor.cpp">
@@ -64,6 +67,9 @@
     </ClCompile>
     <ClCompile Include="TemperatureSensorTarget.cpp">
       <Filter>Source Files\Models\Enums</Filter>
+    </ClCompile>
+    <ClCompile Include="TemperatureService.cpp">
+      <Filter>Source Files\Services</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
