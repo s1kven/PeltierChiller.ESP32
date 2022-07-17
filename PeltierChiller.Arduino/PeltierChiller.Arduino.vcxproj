@@ -117,7 +117,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ChillerService.h" />
-    <ClInclude Include="PeltierModule.h" />
     <ClInclude Include="Rele.h" />
     <ClInclude Include="TemperatureSensor.h" />
     <ClInclude Include="TemperatureService.h" />
@@ -125,7 +124,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ChillerService.cpp" />
-    <ClCompile Include="PeltierModule.cpp" />
     <ClCompile Include="Rele.cpp" />
     <ClCompile Include="ReleState.cpp" />
     <ClCompile Include="TemperatureSensor.cpp">

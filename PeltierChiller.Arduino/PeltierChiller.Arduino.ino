@@ -12,28 +12,21 @@
 #include <DallasTemperature.h>
 #include "ChillerService.h"
 
-const uint8_t PELTIER_PIN = 10;
-const uint8_t TSENSOR_PIN = 2;
+const uint8_t TSENSOR_PIN = 7;
 
 const float _targetCircuitTemperature = 27;
 
+DeviceAddress _tSensors[] = 
+{
+	{ 0x28, 0xCD, 0x86, 0x56, 0xB5, 0x01, 0x3C, 0x1D },
+	{ 0x28, 0xA7, 0xC6, 0x14, 0x00, 0x00, 0x00, 0x4F }
+};
+
 Services::ChillerService * _chillerService;
 
-void setup() 
+void setup()  
 {
-
-	LinkedList<int8_t> * _peltierPins = new LinkedList<int8_t>();
-	LinkedList<int8_t> * _temperatureSensorsPin = new LinkedList<int8_t>();
-
-	(*_peltierPins).add(PELTIER_PIN);
-	(*_temperatureSensorsPin).add(TSENSOR_PIN);
-
-	for (uint8_t index = 0; index < (*_peltierPins).size(); index++)
-	{
-		pinMode((*_peltierPins).get(index), OUTPUT);
-	}
-
-	_chillerService = new Services::ChillerService(*_peltierPins, *_temperatureSensorsPin, _targetCircuitTemperature);
+	_chillerService = new Services::ChillerService(TSENSOR_PIN, _tSensors, _targetCircuitTemperature);
 
 	Serial.begin(9600);
 }

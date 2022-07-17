@@ -36,9 +36,6 @@
     <ClInclude Include="Rele.h">
       <Filter>Source Files\Models</Filter>
     </ClInclude>
-    <ClInclude Include="PeltierModule.h">
-      <Filter>Source Files\Models</Filter>
-    </ClInclude>
     <ClInclude Include="TemperatureSensor.h">
       <Filter>Source Files\Models</Filter>
     </ClInclude>
@@ -51,9 +48,6 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="TemperatureSensor.cpp">
-      <Filter>Source Files\Models</Filter>
-    </ClCompile>
-    <ClCompile Include="PeltierModule.cpp">
       <Filter>Source Files\Models</Filter>
     </ClCompile>
     <ClCompile Include="ReleState.cpp">

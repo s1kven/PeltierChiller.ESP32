@@ -3,45 +3,31 @@
 #include "TemperatureSensor.h"
 
 
-Models::TemperatureSensor::TemperatureSensor(int8_t _temperaturePin, uint8_t _onBusIndex)
+Models::TemperatureSensor::TemperatureSensor(DeviceAddress* sensorAddress, DallasTemperature* sensor)
 {
-	_dataPin = _temperaturePin;
-	_sensorIndex = _onBusIndex;
-
-	oneWire = new OneWire(_dataPin);
-	sensor = new DallasTemperature(oneWire);
+	_sensor = sensor;
+	_sensorAddress = sensorAddress;
 }
 
-void Models::TemperatureSensor::init(uint8_t _temperaturePrecision, Models::Enums::TemperatureSensorTarget::TemperatureSensorTarget _sensorTarget)
+void Models::TemperatureSensor::init(uint8_t _temperaturePrecision, Models::Enums::TemperatureSensorTarget _sensorTarget)
 {
-	(*sensor).begin();
-	(*sensor).getAddress((*sensorAddress), _sensorIndex);
-	(*sensor).setResolution((*sensorAddress), _temperaturePrecision);
+	(*_sensor).begin();
+	(*_sensor).setResolution((*_sensorAddress), _temperaturePrecision);
 	this->_sensorTarget = _sensorTarget;
-}
-
-void Models::TemperatureSensor::setDataPin(int8_t _temperaturePin)
-{
-	_dataPin = _temperaturePin;
-}
-
-int8_t Models::TemperatureSensor::getDataPin()
-{
-	return _dataPin;
 }
 
 float Models::TemperatureSensor::getTemperature()
 {
-	(*sensor).requestTemperatures();
-	return float((*sensor).getTempCByIndex(_sensorIndex));
+	(*_sensor).requestTemperatures();
+	return float((*_sensor).getTempC((*_sensorAddress)));
 }
 
-Models::Enums::TemperatureSensorTarget::TemperatureSensorTarget Models::TemperatureSensor::getSensorTarget()
+Models::Enums::TemperatureSensorTarget Models::TemperatureSensor::getSensorTarget()
 {
 	return _sensorTarget;
 }
 
 DeviceAddress *Models::TemperatureSensor::getSensorAddress()
 {
-	return sensorAddress;
+	return _sensorAddress;
 }

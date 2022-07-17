@@ -1,40 +1,29 @@
 #include "ChillerService.h"
 
-Services::ChillerService::ChillerService(LinkedList<int8_t> _peltierPins, LinkedList<int8_t> _temperatureSensorsPin, float _targetCircuitTemperature)
+Services::ChillerService::ChillerService(uint8_t _temperatureSensorsPin, DeviceAddress _tSensors[], float _targetCircuitTemperature)
 {
-	_peltierModules = new LinkedList<Models::PeltierModule *>();
-
-	_temperatureService = new Services::TemperatureService(_temperatureSensorsPin, _targetCircuitTemperature); 
+	_temperatureService = new Services::TemperatureService(_temperatureSensorsPin, _tSensors, _targetCircuitTemperature);
 	Serial.println();
-
-	for (uint8_t index = 0; index < _peltierPins.size(); index++)
-	{
-		Models::PeltierModule* module = new Models::PeltierModule(_peltierPins.get(index));
-
-		(*_peltierModules).add(module);
-	}
 }
 
 void Services::ChillerService::handleChillerState()
 {
-	Serial.println((*_temperatureService).getColdCircuitTemperature());
+	//Serial.println((*_temperatureService).getColdCircuitTemperature());
+	/*Serial.print((*_temperatureService).getTemperatureSensorTargetName(Models::Enums::TemperatureSensorTarget::none));
+	Serial.println((*_temperatureService).getTemperatureForSpecificTarget(Models::Enums::TemperatureSensorTarget::none));
 
-	static uint32_t timer;
+	Serial.print((*_temperatureService).getTemperatureSensorTargetName(Models::Enums::TemperatureSensorTarget::room));
+	Serial.println((*_temperatureService).getTemperatureForSpecificTarget(Models::Enums::TemperatureSensorTarget::room));
 
-	for (uint8_t index = 0; index < (*_peltierModules).size(); index++)
-	{
-		if ((*_temperatureService).getColdCircuitTemperature() >= (*_temperatureService).getTargetTemperature())
-		{
-			(*(*_peltierModules).get(index)).switchingOn();
+	Serial.print((*_temperatureService).getTemperatureSensorTargetName(Models::Enums::TemperatureSensorTarget::pcCase));
+	Serial.println((*_temperatureService).getTemperatureForSpecificTarget(Models::Enums::TemperatureSensorTarget::pcCase));
 
-			timer = millis();
-		}
-		else
-		{
-			if (millis() - timer >= _delayForDisablePeltier)
-			{
-				(*(*_peltierModules).get(index)).switchingOff(); 
-			}
-		}
-	}
+	Serial.print((*_temperatureService).getTemperatureSensorTargetName(Models::Enums::TemperatureSensorTarget::coldCircuit));
+	Serial.println((*_temperatureService).getTemperatureForSpecificTarget(Models::Enums::TemperatureSensorTarget::coldCircuit));
+
+	Serial.print((*_temperatureService).getTemperatureSensorTargetName(Models::Enums::TemperatureSensorTarget::hotCircuit));
+	Serial.println((*_temperatureService).getTemperatureForSpecificTarget(Models::Enums::TemperatureSensorTarget::hotCircuit));*/
+
+	(*_temperatureService).getTemperatureForSpecificTarget(Models::Enums::TemperatureSensorTarget::coldCircuit);
+
 }

@@ -20,13 +20,9 @@ namespace Models
 	{
 	private:
 
-		int8_t _dataPin;
-		uint8_t _sensorIndex;
-
-		OneWire* oneWire;
-		DallasTemperature* sensor;
-		DeviceAddress* sensorAddress;
-		Models::Enums::TemperatureSensorTarget::TemperatureSensorTarget _sensorTarget;
+		DallasTemperature* _sensor;
+		DeviceAddress* _sensorAddress;
+		Models::Enums::TemperatureSensorTarget _sensorTarget;
 
 
 	protected:
@@ -34,12 +30,10 @@ namespace Models
 
 	public:
 
-		TemperatureSensor(int8_t _temperaturePin, uint8_t _onBusIndex);
-		void init(uint8_t _temperaturePrecision, Models::Enums::TemperatureSensorTarget::TemperatureSensorTarget _sensorTarget);
-		void setDataPin(int8_t _temperaturePin);
-		int8_t getDataPin();
+		TemperatureSensor(DeviceAddress* sensorAddress, DallasTemperature* sensor);
+		void init(uint8_t _temperaturePrecision, Models::Enums::TemperatureSensorTarget _sensorTarget);
 		float getTemperature();
-		Models::Enums::TemperatureSensorTarget::TemperatureSensorTarget getSensorTarget();
+		Models::Enums::TemperatureSensorTarget getSensorTarget();
 		DeviceAddress* getSensorAddress();
 	};
 }

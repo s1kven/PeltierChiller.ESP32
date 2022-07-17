@@ -2,16 +2,13 @@ namespace Models
 {
     namespace Enums
     {
-        namespace TemperatureSensorTarget
+        enum class TemperatureSensorTarget
         {
-            enum TemperatureSensorTarget
-            {
-                none,
-                room,
-                pcCase,
-                coldCircuit,
-                hotCircuit
-            };
-        }
+            none,
+            room,
+            pcCase,
+            coldCircuit,
+            hotCircuit
+        };
     }
 }
