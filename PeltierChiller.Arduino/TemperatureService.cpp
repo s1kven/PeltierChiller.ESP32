@@ -1,8 +1,7 @@
 #include "TemperatureService.h"
 
-Services::TemperatureService::TemperatureService(uint8_t _temperatureSensorsPin, DeviceAddress _tSensors[], float _targetCircuitTemperature)
-{
-	_targetTemperature = _targetCircuitTemperature;    
+Services::TemperatureService::TemperatureService(uint8_t _temperatureSensorsPin, Models::TemperatureSensor* _tSensors[])
+{ 
 	_temperatureSensors = new LinkedList<Models::TemperatureSensor*>();
 
 	_oneWire = new OneWire(_temperatureSensorsPin);
@@ -12,16 +11,10 @@ Services::TemperatureService::TemperatureService(uint8_t _temperatureSensorsPin,
 
 	for (uint8_t index = 0; index < _dallasSensors->getDeviceCount(); index++)
 	{
-		Models::TemperatureSensor* sensor = new Models::TemperatureSensor(&_tSensors[index], _dallasSensors);
-		(*sensor).init(_temperaturePrecision, Models::Enums::TemperatureSensorTarget::coldCircuit);
+		_tSensors[index]->init(_dallasSensors, _temperaturePrecision);
 
-		(*_temperatureSensors).add(sensor);
+		(*_temperatureSensors).add(_tSensors[index]);
 	}
-}
-
-float Services::TemperatureService::getTargetTemperature()
-{
-	return _targetTemperature;
 }
 
 float Services::TemperatureService::getTemperatureForSpecificTarget(Models::Enums::TemperatureSensorTarget _sensorsTarget)
@@ -33,7 +26,8 @@ float Services::TemperatureService::getTemperatureForSpecificTarget(Models::Enum
 	{
 		if ((*(*_temperatureSensors).get(index)).getSensorTarget() == _sensorsTarget)
 		{
-			Serial.println(getSensorTemperature(index));
+			//Serial.print(getSensorTemperature(index));
+			//Serial.println(getTemperatureSensorTargetName((*_temperatureSensors).get(index)->getSensorTarget()));
 			_temperature = _temperature + getSensorTemperature(index);
 			_sensorsCounter++;
 		}

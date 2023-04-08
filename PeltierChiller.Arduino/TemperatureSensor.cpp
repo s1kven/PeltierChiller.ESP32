@@ -3,17 +3,17 @@
 #include "TemperatureSensor.h"
 
 
-Models::TemperatureSensor::TemperatureSensor(DeviceAddress* sensorAddress, DallasTemperature* sensor)
+Models::TemperatureSensor::TemperatureSensor(DeviceAddress* sensorAddress, Models::Enums::TemperatureSensorTarget _sensorTarget)
 {
-	_sensor = sensor;
 	_sensorAddress = sensorAddress;
+	this->_sensorTarget = _sensorTarget;
 }
 
-void Models::TemperatureSensor::init(uint8_t _temperaturePrecision, Models::Enums::TemperatureSensorTarget _sensorTarget)
+void Models::TemperatureSensor::init(DallasTemperature* sensor, uint8_t _temperaturePrecision)
 {
+	_sensor = sensor;
 	(*_sensor).begin();
 	(*_sensor).setResolution((*_sensorAddress), _temperaturePrecision);
-	this->_sensorTarget = _sensorTarget;
 }
 
 float Models::TemperatureSensor::getTemperature()

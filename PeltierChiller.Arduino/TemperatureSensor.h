@@ -30,8 +30,8 @@ namespace Models
 
 	public:
 
-		TemperatureSensor(DeviceAddress* sensorAddress, DallasTemperature* sensor);
-		void init(uint8_t _temperaturePrecision, Models::Enums::TemperatureSensorTarget _sensorTarget);
+		TemperatureSensor(DeviceAddress* sensorAddress, Models::Enums::TemperatureSensorTarget _sensorTarget);
+		void init(DallasTemperature* sensor, uint8_t _temperaturePrecision);
 		float getTemperature();
 		Models::Enums::TemperatureSensorTarget getSensorTarget();
 		DeviceAddress* getSensorAddress();
