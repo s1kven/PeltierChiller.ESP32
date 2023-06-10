@@ -2,14 +2,10 @@ namespace Models
 {
     namespace Enums
     {
-        namespace ReleState
+        enum class ReleState
         {
-            enum ReleState
-            {
-                none,
-                off,
-                on
-            };
-        }
+            off,
+            on
+        };
     }
 }

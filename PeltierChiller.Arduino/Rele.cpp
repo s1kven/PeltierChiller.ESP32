@@ -15,12 +15,12 @@ int8_t Models::Rele::getSignalPin()
 	return _signalPin;
 }
 
-Models::Enums::ReleState::ReleState Models::Rele::getReleState()
+Models::Enums::ReleState Models::Rele::getReleState()
 {
 	return _state;
 }
 
-void Models::Rele::setReleState(Models::Enums::ReleState::ReleState _releState)
+void Models::Rele::setReleState(Models::Enums::ReleState _releState)
 {
 	_state = _releState;
 }

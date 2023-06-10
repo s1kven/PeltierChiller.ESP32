@@ -11,17 +11,17 @@ namespace Models
 	private:
 
 		int8_t _signalPin;
-		Models::Enums::ReleState::ReleState _state;
+		Models::Enums::ReleState _state;
 
 	protected:
 
-		void setReleState(Models::Enums::ReleState::ReleState _releState);
+		void setReleState(Models::Enums::ReleState _releState);
 
 	public:
 
 		Rele();
 		Rele(int8_t _relePin);
 		int8_t getSignalPin();
-		Models::Enums::ReleState::ReleState getReleState();
+		Models::Enums::ReleState getReleState();
 	};
 }
