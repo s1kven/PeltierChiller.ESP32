@@ -22,6 +22,9 @@
     <Filter Include="Source Files\Models\Enums">
       <UniqueIdentifier>{3a2a313b-6554-43ba-9691-0327013b50bf}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Models\TemperatureSensors">
+      <UniqueIdentifier>{458f7bc4-dcc2-423a-ba9b-48e68379647c}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="PeltierChiller.Arduino.ino" />
@@ -36,20 +39,32 @@
     <ClInclude Include="Rele.h">
       <Filter>Source Files\Models</Filter>
     </ClInclude>
-    <ClInclude Include="TemperatureSensor.h">
-      <Filter>Source Files\Models</Filter>
-    </ClInclude>
     <ClInclude Include="ChillerService.h">
       <Filter>Source Files\Services</Filter>
     </ClInclude>
     <ClInclude Include="TemperatureService.h">
       <Filter>Source Files\Services</Filter>
     </ClInclude>
+    <ClInclude Include="PowerButtonService.h">
+      <Filter>Source Files\Services</Filter>
+    </ClInclude>
+    <ClInclude Include="Button.h">
+      <Filter>Source Files\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseSensor.h">
+      <Filter>Source Files\Models\TemperatureSensors</Filter>
+    </ClInclude>
+    <ClInclude Include="DS18B20.h">
+      <Filter>Source Files\Models\TemperatureSensors</Filter>
+    </ClInclude>
+    <ClInclude Include="BME280.h">
+      <Filter>Source Files\Models\TemperatureSensors</Filter>
+    </ClInclude>
+    <ClInclude Include="NTC.h">
+      <Filter>Source Files\Models\TemperatureSensors</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="TemperatureSensor.cpp">
-      <Filter>Source Files\Models</Filter>
-    </ClCompile>
     <ClCompile Include="ReleState.cpp">
       <Filter>Source Files\Models\Enums</Filter>
     </ClCompile>
@@ -64,6 +79,30 @@
     </ClCompile>
     <ClCompile Include="TemperatureService.cpp">
       <Filter>Source Files\Services</Filter>
+    </ClCompile>
+    <ClCompile Include="ChillerState.cpp">
+      <Filter>Source Files\Models\Enums</Filter>
+    </ClCompile>
+    <ClCompile Include="PowerButtonService.cpp">
+      <Filter>Source Files\Services</Filter>
+    </ClCompile>
+    <ClCompile Include="Button.cpp">
+      <Filter>Source Files\Models</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseSensor.cpp">
+      <Filter>Source Files\Models\TemperatureSensors</Filter>
+    </ClCompile>
+    <ClCompile Include="DS18B20.cpp">
+      <Filter>Source Files\Models\TemperatureSensors</Filter>
+    </ClCompile>
+    <ClCompile Include="TemperatureSensorType.cpp">
+      <Filter>Source Files\Models\Enums</Filter>
+    </ClCompile>
+    <ClCompile Include="BME280.cpp">
+      <Filter>Source Files\Models\TemperatureSensors</Filter>
+    </ClCompile>
+    <ClCompile Include="NTC.cpp">
+      <Filter>Source Files\Models\TemperatureSensors</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>
