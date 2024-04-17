@@ -1,8 +1,10 @@
+#pragma once
+
 namespace Models
 {
     namespace Enums
     {
-        enum class ChillerState
+        enum ChillerState
         {
             off,
             enabling,

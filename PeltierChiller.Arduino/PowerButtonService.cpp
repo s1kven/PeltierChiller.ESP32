@@ -1,3 +1,5 @@
+#pragma once
+
 #include "PowerButtonService.h"
 
 Services::PowerButtonService::PowerButtonService(Models::Button* buttons[])

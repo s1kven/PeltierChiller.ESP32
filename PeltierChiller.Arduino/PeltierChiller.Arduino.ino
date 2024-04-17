@@ -120,7 +120,7 @@ void loop()
 		powerButton->setLastPressMillis(millis() - powerButton->getLastPressTime());
 	}
 
-	(*_chillerService).handleChillerState();
+	(*_chillerService).execute();
 
 	selectChillerState();
 	
