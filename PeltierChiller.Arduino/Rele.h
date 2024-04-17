@@ -3,10 +3,12 @@
 #include "ReleState.cpp"
 #include "Arduino.h"
 #include <stdint.h>
+#include "BaseJsonModel.h"
 
 namespace Models
 {
-	class Rele
+	class Rele :
+		public Models::Abstractions::BaseJsonModel
 	{
 	private:
 
@@ -23,5 +25,6 @@ namespace Models
 		Rele(int8_t _relePin);
 		int8_t getSignalPin();
 		Models::Enums::ReleState getReleState();
+		DynamicJsonDocument createPayload() override;
 	};
 }

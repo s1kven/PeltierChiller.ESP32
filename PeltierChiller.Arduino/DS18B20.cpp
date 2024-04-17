@@ -1,3 +1,5 @@
+#pragma once
+
 #include "DS18B20.h"
 
 Models::TemperatureSensors::DS18B20::DS18B20(DeviceAddress* sensorAddress, Models::Enums::TemperatureSensorTarget sensorTarget) :
@@ -27,6 +29,11 @@ void Models::TemperatureSensors::DS18B20::sensorRequest()
 		(*_sensor).requestTemperaturesByAddress(*getSensorAddress());
 		_temperature = float((*_sensor).getTempC((*_sensorAddress)));
 	}
+}
+
+DynamicJsonDocument Models::TemperatureSensors::DS18B20::createPayload()
+{
+	return BaseSensor::createPayload();
 }
 
 DeviceAddress* Models::TemperatureSensors::DS18B20::getSensorAddress()

@@ -1,5 +1,5 @@
 #pragma once
-// DS18B20
+
 #include "BaseSensor.h"
 
 
@@ -22,6 +22,16 @@ float Models::TemperatureSensors::BaseSensor::getTemperature()
 void Models::TemperatureSensors::BaseSensor::sensorRequest()
 {
 
+}
+
+DynamicJsonDocument Models::TemperatureSensors::BaseSensor::createPayload()
+{
+	DynamicJsonDocument document(JSON_OBJECT_SIZE(3));
+	JsonObject payload = document.to<JsonObject>();
+	payload["Type"] = getSensorType();
+	payload["Target"] = getSensorTarget();
+	payload["Temperature"] = getTemperature();
+	return document;
 }
 
 Models::Enums::TemperatureSensorTarget Models::TemperatureSensors::BaseSensor::getSensorTarget()

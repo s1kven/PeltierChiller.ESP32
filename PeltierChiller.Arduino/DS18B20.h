@@ -1,4 +1,5 @@
 #pragma once
+
 #include <OneWire.h>
 #include <DallasTemperature.h>
 #include <stdint.h>
@@ -24,6 +25,7 @@ namespace Models::TemperatureSensors
 		void init(DallasTemperature* sensor, uint8_t _temperaturePrecision) ;
 		float getTemperature();
 		void sensorRequest() override;
+		DynamicJsonDocument createPayload() override;
 		DeviceAddress* getSensorAddress();
 	};
 }

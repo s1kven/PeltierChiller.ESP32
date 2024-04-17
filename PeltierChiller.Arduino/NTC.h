@@ -1,4 +1,5 @@
 #pragma once
+
 #include "BaseSensor.h"
 
 namespace Models::TemperatureSensors
@@ -26,6 +27,7 @@ namespace Models::TemperatureSensors
 			Models::Enums::TemperatureSensorTarget sensorTarget, uint8_t baseNTCTemp = 25);
 		float getTemperature();
 		void sensorRequest() override;
+		DynamicJsonDocument createPayload() override;
 		uint8_t getSensorAddress();
 	};
 }

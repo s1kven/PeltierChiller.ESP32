@@ -1,4 +1,5 @@
 // BME280.h
+#pragma once
 
 #include <GyverBME280.h>
 #include "BaseSensor.h"
@@ -27,6 +28,7 @@ namespace Models::TemperatureSensors
 		float getHumidity();
 		float getPressure();
 		void sensorRequest() override;
+		DynamicJsonDocument createPayload() override;
 		uint8_t getSensorAddress();
 	};
 }

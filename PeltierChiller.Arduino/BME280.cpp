@@ -1,6 +1,7 @@
 // 
 // 
 // 
+#pragma once
 
 #include "BME280.h"
 
@@ -40,6 +41,18 @@ void Models::TemperatureSensors::BME280::sensorRequest()
 		_humidity = bme.readHumidity();
 		_pressure = bme.readPressure();
 	}
+}
+
+DynamicJsonDocument Models::TemperatureSensors::BME280::createPayload()
+{
+	DynamicJsonDocument document(JSON_OBJECT_SIZE(5));
+	JsonObject payload = document.to<JsonObject>();
+	payload["Type"] = getSensorType();
+	payload["Target"] = getSensorTarget();
+	payload["Temperature"] = getTemperature();
+	payload["Pressure"] = getPressure();
+	payload["Humidity"] = getHumidity();
+	return document;
 }
 
 uint8_t Models::TemperatureSensors::BME280::getSensorAddress()
