@@ -111,7 +111,7 @@ const char* Services::TemperatureService::getTemperatureSensorTargetName(Models:
 
 void Services::TemperatureService::requestSensors(uint16_t _sensorsRequestDelay)
 {
-	if (millis() - _sensorsRequestTimer >= _sensorsRequestTimer)
+	if (millis() - _sensorsRequestTimer >= _sensorsRequestDelay)
 	{
 		_sensorsRequestTimer = millis();
 

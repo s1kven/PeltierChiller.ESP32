@@ -128,5 +128,8 @@
     <ClCompile Include="JsonHelper.cpp">
       <Filter>Source Files\Helpers</Filter>
     </ClCompile>
+    <ClCompile Include="ResponseType.cpp">
+      <Filter>Source Files\Models\Enums</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

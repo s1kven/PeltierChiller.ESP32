@@ -155,6 +155,7 @@
       <SubType>
       </SubType>
     </ClCompile>
+    <ClCompile Include="ResponseType.cpp" />
     <ClCompile Include="TemperatureSensorTarget.cpp" />
     <ClCompile Include="TemperatureSensorType.cpp" />
     <ClCompile Include="TemperatureService.cpp" />

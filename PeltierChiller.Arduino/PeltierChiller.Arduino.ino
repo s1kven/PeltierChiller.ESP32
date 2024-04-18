@@ -124,7 +124,8 @@ void loop()
 
 	selectChillerState();
 	
-	(*_jsonService).serializeAndSendToSerialPort(Helpers::JsonHelper::convertToBaseJsonModelArray(_tSensors, sizeof(_tSensors) / sizeof(int)));
+	(*_jsonService).serializeAndSendToSerialPort(Helpers::JsonHelper::convertToBaseJsonModelArray(_tSensors, sizeof(_tSensors) / sizeof(int)),
+		Models::Enums::ResponseType::temperatureSensors);
 
 	//tftOutput(); 
 }
