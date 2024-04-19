@@ -1,8 +1,8 @@
-// DS18B20
 #pragma once
 
 #include "TemperatureSensorTarget.cpp"
 #include "TemperatureSensorType.cpp"
+#include "BaseJsonModel.h"
 
 #if defined(ARDUINO) && ARDUINO >= 100
 #include "arduino.h"
@@ -13,9 +13,12 @@
 namespace Models::TemperatureSensors
 {
 
-	class BaseSensor
+	class BaseSensor :
+		public Models::Abstractions::BaseJsonModel
 	{
 	private:
+		uint16_t _payloadSize;
+
 		Models::Enums::TemperatureSensorTarget _sensorTarget;
 		Models::Enums::TemperatureSensorType _sensorType;
 
@@ -26,10 +29,12 @@ namespace Models::TemperatureSensors
 
 	public:
 
-		BaseSensor(Models::Enums::TemperatureSensorTarget _sensorTarget, Models::Enums::TemperatureSensorType _sensorType);
+		BaseSensor(Models::Enums::TemperatureSensorTarget _sensorTarget, Models::Enums::TemperatureSensorType _sensorType,
+			uint16_t payloadSize);
 		void init();
 		float getTemperature();
 		virtual void sensorRequest() = 0;
+		virtual DynamicJsonDocument createPayload() override;
 		Models::Enums::TemperatureSensorTarget getSensorTarget();
 		Models::Enums::TemperatureSensorType getSensorType();
 	};

@@ -1,10 +1,12 @@
+#pragma once
+
 namespace Models
 {
     namespace Enums
     {
-        enum class TemperatureSensorType
+        enum TemperatureSensorType
         {
-            none,
+            NONE,
             DS18B20,
             BME280,
             NTC

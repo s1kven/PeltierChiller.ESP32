@@ -1,3 +1,5 @@
+#pragma once
+
 #include "ChillerService.h"
 
 Services::ChillerService::ChillerService(uint8_t _temperatureSensorsPin, uint8_t _tSensorsCount, Models::TemperatureSensors::BaseSensor* _tSensors[],
@@ -8,11 +10,17 @@ Services::ChillerService::ChillerService(uint8_t _temperatureSensorsPin, uint8_t
 	_state = state;
 }
 
+void Services::ChillerService::execute()
+{
+	handleChillerState();
+	(*_temperatureService).requestSensors(_sensorsRequestDelay);
+}
+
 void Services::ChillerService::handleChillerState()
 {
 	static uint32_t tmr;
 	static float coldT;
-	static int potIncrement = 190;
+	static int potIncrement = 150;
 	if (millis() - tmr >= 5000)
 	{
 		coldT = (*_temperatureService).getTemperatureForSpecificTarget(Models::Enums::TemperatureSensorTarget::coldCircuit);
@@ -21,9 +29,9 @@ void Services::ChillerService::handleChillerState()
 			-50, -0.1, -100.0, 20) + 20;
 		tmr = millis();
 
-		if (potIncrement > 190)
+		if (potIncrement > 150)
 		{
-			potIncrement = 190;
+			potIncrement = 150;
 		}
 		else if (potIncrement < 50)
 		{

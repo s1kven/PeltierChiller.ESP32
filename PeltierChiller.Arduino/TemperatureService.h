@@ -1,4 +1,5 @@
 #pragma once
+
 #include <LinkedList.h>
 #include <OneWire.h>
 #include <DallasTemperature.h>
@@ -18,6 +19,7 @@ namespace Services
 		OneWire* _oneWire;
 		DallasTemperature* _dallasSensors;
 		LinkedList<Models::TemperatureSensors::BaseSensor*>* _temperatureSensors;
+		uint32_t _sensorsRequestTimer = 0;
 
 		void dallasInit(uint8_t _dallasTemperatureSensorsPin);
 
@@ -28,6 +30,7 @@ namespace Services
 		float getSensorTemperature(uint8_t);
 		String getSensorTarget(uint8_t);
 		const char* getTemperatureSensorTargetName(Models::Enums::TemperatureSensorTarget);
+		void requestSensors(uint16_t _sensorsRequestDelay);
 		TemperatureService(uint8_t _dallasTemperatureSensorsPin, uint8_t _tSensorsCount, Models::TemperatureSensors::BaseSensor* _tSensors[]);
 	};
 }

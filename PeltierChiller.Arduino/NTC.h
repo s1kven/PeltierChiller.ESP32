@@ -1,4 +1,5 @@
 #pragma once
+
 #include "BaseSensor.h"
 
 namespace Models::TemperatureSensors
@@ -8,7 +9,7 @@ namespace Models::TemperatureSensors
 		public Models::TemperatureSensors::BaseSensor
 	{
 	private:
-
+		const uint16_t _payloadSize = JSON_OBJECT_SIZE(3);
 		const float _zeroCbyK = 273.15f;
 
 		uint8_t _sensorAddress;
@@ -26,6 +27,7 @@ namespace Models::TemperatureSensors
 			Models::Enums::TemperatureSensorTarget sensorTarget, uint8_t baseNTCTemp = 25);
 		float getTemperature();
 		void sensorRequest() override;
+		DynamicJsonDocument createPayload() override;
 		uint8_t getSensorAddress();
 	};
 }

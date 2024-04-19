@@ -10,6 +10,8 @@ namespace Services
 	class ChillerService
 	{
 	private:
+		const uint16_t _sensorsRequestDelay = 2000;
+
 		Services::TemperatureService* _temperatureService;
 		float _targetTemperature;
 		Models::Enums::ChillerState _state;
@@ -23,6 +25,7 @@ namespace Services
 
 		float getTargetTemperature();
 		Services::TemperatureService* getTemperatureService();
+		void execute();
 		void handleChillerState();
 		int computePID(float _currentT, float _targetT, float _kp, float _ki, float _kd, float _dt);
 		Models::Enums::ChillerState GetChillerState();

@@ -1,4 +1,5 @@
 // BME280.h
+#pragma once
 
 #include <GyverBME280.h>
 #include "BaseSensor.h"
@@ -10,6 +11,7 @@ namespace Models::TemperatureSensors
 		public Models::TemperatureSensors::BaseSensor
 	{
 	private:
+		const uint16_t _payloadSize = JSON_OBJECT_SIZE(5);
 
 		GyverBME280 bme;
 		uint8_t _sensorAddress;
@@ -27,6 +29,7 @@ namespace Models::TemperatureSensors
 		float getHumidity();
 		float getPressure();
 		void sensorRequest() override;
+		DynamicJsonDocument createPayload() override;
 		uint8_t getSensorAddress();
 	};
 }

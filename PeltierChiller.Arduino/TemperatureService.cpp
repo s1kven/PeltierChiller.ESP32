@@ -1,3 +1,5 @@
+#pragma once
+
 #include "TemperatureService.h"
 
 Services::TemperatureService::TemperatureService(uint8_t _dallasTemperatureSensorsPin,
@@ -57,7 +59,6 @@ float Services::TemperatureService::getHumidityForSpecificTarget(Models::Enums::
 			(*(*_temperatureSensors).get(index)).getSensorType() == Models::Enums::TemperatureSensorType::BME280)
 		{
 			Models::TemperatureSensors::BME280* bme = (Models::TemperatureSensors::BME280*)(*_temperatureSensors).get(index);
-			bme->sensorRequest();
 			_humidity = _humidity + bme->getHumidity();
 			_sensorsCounter++;
 		}
@@ -77,7 +78,6 @@ float Services::TemperatureService::getPressureForSpecificTarget(Models::Enums::
 			(*(*_temperatureSensors).get(index)).getSensorType() == Models::Enums::TemperatureSensorType::BME280)
 		{
 			Models::TemperatureSensors::BME280* bme = (Models::TemperatureSensors::BME280*)(*_temperatureSensors).get(index);
-			bme->sensorRequest();
 			_pressure = _pressure + bme->getPressure();
 			_sensorsCounter++;
 		}
@@ -89,7 +89,6 @@ float Services::TemperatureService::getPressureForSpecificTarget(Models::Enums::
 float Services::TemperatureService::getSensorTemperature(uint8_t sensorIndex)
 {
 	Models::TemperatureSensors::BaseSensor* sensor = (*_temperatureSensors).get(sensorIndex);
-	sensor->sensorRequest();
 	return sensor->getTemperature();
 }
 
@@ -107,6 +106,19 @@ const char* Services::TemperatureService::getTemperatureSensorTargetName(Models:
 	case Models::Enums::TemperatureSensorTarget::pcCase: return "PC case";
 	case Models::Enums::TemperatureSensorTarget::coldCircuit: return "Cold";
 	case Models::Enums::TemperatureSensorTarget::hotCircuit: return "Hot";
+	}
+}
+
+void Services::TemperatureService::requestSensors(uint16_t _sensorsRequestDelay)
+{
+	if (millis() - _sensorsRequestTimer >= _sensorsRequestDelay)
+	{
+		_sensorsRequestTimer = millis();
+
+		for (uint8_t index = 0; index < (*_temperatureSensors).size(); index++)
+		{
+			(*(*_temperatureSensors).get(index)).sensorRequest();
+		}
 	}
 }
 

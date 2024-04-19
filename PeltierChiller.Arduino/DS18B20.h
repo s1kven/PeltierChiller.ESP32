@@ -1,4 +1,5 @@
 #pragma once
+
 #include <OneWire.h>
 #include <DallasTemperature.h>
 #include <stdint.h>
@@ -11,6 +12,7 @@ namespace Models::TemperatureSensors
 		public Models::TemperatureSensors::BaseSensor
 	{
 	private:
+		const uint16_t _payloadSize = JSON_OBJECT_SIZE(3);
 
 		DallasTemperature* _sensor;
 		DeviceAddress* _sensorAddress;
@@ -24,6 +26,7 @@ namespace Models::TemperatureSensors
 		void init(DallasTemperature* sensor, uint8_t _temperaturePrecision) ;
 		float getTemperature();
 		void sensorRequest() override;
+		DynamicJsonDocument createPayload() override;
 		DeviceAddress* getSensorAddress();
 	};
 }
