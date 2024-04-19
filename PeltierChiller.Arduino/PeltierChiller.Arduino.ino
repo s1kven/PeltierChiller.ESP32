@@ -40,10 +40,10 @@ const uint8_t NTC_PIN = A0;
 
 const float _targetCircuitTemperature = 20;
 
-float vin = 0;
+//float vin = 0;
 //uint32_t tftTimer = 0;
 
-bool powerSignalFlag = false;
+//bool powerSignalFlag = false;
 uint32_t tmr = 0;
 uint32_t oldTmr = 0;
 
@@ -106,7 +106,7 @@ void setup()
 
 void loop() 
 {
-	vin = float(analogRead(PCV_PIN));
+	/*vin = float(analogRead(PCV_PIN));
 
 	powerButton->setState(!digitalRead(powerButton->getSignalPin()));
 	if (powerButton->getState() && !powerButton->getFlag())
@@ -118,11 +118,11 @@ void loop()
 	{
 		powerButton->setFlag(false);
 		powerButton->setLastPressMillis(millis() - powerButton->getLastPressTime());
-	}
+	}*/
 
 	(*_chillerService).execute();
 
-	selectChillerState();
+	//selectChillerState();
 	
 	(*_jsonService).serializeAndSendToSerialPort(Helpers::JsonHelper::convertToBaseJsonModelArray(_tSensors, sizeof(_tSensors) / sizeof(int)),
 		Models::Enums::ResponseType::temperatureSensors);
@@ -130,94 +130,94 @@ void loop()
 	//tftOutput(); 
 }
 
-void selectChillerState()
-{
-	if (vin > 30 && (*_chillerService).GetChillerState() != Models::Enums::ChillerState::enabling)
-	{
-		(*_chillerService).SetChillerState(Models::Enums::ChillerState::temperatureMaintaining);
-	}
-
-	switch ((*_chillerService).GetChillerState())
-	{
-	case Models::Enums::ChillerState::off:
-		if (powerButton->getLastPressMillis() > 0)
-		{
-			(*_chillerService).SetChillerState(Models::Enums::ChillerState::enabling);
-		}
-		else
-		{
-			digitalWrite(CHILLERPSSIGNAL_PIN, LOW);
-			digitalWrite(CHILLERSIGNAL_PIN, LOW);
-		}
-		break;
-
-	case Models::Enums::ChillerState::enabling:
-
-		digitalWrite(CHILLERPSSIGNAL_PIN, HIGH);
-		digitalWrite(CHILLERSIGNAL_PIN, HIGH);
-		if (powerButton->getLastPressMillis() > 0 &&
-			(*_chillerService).getTemperatureService()->getTemperatureForSpecificTarget(Models::Enums::TemperatureSensorTarget::coldCircuit) <=
-			(*_chillerService).getTargetTemperature())
-		{
-			digitalWrite(POWERSIGNAL_PIN, HIGH);
-			if (tmr == oldTmr)
-			{
-				tmr = millis();
-			}
-			if (powerSignalFlag)
-			{
-				digitalWrite(POWERSIGNAL_PIN, LOW);
-				tmr = millis();
-				oldTmr = tmr;
-				powerButton->setLastPressMillis(0);
-				powerSignalFlag = false;
-				(*_chillerService).SetChillerState(Models::Enums::ChillerState::temperatureMaintaining);
-			}
-			else if (millis() - powerButton->getLastPressMillis() >= tmr)
-			{
-				powerSignalFlag = true;
-			}
-		}
-		break;
-
-	case Models::Enums::ChillerState::temperatureMaintaining:
-
-		digitalWrite(CHILLERPSSIGNAL_PIN, HIGH);
-		digitalWrite(CHILLERSIGNAL_PIN, HIGH);
-		if (vin < 30)
-		{
-			(*_chillerService).SetChillerState(Models::Enums::ChillerState::off);
-		}
-		/*if (powerButton->getLastPressMillis() != 0)
-		{
-			Serial.println("temperatureMaintaining high");
-			digitalWrite(POWERSIGNAL_PIN, HIGH);
-			(*_chillerService).SetChillerState(Models::Enums::ChillerState::disabling);
-		}*/
-		break;
-	case Models::Enums::ChillerState::disabling:
-
-		//Serial.println("disabling");
-		//digitalWrite(CHILLERPSSIGNAL_PIN, HIGH);
-		//digitalWrite(CHILLERSIGNAL_PIN, HIGH);
-		if (!powerButton->getFlag() && millis() - powerButton->getLastTime() < powerButton->getLastPressMillis() &&
-			powerButton->getLastPressMillis() != 0)
-		{
-			//Serial.println("disabling high");
-			digitalWrite(POWERSIGNAL_PIN, HIGH);
-		}
-		else
-		{
-			//Serial.println("disabling low");
-			digitalWrite(POWERSIGNAL_PIN, LOW);
-			(*_chillerService).SetChillerState(Models::Enums::ChillerState::off);
-		}
-		break;
-
-	default:
-		break;
-	}
-}
+//void selectChillerState()
+//{
+//	if (vin > 30 && (*_chillerService).GetChillerState() != Models::Enums::ChillerState::enabling)
+//	{
+//		(*_chillerService).SetChillerState(Models::Enums::ChillerState::temperatureMaintaining);
+//	}
+//
+//	switch ((*_chillerService).GetChillerState())
+//	{
+//	case Models::Enums::ChillerState::off:
+//		if (powerButton->getLastPressMillis() > 0)
+//		{
+//			(*_chillerService).SetChillerState(Models::Enums::ChillerState::enabling);
+//		}
+//		else
+//		{
+//			digitalWrite(CHILLERPSSIGNAL_PIN, LOW);
+//			digitalWrite(CHILLERSIGNAL_PIN, LOW);
+//		}
+//		break;
+//
+//	case Models::Enums::ChillerState::enabling:
+//
+//		digitalWrite(CHILLERPSSIGNAL_PIN, HIGH);
+//		digitalWrite(CHILLERSIGNAL_PIN, HIGH);
+//		if (powerButton->getLastPressMillis() > 0 &&
+//			(*_chillerService).getTemperatureService()->getTemperatureForSpecificTarget(Models::Enums::TemperatureSensorTarget::coldCircuit) <=
+//			(*_chillerService).getTargetTemperature())
+//		{
+//			digitalWrite(POWERSIGNAL_PIN, HIGH);
+//			if (tmr == oldTmr)
+//			{
+//				tmr = millis();
+//			}
+//			if (powerSignalFlag)
+//			{
+//				digitalWrite(POWERSIGNAL_PIN, LOW);
+//				tmr = millis();
+//				oldTmr = tmr;
+//				powerButton->setLastPressMillis(0);
+//				powerSignalFlag = false;
+//				(*_chillerService).SetChillerState(Models::Enums::ChillerState::temperatureMaintaining);
+//			}
+//			else if (millis() - powerButton->getLastPressMillis() >= tmr)
+//			{
+//				powerSignalFlag = true;
+//			}
+//		}
+//		break;
+//
+//	case Models::Enums::ChillerState::temperatureMaintaining:
+//
+//		digitalWrite(CHILLERPSSIGNAL_PIN, HIGH);
+//		digitalWrite(CHILLERSIGNAL_PIN, HIGH);
+//		if (vin < 30)
+//		{
+//			(*_chillerService).SetChillerState(Models::Enums::ChillerState::off);
+//		}
+//		/*if (powerButton->getLastPressMillis() != 0)
+//		{
+//			Serial.println("temperatureMaintaining high");
+//			digitalWrite(POWERSIGNAL_PIN, HIGH);
+//			(*_chillerService).SetChillerState(Models::Enums::ChillerState::disabling);
+//		}*/
+//		break;
+//	case Models::Enums::ChillerState::disabling:
+//
+//		//Serial.println("disabling");
+//		//digitalWrite(CHILLERPSSIGNAL_PIN, HIGH);
+//		//digitalWrite(CHILLERSIGNAL_PIN, HIGH);
+//		if (!powerButton->getFlag() && millis() - powerButton->getLastTime() < powerButton->getLastPressMillis() &&
+//			powerButton->getLastPressMillis() != 0)
+//		{
+//			//Serial.println("disabling high");
+//			digitalWrite(POWERSIGNAL_PIN, HIGH);
+//		}
+//		else
+//		{
+//			//Serial.println("disabling low");
+//			digitalWrite(POWERSIGNAL_PIN, LOW);
+//			(*_chillerService).SetChillerState(Models::Enums::ChillerState::off);
+//		}
+//		break;
+//
+//	default:
+//		break;
+//	}
+//}
 
 //void tftOutput()
 //{

@@ -131,5 +131,8 @@
     <ClCompile Include="ResponseType.cpp">
       <Filter>Source Files\Models\Enums</Filter>
     </ClCompile>
+    <ClCompile Include="BaseJsonModel.cpp">
+      <Filter>Source Files\Models\Abstractions</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>

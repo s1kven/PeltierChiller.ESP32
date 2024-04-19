@@ -3,8 +3,10 @@
 #include "BaseSensor.h"
 
 
-Models::TemperatureSensors::BaseSensor::BaseSensor(Models::Enums::TemperatureSensorTarget sensorTarget, Models::Enums::TemperatureSensorType sensorType)
+Models::TemperatureSensors::BaseSensor::BaseSensor(Models::Enums::TemperatureSensorTarget sensorTarget, 
+	Models::Enums::TemperatureSensorType sensorType, uint16_t payloadSize) : BaseJsonModel(payloadSize)
 {
+	_payloadSize = payloadSize;
 	_sensorTarget = sensorTarget;
 	_sensorType = sensorType;
 }
@@ -26,7 +28,7 @@ void Models::TemperatureSensors::BaseSensor::sensorRequest()
 
 DynamicJsonDocument Models::TemperatureSensors::BaseSensor::createPayload()
 {
-	DynamicJsonDocument document(JSON_OBJECT_SIZE(3));
+	DynamicJsonDocument document(_payloadSize);
 	JsonObject payload = document.to<JsonObject>();
 	payload["Type"] = getSensorType();
 	payload["Target"] = getSensorTarget();

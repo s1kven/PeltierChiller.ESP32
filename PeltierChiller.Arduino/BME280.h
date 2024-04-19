@@ -11,6 +11,7 @@ namespace Models::TemperatureSensors
 		public Models::TemperatureSensors::BaseSensor
 	{
 	private:
+		const uint16_t _payloadSize = JSON_OBJECT_SIZE(5);
 
 		GyverBME280 bme;
 		uint8_t _sensorAddress;

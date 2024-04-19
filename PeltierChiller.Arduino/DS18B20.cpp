@@ -3,7 +3,7 @@
 #include "DS18B20.h"
 
 Models::TemperatureSensors::DS18B20::DS18B20(DeviceAddress* sensorAddress, Models::Enums::TemperatureSensorTarget sensorTarget) :
-	Models::TemperatureSensors::BaseSensor(sensorTarget, Models::Enums::TemperatureSensorType::DS18B20)
+	Models::TemperatureSensors::BaseSensor(sensorTarget, Models::Enums::TemperatureSensorType::DS18B20, _payloadSize)
 {
 	_sensorAddress = sensorAddress;
 }

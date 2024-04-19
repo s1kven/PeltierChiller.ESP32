@@ -9,7 +9,7 @@ namespace Models::TemperatureSensors
 		public Models::TemperatureSensors::BaseSensor
 	{
 	private:
-
+		const uint16_t _payloadSize = JSON_OBJECT_SIZE(3);
 		const float _zeroCbyK = 273.15f;
 
 		uint8_t _sensorAddress;

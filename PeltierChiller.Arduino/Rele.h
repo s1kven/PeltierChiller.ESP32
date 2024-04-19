@@ -11,6 +11,7 @@ namespace Models
 		public Models::Abstractions::BaseJsonModel
 	{
 	private:
+		const uint16_t _payloadSize = JSON_OBJECT_SIZE(2);
 
 		int8_t _signalPin;
 		Models::Enums::ReleState _state;

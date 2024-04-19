@@ -14,7 +14,9 @@ void Services::JsonService::serializeAndSendToSerialPort(
 	{
 		_serialWriteTimer = millis();
 
-		StaticJsonDocument<256> response;
+		uint16_t responseDocumentSize = calculateJsonDocumentSize(_models);
+
+		DynamicJsonDocument response(responseDocumentSize);
 		JsonObject responsePayload = response.to<JsonObject>();
 
 		responsePayload["ResponseType"] = _responseType;
@@ -32,9 +34,20 @@ void Services::JsonService::serializeAndSendToSerialPort(
 	delete _models.key;
 }
 
+uint16_t Services::JsonService::calculateJsonDocumentSize(
+	Models::Abstractions::KeyValuePair<Models::Abstractions::BaseJsonModel**, uint8_t> _models)
+{
+	uint16_t documentSize = 0;
+	for (int i = 0; i < _models.value; i++)
+	{
+		documentSize += (*_models.key[i]).GetJsonSize();
+	}
+	documentSize += _baseResponseSize + 8; // 8 - size of JsonArray
 
+	return documentSize;
+}
 
-void Services::JsonService::buildResponseBasedOnType(JsonObject& _data, 
+void Services::JsonService::buildResponseBasedOnType(JsonObject& _data,
 	Models::Abstractions::KeyValuePair<Models::Abstractions::BaseJsonModel**, uint8_t> _models, 
 	Models::Enums::ResponseType _responseType)
 {
@@ -51,6 +64,8 @@ void Services::JsonService::buildResponseBasedOnType(JsonObject& _data,
 	}
 }
 
+#pragma region buildResponse
+
 void Services::JsonService::buildTemperatureSensorsResponse(JsonObject& _data,
 	Models::Abstractions::KeyValuePair<Models::Abstractions::BaseJsonModel**, uint8_t> _models)
 {
@@ -60,3 +75,5 @@ void Services::JsonService::buildTemperatureSensorsResponse(JsonObject& _data,
 		temperatureSensors.add((*_models.key[i]).createPayload());
 	}
 }
+
+#pragma endregion

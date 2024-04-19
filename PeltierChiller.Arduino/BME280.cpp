@@ -6,7 +6,7 @@
 #include "BME280.h"
 
 Models::TemperatureSensors::BME280::BME280(uint8_t sensorAddress, Models::Enums::TemperatureSensorTarget sensorTarget) :
-	Models::TemperatureSensors::BaseSensor(sensorTarget, Models::Enums::TemperatureSensorType::BME280)
+	Models::TemperatureSensors::BaseSensor(sensorTarget, Models::Enums::TemperatureSensorType::BME280, _payloadSize)
 {
 	_sensorAddress = sensorAddress;
 }
@@ -45,7 +45,7 @@ void Models::TemperatureSensors::BME280::sensorRequest()
 
 DynamicJsonDocument Models::TemperatureSensors::BME280::createPayload()
 {
-	DynamicJsonDocument document(JSON_OBJECT_SIZE(5));
+	DynamicJsonDocument document(_payloadSize);
 	JsonObject payload = document.to<JsonObject>();
 	payload["Type"] = getSensorType();
 	payload["Target"] = getSensorTarget();

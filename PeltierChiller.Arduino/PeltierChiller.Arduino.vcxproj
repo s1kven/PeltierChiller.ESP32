@@ -108,6 +108,7 @@
     <DebuggerFlavor>VisualMicroDebugger</DebuggerFlavor>
   </PropertyGroup>
   <ItemGroup>
+    <ClCompile Include="BaseJsonModel.cpp" />
     <ClCompile Include="JsonHelper.cpp" />
     <ClCompile Include="JsonService.cpp" />
     <ClCompile Include="PeltierChiller.Arduino.ino">
