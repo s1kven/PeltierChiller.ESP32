@@ -9,8 +9,8 @@
 #include <ArduinoJson.h>
 #include <ArduinoJson.hpp>
 #include <GyverBME280.h>
-#include <HID.h>
-#include <TFT.h>
+//#include <HID.h>
+//#include <TFT.h>
 #include <SPI.h>
 #include <Wire.h>
 #include <LinkedList.h>
@@ -26,17 +26,33 @@
 #include "JsonService.h"
 #include "JsonHelper.h"
 
-#define cs 10
-#define dc 9
+//      arduino      ->      esp32
+//        SCL                 22
+//        SDA                 21
+//        CS(10)              5
+//        DC(9)               4
+//        RST(8)              17
+//    TSENSOR_PIN(7)          16
+// CHILLERPSSIGNAL_PIN(A1)    32
+//   CHILLERSIGNAL_PIN(A2)    33
+//       PCV_PIN(A3)          25
+//    POWERBUTTON_PIN(A5)     26
+//        NTC_PIN(A0)         34
+//    POWERSIGNAL_PIN(5)      18
+//        SCK(13)             14
+//        MOSI(11)            13
+
+#define cs 5
+#define dc 4
 #define rst 8
 
-const uint8_t TSENSOR_PIN = 7;
-const uint8_t CHILLERPSSIGNAL_PIN = A1;
-const uint8_t CHILLERSIGNAL_PIN = A2;
-const uint8_t PCV_PIN = A3;
-const uint8_t POWERSIGNAL_PIN = 5;
-const uint8_t POWERBUTTON_PIN = A5;
-const uint8_t NTC_PIN = A0;
+const uint8_t TSENSOR_PIN = 16;
+const uint8_t CHILLERPSSIGNAL_PIN = 32;
+const uint8_t CHILLERSIGNAL_PIN = 33;
+const uint8_t PCV_PIN = 25;
+const uint8_t POWERSIGNAL_PIN = 18;
+const uint8_t POWERBUTTON_PIN = 26;
+const uint8_t NTC_PIN = 34;
 
 const float _targetCircuitTemperature = 20;
 
@@ -58,8 +74,8 @@ Models::TemperatureSensors::BaseSensor* _tSensors[] =
 	new Models::TemperatureSensors::DS18B20(&coldCircuit, Models::Enums::TemperatureSensorTarget::coldCircuit),
 	new Models::TemperatureSensors::DS18B20(&room, Models::Enums::TemperatureSensorTarget::room),
 	new Models::TemperatureSensors::DS18B20(&pcCase, Models::Enums::TemperatureSensorTarget::pcCase),
-	new Models::TemperatureSensors::NTC(NTC_PIN, 10000, 3950, 10000,
-		Models::Enums::TemperatureSensorTarget::room),
+	//new Models::TemperatureSensors::NTC(NTC_PIN, 10000, 3950, 10000, Give wrong data in ESP32 environment
+		//Models::Enums::TemperatureSensorTarget::room),
 	new Models::TemperatureSensors::DS18B20(&hotCircuit, Models::Enums::TemperatureSensorTarget::hotCircuit),
 	new Models::TemperatureSensors::BME280(0x76, Models::Enums::TemperatureSensorTarget::room)
 };
@@ -67,7 +83,7 @@ Models::TemperatureSensors::BaseSensor* _tSensors[] =
 Models::Button* powerButton = new Models::Button(POWERBUTTON_PIN, "POWER");
 
 Services::ChillerService * _chillerService;
-
+ 
 Services::JsonService* _jsonService;
 
 //TFT TFTscreen = TFT(cs, dc, rst);
@@ -83,7 +99,7 @@ void setup()
 {
 	Wire.begin();
 
-	Serial.begin(9600);
+	Serial.begin(115200);
 
 	_chillerService = new Services::ChillerService(TSENSOR_PIN, sizeof(_tSensors) / sizeof(int), _tSensors,
 		_targetCircuitTemperature, Models::Enums::ChillerState::off);
