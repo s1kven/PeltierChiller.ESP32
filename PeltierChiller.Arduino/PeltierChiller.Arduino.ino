@@ -148,7 +148,7 @@ void loop()
 
 void selectChillerState()
 {
-	if (vin > 30 && (*_chillerService).GetChillerState() != Models::Enums::ChillerState::enabling)
+	if (vin > 250 && (*_chillerService).GetChillerState() != Models::Enums::ChillerState::enabling)
 	{
 		(*_chillerService).SetChillerState(Models::Enums::ChillerState::temperatureMaintaining);
 	}
