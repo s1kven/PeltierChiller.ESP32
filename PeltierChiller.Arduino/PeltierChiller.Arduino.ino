@@ -9,8 +9,6 @@
 #include <ArduinoJson.h>
 #include <ArduinoJson.hpp>
 #include <GyverBME280.h>
-//#include <HID.h>
-//#include <TFT.h>
 #include <SPI.h>
 #include <Wire.h>
 #include <LinkedList.h>
@@ -57,7 +55,6 @@ const uint8_t NTC_PIN = 34;
 const float _targetCircuitTemperature = 20;
 
 float vin = 0;
-//uint32_t tftTimer = 0;
 
 bool powerSignalFlag = false;
 uint32_t tmr = 0;
@@ -74,8 +71,8 @@ Models::TemperatureSensors::BaseSensor* _tSensors[] =
 	new Models::TemperatureSensors::DS18B20(&coldCircuit, Models::Enums::TemperatureSensorTarget::coldCircuit),
 	new Models::TemperatureSensors::DS18B20(&room, Models::Enums::TemperatureSensorTarget::room),
 	new Models::TemperatureSensors::DS18B20(&pcCase, Models::Enums::TemperatureSensorTarget::pcCase),
-	//new Models::TemperatureSensors::NTC(NTC_PIN, 10000, 3950, 10000, Give wrong data in ESP32 environment
-		//Models::Enums::TemperatureSensorTarget::room),
+	new Models::TemperatureSensors::NTC(NTC_PIN, 10000, 3950, 10000,
+		Models::Enums::TemperatureSensorTarget::room, 25, 3.3, 12),
 	new Models::TemperatureSensors::DS18B20(&hotCircuit, Models::Enums::TemperatureSensorTarget::hotCircuit),
 	new Models::TemperatureSensors::BME280(0x76, Models::Enums::TemperatureSensorTarget::room)
 };
@@ -85,15 +82,6 @@ Models::Button* powerButton = new Models::Button(POWERBUTTON_PIN, "POWER");
 Services::ChillerService * _chillerService;
  
 Services::JsonService* _jsonService;
-
-//TFT TFTscreen = TFT(cs, dc, rst);
-
-//char coldCircuitT[6];
-//char hotCircuitT[6];
-//char roomCircuitT[6];
-//char pcCaseCircuitT[6];
-//char pressureCH[6];
-//char humidityCH[6];
 
 void setup()  
 {
@@ -112,11 +100,6 @@ void setup()
 	pinMode(CHILLERPSSIGNAL_PIN, OUTPUT);
 	pinMode(CHILLERSIGNAL_PIN, OUTPUT);
 	pinMode(POWERSIGNAL_PIN, OUTPUT);
-
-	/*TFTscreen.begin();
-	TFTscreen.setRotation(270);
-	TFTscreen.background(255, 255, 255);
-	TFTscreen.setTextSize(2);*/
 }
 
 
@@ -234,52 +217,3 @@ void selectChillerState()
 		break;
 	}
 }
-
-//void tftOutput()
-//{
-//	if (millis() - tftTimer >= 5000)
-//	{
-//		tftTimer = millis();
-//
-//		String coldCT = String((*_chillerService).getTemperatureService()->
-//			getTemperatureForSpecificTarget(Models::Enums::TemperatureSensorTarget::coldCircuit), 4);
-//		String hotCT = String((*_chillerService).getTemperatureService()->
-//			getTemperatureForSpecificTarget(Models::Enums::TemperatureSensorTarget::hotCircuit), 4);
-//		String pcCaseCT = String((*_chillerService).getTemperatureService()->
-//			getTemperatureForSpecificTarget(Models::Enums::TemperatureSensorTarget::pcCase), 4);
-//		String roomCT = String((*_chillerService).getTemperatureService()->
-//			getTemperatureForSpecificTarget(Models::Enums::TemperatureSensorTarget::room), 4);
-//		String pressure = String((*_chillerService).getTemperatureService()->
-//			getPressureForSpecificTarget(Models::Enums::TemperatureSensorTarget::room), 4);
-//		String humidity = String((*_chillerService).getTemperatureService()->
-//			getHumidityForSpecificTarget(Models::Enums::TemperatureSensorTarget::room), 4);
-//
-//		coldCT.toCharArray(coldCircuitT, 6);
-//		hotCT.toCharArray(hotCircuitT, 6);
-//		roomCT.toCharArray(roomCircuitT, 6);
-//		pcCaseCT.toCharArray(pcCaseCircuitT, 6);
-//		pressure.toCharArray(pressureCH, 6);
-//		humidity.toCharArray(humidityCH, 6);
-//
-//		TFTscreen.background(255, 255, 255);
-//		TFTscreen.stroke(0, 0, 0);
-//
-//		TFTscreen.text((*_chillerService).getTemperatureService()->
-//			getTemperatureSensorTargetName(Models::Enums::TemperatureSensorTarget::coldCircuit), 5, 5);
-//		TFTscreen.text(coldCircuitT, 5, 25);
-//
-//		TFTscreen.text((*_chillerService).getTemperatureService()->
-//			getTemperatureSensorTargetName(Models::Enums::TemperatureSensorTarget::hotCircuit), 5, 45);
-//		TFTscreen.text(hotCircuitT, 5, 65);
-//		TFTscreen.text(pressureCH, 65, 45);
-//		TFTscreen.text(humidityCH, 65, 65);
-//
-//		TFTscreen.text((*_chillerService).getTemperatureService()->
-//			getTemperatureSensorTargetName(Models::Enums::TemperatureSensorTarget::room), 5, 85);
-//		TFTscreen.text(roomCircuitT, 5, 105);
-//
-//		TFTscreen.text((*_chillerService).getTemperatureService()->
-//			getTemperatureSensorTargetName(Models::Enums::TemperatureSensorTarget::pcCase), 5, 125);
-//		TFTscreen.text(pcCaseCircuitT, 5, 145);
-//	}
-//}

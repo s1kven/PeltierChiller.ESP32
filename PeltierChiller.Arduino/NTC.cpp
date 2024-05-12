@@ -3,7 +3,8 @@
 #include "NTC.h"
 
 Models::TemperatureSensors::NTC::NTC(uint8_t sensorAddress, uint32_t resistance, uint16_t bCoefficient,
-	uint32_t resistanceNTC, Models::Enums::TemperatureSensorTarget sensorTarget, uint8_t baseNTCTemp) :
+	uint32_t resistanceNTC, Models::Enums::TemperatureSensorTarget sensorTarget, uint8_t baseNTCTemp,
+	float ntcVoltage, uint8_t adcResolution) :
 	Models::TemperatureSensors::BaseSensor(sensorTarget, Models::Enums::TemperatureSensorType::NTC, _payloadSize)
 {
 	_sensorAddress = sensorAddress;
@@ -11,6 +12,8 @@ Models::TemperatureSensors::NTC::NTC(uint8_t sensorAddress, uint32_t resistance,
 	_bCoefficient = bCoefficient;
 	_resistanceNTC = resistanceNTC;
 	_baseNTCTemp = baseNTCTemp;
+	_ntcVoltage = ntcVoltage;
+	_adcMaxValue = pow(2.0, adcResolution);
 }
 
 float Models::TemperatureSensors::NTC::getTemperature()
@@ -20,10 +23,13 @@ float Models::TemperatureSensors::NTC::getTemperature()
 
 void Models::TemperatureSensors::NTC::sensorRequest()
 {
+	float Vout, Rt = 0;
+
 	float value = analogRead(_sensorAddress);
-	value = ((float) _resistanceNTC / _resistance) / (1023.0f / value - 1.0);
-	value = (log(value) / _bCoefficient) + 1.0 / (_baseNTCTemp + _zeroCbyK);
-	_temperature = (1.0 / value - _zeroCbyK);
+	value = ADC_LUT[(int)value];
+	Vout = value * _ntcVoltage / _adcMaxValue;
+	Rt = _resistance * Vout / (_ntcVoltage - Vout);
+	_temperature = (1 / (1 / (_baseNTCTemp + _zeroCbyK) + log(Rt / _resistanceNTC) / _bCoefficient))-_zeroCbyK;
 }
 
 DynamicJsonDocument Models::TemperatureSensors::NTC::createPayload()
