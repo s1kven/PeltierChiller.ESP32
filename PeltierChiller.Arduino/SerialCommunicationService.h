@@ -7,7 +7,7 @@
 
 #include "CommunicationService.h"
 
-namespace Services
+namespace Communication::Services
 {
 	class SerialCommunicationService :
 		public CommunicationService
@@ -19,5 +19,7 @@ namespace Services
 		SerialCommunicationService(uint32_t baudRate);
 
 		void init() override;
+
+		void sendData(String data) override;
 	};
 }

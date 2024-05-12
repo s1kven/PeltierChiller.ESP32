@@ -31,6 +31,12 @@
     <Filter Include="Source Files\Helpers">
       <UniqueIdentifier>{1482848d-73d8-4ae3-95da-2745109b47bb}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Communication">
+      <UniqueIdentifier>{59326fa5-bbb0-4973-885e-4a8d1cf2d703}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Communication\Services">
+      <UniqueIdentifier>{82411c56-107e-4b11-bc67-eb2be735f039}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\arduino folders read me.txt">
@@ -79,6 +85,15 @@
     </ClInclude>
     <ClInclude Include="KeyValuePair.h">
       <Filter>Source Files\Models\Abstractions</Filter>
+    </ClInclude>
+    <ClInclude Include="FileService.h">
+      <Filter>Source Files\Services</Filter>
+    </ClInclude>
+    <ClInclude Include="CommunicationService.h">
+      <Filter>Source Files\Communication\Services</Filter>
+    </ClInclude>
+    <ClInclude Include="SerialCommunicationService.h">
+      <Filter>Source Files\Communication\Services</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -133,6 +148,15 @@
     </ClCompile>
     <ClCompile Include="BaseJsonModel.cpp">
       <Filter>Source Files\Models\Abstractions</Filter>
+    </ClCompile>
+    <ClCompile Include="CommunicationService.cpp">
+      <Filter>Source Files\Communication\Services</Filter>
+    </ClCompile>
+    <ClCompile Include="SerialCommunicationService.cpp">
+      <Filter>Source Files\Communication\Services</Filter>
+    </ClCompile>
+    <ClCompile Include="FileService.cpp">
+      <Filter>Source Files\Services</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

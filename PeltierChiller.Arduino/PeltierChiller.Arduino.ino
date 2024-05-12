@@ -15,8 +15,6 @@
 #include <ArduinoJson.hpp>
 #include <GyverBME280.h>
 #include <SPI.h>
-#include <FS.h>
-#include <SD.h>
 #include <Wire.h>
 #include <LinkedList.h>
 #include <OneWire.h>
@@ -32,6 +30,7 @@
 #include "JsonHelper.h"
 #include "CommunicationService.h"
 #include "SerialCommunicationService.h"
+#include "FileService.h"
 
 //      arduino      ->      esp32
 //        SCL                 22
@@ -89,13 +88,15 @@ Services::ChillerService * _chillerService;
  
 Services::JsonService* _jsonService;
 
-Services::CommunicationService* _communicationService;
+Communication::Services::CommunicationService* _communicationService;
+
+Services::FileService* _fileService;
 
 void setup()  
 {
 	Wire.begin();
 
-	_communicationService = new Services::SerialCommunicationService(115200);
+	_communicationService = new Communication::Services::SerialCommunicationService(115200);
 	_communicationService->init();
 
 	_chillerService = new Services::ChillerService(TSENSOR_PIN, sizeof(_tSensors) / sizeof(int), _tSensors,
@@ -109,6 +110,11 @@ void setup()
 	pinMode(CHILLERPSSIGNAL_PIN, OUTPUT);
 	pinMode(CHILLERSIGNAL_PIN, OUTPUT);
 	pinMode(POWERSIGNAL_PIN, OUTPUT);
+
+	_fileService = new Services::FileService();
+	_fileService->init(SD_CS);
+
+	_communicationService->sendData(_fileService->readFile("/Settings.json"));
 }
 
 
