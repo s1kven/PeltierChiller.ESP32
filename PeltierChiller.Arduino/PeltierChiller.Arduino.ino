@@ -5,11 +5,18 @@
 */
 
 #pragma once
+#if defined(ARDUINO) && ARDUINO >= 100
+#include "arduino.h"
+#else
+#include "WProgram.h"
+#endif
 
 #include <ArduinoJson.h>
 #include <ArduinoJson.hpp>
 #include <GyverBME280.h>
 #include <SPI.h>
+#include <FS.h>
+#include <SD.h>
 #include <Wire.h>
 #include <LinkedList.h>
 #include <OneWire.h>
@@ -23,11 +30,13 @@
 #include "KeyValuePair.h"
 #include "JsonService.h"
 #include "JsonHelper.h"
+#include "CommunicationService.h"
+#include "SerialCommunicationService.h"
 
 //      arduino      ->      esp32
 //        SCL                 22
 //        SDA                 21
-//        CS(10)              5
+//        CS(10)              15
 //        DC(9)               4
 //        RST(8)              17
 //    TSENSOR_PIN(7)          16
@@ -36,21 +45,18 @@
 //       PCV_PIN(A3)          25
 //    POWERBUTTON_PIN(A5)     26
 //        NTC_PIN(A0)         34
-//    POWERSIGNAL_PIN(5)      18
+//    POWERSIGNAL_PIN(5)      27
 //        SCK(13)             14
 //        MOSI(11)            13
-
-#define cs 5
-#define dc 4
-#define rst 8
 
 const uint8_t TSENSOR_PIN = 16;
 const uint8_t CHILLERPSSIGNAL_PIN = 32;
 const uint8_t CHILLERSIGNAL_PIN = 33;
 const uint8_t PCV_PIN = 25;
-const uint8_t POWERSIGNAL_PIN = 18;
+const uint8_t POWERSIGNAL_PIN = 27;
 const uint8_t POWERBUTTON_PIN = 26;
 const uint8_t NTC_PIN = 34;
+const uint8_t SD_CS = 5;
 
 const float _targetCircuitTemperature = 20;
 
@@ -83,11 +89,14 @@ Services::ChillerService * _chillerService;
  
 Services::JsonService* _jsonService;
 
+Services::CommunicationService* _communicationService;
+
 void setup()  
 {
 	Wire.begin();
 
-	Serial.begin(115200);
+	_communicationService = new Services::SerialCommunicationService(115200);
+	_communicationService->init();
 
 	_chillerService = new Services::ChillerService(TSENSOR_PIN, sizeof(_tSensors) / sizeof(int), _tSensors,
 		_targetCircuitTemperature, Models::Enums::ChillerState::off);
