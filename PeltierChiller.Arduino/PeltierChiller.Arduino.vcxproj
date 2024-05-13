@@ -108,7 +108,7 @@
     <DebuggerFlavor>VisualMicroDebugger</DebuggerFlavor>
   </PropertyGroup>
   <ItemGroup>
-    <ClCompile Include="BaseJsonModel.cpp" />
+    <ClCompile Include="BaseSerializableObject.cpp" />
     <ClCompile Include="ChillerConfiguration.cpp" />
     <ClCompile Include="CommunicationService.cpp" />
     <ClCompile Include="ConfigurationService.cpp" />
@@ -126,7 +126,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="BaseDeserializableObject.h" />
-    <ClInclude Include="BaseJsonModel.h" />
+    <ClInclude Include="BaseSerializableObject.h" />
     <ClInclude Include="BME280.h">
       <SubType>
       </SubType>
@@ -139,7 +139,6 @@
     <ClInclude Include="JsonHelper.h" />
     <ClInclude Include="JsonService.h" />
     <ClInclude Include="KeyValuePair.h" />
-    <ClInclude Include="PowerButtonService.h" />
     <ClInclude Include="ChillerService.h" />
     <ClInclude Include="DS18B20.h" />
     <ClInclude Include="NTC.h" />
@@ -155,7 +154,6 @@
       </SubType>
     </ClCompile>
     <ClCompile Include="Button.cpp" />
-    <ClCompile Include="PowerButtonService.cpp" />
     <ClCompile Include="ChillerService.cpp" />
     <ClCompile Include="ChillerState.cpp" />
     <ClCompile Include="DS18B20.cpp" />

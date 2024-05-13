@@ -8,7 +8,7 @@ Services::JsonService::JsonService(uint32_t serialWriteDelay)
 }
 
 void Services::JsonService::serializeAndSendToSerialPort(
-	Models::Abstractions::KeyValuePair<Models::Abstractions::BaseJsonModel**, uint8_t> _models, 
+	Models::Abstractions::KeyValuePair<Communication::Abstractions::BaseSerializableObject**, uint8_t> _models,
 	Communication::Enums::ResponseType _responseType)
 {
 	if (millis() - _serialWriteTimer >= _serialWriteDelay)
@@ -50,7 +50,7 @@ Communication::Abstractions::BaseDeserializableObject* Services::JsonService::de
 }
 
 uint16_t Services::JsonService::calculateJsonDocumentSize(
-	Models::Abstractions::KeyValuePair<Models::Abstractions::BaseJsonModel**, uint8_t> _models)
+	Models::Abstractions::KeyValuePair<Communication::Abstractions::BaseSerializableObject**, uint8_t> _models)
 {
 	uint16_t documentSize = 0;
 	for (int i = 0; i < _models.value; i++)
@@ -63,7 +63,7 @@ uint16_t Services::JsonService::calculateJsonDocumentSize(
 }
 
 void Services::JsonService::buildResponseBasedOnType(JsonObject& _data,
-	Models::Abstractions::KeyValuePair<Models::Abstractions::BaseJsonModel**, uint8_t> _models, 
+	Models::Abstractions::KeyValuePair<Communication::Abstractions::BaseSerializableObject**, uint8_t> _models,
 	Communication::Enums::ResponseType _responseType)
 {
 	switch (_responseType)
@@ -99,7 +99,7 @@ Communication::Abstractions::BaseDeserializableObject* Services::JsonService::de
 #pragma region buildResponse
 
 void Services::JsonService::buildTemperatureSensorsResponse(JsonObject& _data,
-	Models::Abstractions::KeyValuePair<Models::Abstractions::BaseJsonModel**, uint8_t> _models)
+	Models::Abstractions::KeyValuePair<Communication::Abstractions::BaseSerializableObject**, uint8_t> _models)
 {
 	JsonArray temperatureSensors = _data.createNestedArray("TemperatureSensors");
 	for (int i = 0; i < _models.value; i++)

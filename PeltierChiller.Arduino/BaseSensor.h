@@ -2,13 +2,13 @@
 
 #include "TemperatureSensorTarget.cpp"
 #include "TemperatureSensorType.cpp"
-#include "BaseJsonModel.h"
+#include "BaseSerializableObject.h"
 
 namespace Models::TemperatureSensors
 {
 
 	class BaseSensor :
-		public Models::Abstractions::BaseJsonModel
+		public Communication::Abstractions::BaseSerializableObject
 	{
 	private:
 		uint16_t _payloadSize;

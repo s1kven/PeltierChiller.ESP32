@@ -20,7 +20,6 @@
 #include <OneWire.h>
 #include <DallasTemperature.h>
 #include "ChillerService.h"
-#include "PowerButtonService.h"
 #include "BaseSensor.h"
 #include "DS18B20.h"
 #include "NTC.h"
@@ -141,7 +140,8 @@ void loop()
 
 	selectChillerState();
 	
-	(*_jsonService).serializeAndSendToSerialPort(Helpers::JsonHelper::convertToBaseJsonModelArray(_tSensors, sizeof(_tSensors) / sizeof(int)),
+	(*_jsonService).serializeAndSendToSerialPort(
+		Helpers::JsonHelper::convertToBaseSerializableObjectArray(_tSensors, sizeof(_tSensors) / sizeof(int)),
 		Communication::Enums::ResponseType::temperatureSensors);
 
 	//tftOutput(); 
