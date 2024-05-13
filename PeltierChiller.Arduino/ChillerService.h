@@ -29,7 +29,7 @@ namespace Services
 		uint32_t _oldPowerSignalTimer = 0;
 
 		uint32_t _chillerLoadTimer = 0;
-		uint16_t _varResistorValue;
+		int16_t _varResistorValue;
 
 		void initConfiguration();
 		void manageChillerLoad();

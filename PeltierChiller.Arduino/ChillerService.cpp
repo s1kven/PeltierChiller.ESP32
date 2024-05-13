@@ -31,6 +31,7 @@ void Services::ChillerService::manageChiller(float pcVoltage)
 void Services::ChillerService::initConfiguration()
 {
 	_targetTemperature = _chillerConfiguration->getTargetCircuitTemperature();
+	_varResistorValue = 150;
 }
 
 void Services::ChillerService::handlePowerButton()
@@ -50,7 +51,6 @@ void Services::ChillerService::handlePowerButton()
 
 void Services::ChillerService::manageChillerLoad()
 {
-	_varResistorValue = 150;
 	if (millis() - _chillerLoadTimer >= 5000)
 	{
 		float coldT = (*_temperatureService).getTemperatureForSpecificTarget(Models::Enums::TemperatureSensorTarget::coldCircuit);
