@@ -2,10 +2,10 @@ namespace Communication
 {
     namespace Enums
     {
-        enum ResponseType
+        enum class RequestType
         {
             unknown,
-            temperatureSensors
+            chillerSettings
         };
     }
 }

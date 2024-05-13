@@ -2,12 +2,14 @@
 
 #include "ChillerService.h"
 
-Services::ChillerService::ChillerService(uint8_t _temperatureSensorsPin, uint8_t _tSensorsCount, Models::TemperatureSensors::BaseSensor* _tSensors[],
-	float _targetCircuitTemperature, Models::Enums::ChillerState state)
+Services::ChillerService::ChillerService(uint8_t _temperatureSensorsPin, uint8_t _tSensorsCount,
+	Models::TemperatureSensors::BaseSensor* _tSensors[], Communication::Models::ChillerConfiguration* chillerConfiguration,
+	Models::Enums::ChillerState state)
 {
 	_temperatureService = new Services::TemperatureService(_temperatureSensorsPin, _tSensorsCount, _tSensors);
-	_targetTemperature = _targetCircuitTemperature;
 	_state = state;
+	_chillerConfiguration = chillerConfiguration;
+	initConfiguration();
 }
 
 void Services::ChillerService::execute()
@@ -81,4 +83,10 @@ float Services::ChillerService::getTargetTemperature()
 Services::TemperatureService* Services::ChillerService::getTemperatureService()
 {
 	return _temperatureService;
+}
+
+
+void Services::ChillerService::initConfiguration()
+{
+	_targetTemperature = _chillerConfiguration->getTargetCircuitTemperature();
 }

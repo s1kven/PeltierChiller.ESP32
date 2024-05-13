@@ -4,6 +4,7 @@
 #include <LinkedList.h>
 #include "TemperatureService.h"
 #include "ChillerState.cpp"
+#include "ChillerConfiguration.h"
 
 namespace Services
 {
@@ -12,16 +13,20 @@ namespace Services
 	private:
 		const uint16_t _sensorsRequestDelay = 2000;
 
+		Communication::Models::ChillerConfiguration* _chillerConfiguration;
 		Services::TemperatureService* _temperatureService;
 		float _targetTemperature;
 		Models::Enums::ChillerState _state;
+
+		void initConfiguration();
 
 	protected:
 
 
 	public:
 
-		ChillerService(uint8_t _temperatureSensorsPin, uint8_t _tSensorsCount, Models::TemperatureSensors::BaseSensor* _tSensors[], float _targetCircuitTemperature, Models::Enums::ChillerState state);
+		ChillerService(uint8_t _temperatureSensorsPin, uint8_t _tSensorsCount, Models::TemperatureSensors::BaseSensor* _tSensors[],
+			Communication::Models::ChillerConfiguration* chillerConfiguration, Models::Enums::ChillerState state);
 
 		float getTargetTemperature();
 		Services::TemperatureService* getTemperatureService();

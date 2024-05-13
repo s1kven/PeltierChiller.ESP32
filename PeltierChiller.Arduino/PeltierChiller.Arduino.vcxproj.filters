@@ -37,6 +37,15 @@
     <Filter Include="Source Files\Communication\Services">
       <UniqueIdentifier>{82411c56-107e-4b11-bc67-eb2be735f039}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Communication\Enums">
+      <UniqueIdentifier>{cb9acf9e-7e79-4a8f-887c-b1da6f555b0d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Communication\Models">
+      <UniqueIdentifier>{7767989d-9ebe-424b-9f6d-590afc366e84}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Communication\Abstractions">
+      <UniqueIdentifier>{990df043-580c-4cff-9b1d-5c2dbef72b18}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\arduino folders read me.txt">
@@ -95,6 +104,15 @@
     <ClInclude Include="SerialCommunicationService.h">
       <Filter>Source Files\Communication\Services</Filter>
     </ClInclude>
+    <ClInclude Include="ConfigurationService.h">
+      <Filter>Source Files\Services</Filter>
+    </ClInclude>
+    <ClInclude Include="ChillerConfiguration.h">
+      <Filter>Source Files\Communication\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseDeserializableObject.h">
+      <Filter>Source Files\Communication\Abstractions</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ReleState.cpp">
@@ -143,9 +161,6 @@
     <ClCompile Include="JsonHelper.cpp">
       <Filter>Source Files\Helpers</Filter>
     </ClCompile>
-    <ClCompile Include="ResponseType.cpp">
-      <Filter>Source Files\Models\Enums</Filter>
-    </ClCompile>
     <ClCompile Include="BaseJsonModel.cpp">
       <Filter>Source Files\Models\Abstractions</Filter>
     </ClCompile>
@@ -157,6 +172,18 @@
     </ClCompile>
     <ClCompile Include="FileService.cpp">
       <Filter>Source Files\Services</Filter>
+    </ClCompile>
+    <ClCompile Include="ConfigurationService.cpp">
+      <Filter>Source Files\Services</Filter>
+    </ClCompile>
+    <ClCompile Include="ResponseType.cpp">
+      <Filter>Source Files\Communication\Enums</Filter>
+    </ClCompile>
+    <ClCompile Include="RequestType.cpp">
+      <Filter>Source Files\Communication\Enums</Filter>
+    </ClCompile>
+    <ClCompile Include="ChillerConfiguration.cpp">
+      <Filter>Source Files\Communication\Models</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

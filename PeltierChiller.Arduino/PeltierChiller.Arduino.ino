@@ -26,11 +26,13 @@
 #include "NTC.h"
 #include "Button.h"
 #include "KeyValuePair.h"
+#include "BaseDeserializableObject.h"
 #include "JsonService.h"
 #include "JsonHelper.h"
 #include "CommunicationService.h"
 #include "SerialCommunicationService.h"
 #include "FileService.h"
+#include "ConfigurationService.h"
 
 //      arduino      ->      esp32
 //        SCL                 22
@@ -57,8 +59,6 @@ const uint8_t POWERBUTTON_PIN = 26;
 const uint8_t NTC_PIN = 34;
 const uint8_t SD_CS = 5;
 
-const float _targetCircuitTemperature = 20;
-
 float vin = 0;
 
 bool powerSignalFlag = false;
@@ -82,7 +82,7 @@ Models::TemperatureSensors::BaseSensor* _tSensors[] =
 	new Models::TemperatureSensors::BME280(0x76, Models::Enums::TemperatureSensorTarget::room)
 };
 
-Models::Button* powerButton = new Models::Button(POWERBUTTON_PIN, "POWER");
+Models::Button* powerButton;
 
 Services::ChillerService * _chillerService;
  
@@ -92,6 +92,8 @@ Communication::Services::CommunicationService* _communicationService;
 
 Services::FileService* _fileService;
 
+Services::ConfigurationService* _configurationService;
+
 void setup()  
 {
 	Wire.begin();
@@ -99,11 +101,7 @@ void setup()
 	_communicationService = new Communication::Services::SerialCommunicationService(115200);
 	_communicationService->init();
 
-	_chillerService = new Services::ChillerService(TSENSOR_PIN, sizeof(_tSensors) / sizeof(int), _tSensors,
-		_targetCircuitTemperature, Models::Enums::ChillerState::off);
-	
-	_jsonService = new Services::JsonService(2000);
-
+	powerButton = new Models::Button(POWERBUTTON_PIN, "POWER");
 	powerButton->setLastPressTime(0);
 
 	pinMode(POWERBUTTON_PIN, INPUT_PULLUP);
@@ -114,7 +112,12 @@ void setup()
 	_fileService = new Services::FileService();
 	_fileService->init(SD_CS);
 
-	_communicationService->sendData(_fileService->readFile("/Settings.json"));
+	_jsonService = new Services::JsonService(2000);
+
+	_configurationService = new Services::ConfigurationService(_fileService, _jsonService);
+
+	_chillerService = new Services::ChillerService(TSENSOR_PIN, sizeof(_tSensors) / sizeof(int), _tSensors,
+		_configurationService->getConfiguration(), Models::Enums::ChillerState::off);
 }
 
 
@@ -139,7 +142,7 @@ void loop()
 	selectChillerState();
 	
 	(*_jsonService).serializeAndSendToSerialPort(Helpers::JsonHelper::convertToBaseJsonModelArray(_tSensors, sizeof(_tSensors) / sizeof(int)),
-		Models::Enums::ResponseType::temperatureSensors);
+		Communication::Enums::ResponseType::temperatureSensors);
 
 	//tftOutput(); 
 }
