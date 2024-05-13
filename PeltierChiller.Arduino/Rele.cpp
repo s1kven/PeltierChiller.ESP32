@@ -2,11 +2,11 @@
 
 #include "Rele.h"
 
-Models::Rele::Rele() : BaseJsonModel(_payloadSize)
+Models::Rele::Rele() : BaseSerializableObject(_payloadSize)
 {
 }
 
-Models::Rele::Rele(int8_t _relePin) : BaseJsonModel(_payloadSize)
+Models::Rele::Rele(int8_t _relePin) : BaseSerializableObject(_payloadSize)
 {
 	_signalPin = _relePin;
 	_state = Models::Enums::ReleState::off;
@@ -27,7 +27,7 @@ DynamicJsonDocument Models::Rele::createPayload()
 	DynamicJsonDocument document(_payloadSize);
 	JsonObject payload = document.to<JsonObject>();
 	payload["Pin"] = _signalPin;
-	payload["State"] = getReleState();
+	payload["State"] = static_cast<uint16_t>(getReleState());
 	return document;
 }
 

@@ -11,7 +11,7 @@ String Services::JsonService::serializeObject(
 	DynamicJsonDocument response(responseDocumentSize);
 	JsonObject responsePayload = response.to<JsonObject>();
 
-	responsePayload["ResponseType"] = _responseType;
+	responsePayload["ResponseType"] = static_cast<uint16_t>(_responseType);
 
 	JsonObject data = responsePayload.createNestedObject("Data");
 
@@ -59,9 +59,9 @@ void Services::JsonService::buildResponseBasedOnType(JsonObject& _data,
 {
 	switch (_responseType)
 	{
-	case Communication::Enums::unknown:
+	case Communication::Enums::ResponseType::unknown:
 		break;
-	case Communication::Enums::temperatureSensors:
+	case Communication::Enums::ResponseType::temperatureSensors:
 		buildTemperatureSensorsResponse(_data, _models);
 
 		break;

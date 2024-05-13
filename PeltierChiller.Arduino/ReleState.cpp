@@ -4,7 +4,7 @@ namespace Models
 {
     namespace Enums
     {
-        enum ReleState
+        enum class ReleState
         {
             off,
             on

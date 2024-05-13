@@ -4,9 +4,9 @@ namespace Models
 {
     namespace Enums
     {
-        enum TemperatureSensorType
+        enum class TemperatureSensorType
         {
-            NONE,
+            none,
             DS18B20,
             BME280,
             NTC

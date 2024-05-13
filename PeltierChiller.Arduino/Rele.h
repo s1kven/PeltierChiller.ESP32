@@ -3,12 +3,12 @@
 #include "ReleState.cpp"
 #include "Arduino.h"
 #include <stdint.h>
-#include "BaseJsonModel.h"
+#include "BaseSerializableObject.h"
 
 namespace Models
 {
 	class Rele :
-		public Models::Abstractions::BaseJsonModel
+		public Communication::Abstractions::BaseSerializableObject
 	{
 	private:
 		const uint16_t _payloadSize = JSON_OBJECT_SIZE(2);

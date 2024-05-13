@@ -30,8 +30,8 @@ DynamicJsonDocument Models::TemperatureSensors::BaseSensor::createPayload()
 {
 	DynamicJsonDocument document(_payloadSize);
 	JsonObject payload = document.to<JsonObject>();
-	payload["Type"] = getSensorType();
-	payload["Target"] = getSensorTarget();
+	payload["Type"] = static_cast<uint16_t>(getSensorType());
+	payload["Target"] = static_cast<uint16_t>(getSensorTarget());
 	payload["Temperature"] = getTemperature();
 	return document;
 }

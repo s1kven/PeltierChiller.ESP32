@@ -4,7 +4,7 @@ namespace Models
 {
     namespace Enums
     {
-        enum ChillerState
+        enum class ChillerState
         {
             off,
             enabling,

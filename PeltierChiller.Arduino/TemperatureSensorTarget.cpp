@@ -4,7 +4,7 @@ namespace Models
 {
     namespace Enums
     {
-        enum TemperatureSensorTarget
+        enum class TemperatureSensorTarget
         {
             none,
             room,
