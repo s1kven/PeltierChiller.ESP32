@@ -59,10 +59,6 @@ const uint8_t NTC_PIN = 34;
 const uint8_t SD_CS = 5;
 
 float vin = 0;
-
-bool powerSignalFlag = false;
-uint32_t tmr = 0;
-uint32_t oldTmr = 0;
 uint32_t _communicationSendTimer = 0;
 
 const uint16_t _communicationDelay = 2000;
@@ -84,8 +80,6 @@ Models::TemperatureSensors::BaseSensor* _tSensors[] =
 	new Models::TemperatureSensors::BME280(0x76, Models::Enums::TemperatureSensorTarget::room)
 };
 
-Models::Button* powerButton;
-
 Services::ChillerService * _chillerService;
  
 Services::JsonService* _jsonService;
@@ -103,9 +97,6 @@ void setup()
 	_communicationService = new Communication::Services::SerialCommunicationService(115200);
 	_communicationService->init();
 
-	powerButton = new Models::Button(POWERBUTTON_PIN, "POWER");
-	powerButton->setLastPressTime(0);
-
 	pinMode(POWERBUTTON_PIN, INPUT_PULLUP);
 	pinMode(CHILLERPSSIGNAL_PIN, OUTPUT);
 	pinMode(CHILLERSIGNAL_PIN, OUTPUT);
@@ -119,7 +110,7 @@ void setup()
 	_configurationService = new Services::ConfigurationService(_fileService, _jsonService);
 
 	_chillerService = new Services::ChillerService(TSENSOR_PIN, sizeof(_tSensors) / sizeof(int), _tSensors,
-		_configurationService->getConfiguration(), Models::Enums::ChillerState::off);
+		_configurationService->getConfiguration(), POWERBUTTON_PIN, CHILLERPSSIGNAL_PIN, CHILLERSIGNAL_PIN, POWERSIGNAL_PIN);
 }
 
 
@@ -127,11 +118,7 @@ void loop()
 {
 	handlePcVoltage();
 
-	handlePowerButton();
-
-	(*_chillerService).execute();
-
-	selectChillerState();
+	(*_chillerService).manageChiller(vin);
 
 	sendDataByTimer();
 }
@@ -139,110 +126,6 @@ void loop()
 void handlePcVoltage()
 {
 	vin = float(analogRead(PCV_PIN));
-}
-
-void handlePowerButton()
-{
-	powerButton->setState(!digitalRead(powerButton->getSignalPin()));
-	if (powerButton->getState() && !powerButton->getFlag())
-	{
-		powerButton->setFlag(true);
-		powerButton->setLastPressTime(millis());
-	}
-	else if (!powerButton->getState() && powerButton->getFlag() && millis() - powerButton->getLastPressTime() > 20)
-	{
-		powerButton->setFlag(false);
-		powerButton->setLastPressMillis(millis() - powerButton->getLastPressTime());
-	}
-}
-
-void selectChillerState()
-{
-	if (vin > 250 && (*_chillerService).GetChillerState() != Models::Enums::ChillerState::enabling)
-	{
-		(*_chillerService).SetChillerState(Models::Enums::ChillerState::temperatureMaintaining);
-	}
-
-	switch ((*_chillerService).GetChillerState())
-	{
-	case Models::Enums::ChillerState::off:
-		if (powerButton->getLastPressMillis() > 0)
-		{
-			(*_chillerService).SetChillerState(Models::Enums::ChillerState::enabling);
-		}
-		else
-		{
-			digitalWrite(CHILLERPSSIGNAL_PIN, LOW);
-			digitalWrite(CHILLERSIGNAL_PIN, LOW);
-		}
-		break;
-
-	case Models::Enums::ChillerState::enabling:
-
-		digitalWrite(CHILLERPSSIGNAL_PIN, HIGH);
-		digitalWrite(CHILLERSIGNAL_PIN, HIGH);
-		if (powerButton->getLastPressMillis() > 0 &&
-			(*_chillerService).getTemperatureService()->getTemperatureForSpecificTarget(Models::Enums::TemperatureSensorTarget::coldCircuit) <=
-			(*_chillerService).getTargetTemperature())
-		{
-			digitalWrite(POWERSIGNAL_PIN, HIGH);
-			if (tmr == oldTmr)
-			{
-				tmr = millis();
-			}
-			if (powerSignalFlag)
-			{
-				digitalWrite(POWERSIGNAL_PIN, LOW);
-				tmr = millis();
-				oldTmr = tmr;
-				powerButton->setLastPressMillis(0);
-				powerSignalFlag = false;
-				(*_chillerService).SetChillerState(Models::Enums::ChillerState::temperatureMaintaining);
-			}
-			else if (millis() - powerButton->getLastPressMillis() >= tmr)
-			{
-				powerSignalFlag = true;
-			}
-		}
-		break;
-
-	case Models::Enums::ChillerState::temperatureMaintaining:
-
-		digitalWrite(CHILLERPSSIGNAL_PIN, HIGH);
-		digitalWrite(CHILLERSIGNAL_PIN, HIGH);
-		if (vin < 30)
-		{
-			(*_chillerService).SetChillerState(Models::Enums::ChillerState::off);
-		}
-		/*if (powerButton->getLastPressMillis() != 0)
-		{
-			Serial.println("temperatureMaintaining high");
-			digitalWrite(POWERSIGNAL_PIN, HIGH);
-			(*_chillerService).SetChillerState(Models::Enums::ChillerState::disabling);
-		}*/
-		break;
-	case Models::Enums::ChillerState::disabling:
-
-		//Serial.println("disabling");
-		//digitalWrite(CHILLERPSSIGNAL_PIN, HIGH);
-		//digitalWrite(CHILLERSIGNAL_PIN, HIGH);
-		if (!powerButton->getFlag() && millis() - powerButton->getLastTime() < powerButton->getLastPressMillis() &&
-			powerButton->getLastPressMillis() != 0)
-		{
-			//Serial.println("disabling high");
-			digitalWrite(POWERSIGNAL_PIN, HIGH);
-		}
-		else
-		{
-			//Serial.println("disabling low");
-			digitalWrite(POWERSIGNAL_PIN, LOW);
-			(*_chillerService).SetChillerState(Models::Enums::ChillerState::off);
-		}
-		break;
-
-	default:
-		break;
-	}
 }
 
 void sendDataByTimer()
