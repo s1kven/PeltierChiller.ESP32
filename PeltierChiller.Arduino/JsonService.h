@@ -15,9 +15,6 @@ namespace Services
 	private:
 		const uint16_t _baseResponseSize = 64; // DynamicJsonDocument(48) + responsePayload(8) + data(responsePayload)
 
-		uint32_t _serialWriteTimer = 0;
-		uint32_t _serialWriteDelay = 0;
-
 		uint16_t calculateJsonDocumentSize(
 			Models::Abstractions::KeyValuePair<Communication::Abstractions::BaseSerializableObject**, uint8_t> _models);
 
@@ -32,9 +29,8 @@ namespace Services
 		Communication::Models::ChillerConfiguration* DeserializeChillerConfiguration(JsonObject data);
 
 	public:
-		JsonService(uint32_t _serialWriteDelay);
 
-		void serializeAndSendToSerialPort(
+		String serializeObject(
 			Models::Abstractions::KeyValuePair<Communication::Abstractions::BaseSerializableObject**, uint8_t> _models, 
 			Communication::Enums::ResponseType _responseType);
 		Communication::Abstractions::BaseDeserializableObject* deserializeRequest(String& content);

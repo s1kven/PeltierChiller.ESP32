@@ -63,6 +63,9 @@ float vin = 0;
 bool powerSignalFlag = false;
 uint32_t tmr = 0;
 uint32_t oldTmr = 0;
+uint32_t _communicationSendTimer = 0;
+
+const uint16_t _communicationDelay = 2000;
 
 DeviceAddress room = { 0x28, 0xCD, 0x86, 0x56, 0xB5, 0x01, 0x3C, 0x1D };
 DeviceAddress hotCircuit = { 0x28, 0xD6, 0x93, 0x81, 0xE3, 0xBC, 0x3C, 0xB6 };
@@ -111,7 +114,7 @@ void setup()
 	_fileService = new Services::FileService();
 	_fileService->init(SD_CS);
 
-	_jsonService = new Services::JsonService(2000);
+	_jsonService = new Services::JsonService();
 
 	_configurationService = new Services::ConfigurationService(_fileService, _jsonService);
 
@@ -122,8 +125,24 @@ void setup()
 
 void loop() 
 {
-	vin = float(analogRead(PCV_PIN));
+	handlePcVoltage();
 
+	handlePowerButton();
+
+	(*_chillerService).execute();
+
+	selectChillerState();
+
+	sendDataByTimer();
+}
+
+void handlePcVoltage()
+{
+	vin = float(analogRead(PCV_PIN));
+}
+
+void handlePowerButton()
+{
 	powerButton->setState(!digitalRead(powerButton->getSignalPin()));
 	if (powerButton->getState() && !powerButton->getFlag())
 	{
@@ -135,16 +154,6 @@ void loop()
 		powerButton->setFlag(false);
 		powerButton->setLastPressMillis(millis() - powerButton->getLastPressTime());
 	}
-
-	(*_chillerService).execute();
-
-	selectChillerState();
-	
-	(*_jsonService).serializeAndSendToSerialPort(
-		Helpers::JsonHelper::convertToBaseSerializableObjectArray(_tSensors, sizeof(_tSensors) / sizeof(int)),
-		Communication::Enums::ResponseType::temperatureSensors);
-
-	//tftOutput(); 
 }
 
 void selectChillerState()
@@ -233,5 +242,18 @@ void selectChillerState()
 
 	default:
 		break;
+	}
+}
+
+void sendDataByTimer()
+{
+	if (millis() - _communicationSendTimer >= _communicationDelay)
+	{
+		_communicationSendTimer = millis();
+
+		String response = (*_jsonService).serializeObject(
+			Helpers::JsonHelper::convertToBaseSerializableObjectArray(_tSensors, sizeof(_tSensors) / sizeof(int)),
+			Communication::Enums::ResponseType::temperatureSensors);
+		_communicationService->sendData(response);
 	}
 }

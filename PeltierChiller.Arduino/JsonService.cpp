@@ -2,37 +2,28 @@
 
 #include "JsonService.h"
 
-Services::JsonService::JsonService(uint32_t serialWriteDelay)
-{
-	_serialWriteDelay = serialWriteDelay;
-}
-
-void Services::JsonService::serializeAndSendToSerialPort(
+String Services::JsonService::serializeObject(
 	Models::Abstractions::KeyValuePair<Communication::Abstractions::BaseSerializableObject**, uint8_t> _models,
 	Communication::Enums::ResponseType _responseType)
 {
-	if (millis() - _serialWriteTimer >= _serialWriteDelay)
-	{
-		_serialWriteTimer = millis();
+	uint16_t responseDocumentSize = calculateJsonDocumentSize(_models);
 
-		uint16_t responseDocumentSize = calculateJsonDocumentSize(_models);
+	DynamicJsonDocument response(responseDocumentSize);
+	JsonObject responsePayload = response.to<JsonObject>();
 
-		DynamicJsonDocument response(responseDocumentSize);
-		JsonObject responsePayload = response.to<JsonObject>();
+	responsePayload["ResponseType"] = _responseType;
 
-		responsePayload["ResponseType"] = _responseType;
+	JsonObject data = responsePayload.createNestedObject("Data");
 
-		JsonObject data = responsePayload.createNestedObject("Data");
-
-		buildResponseBasedOnType(data, _models, _responseType);
-
-		serializeJson(response, Serial);
-		Serial.println();
-
-		response.clear();
-	}
+	buildResponseBasedOnType(data, _models, _responseType);
 
 	delete _models.key;
+
+	String serializedObject = response.as<String>();
+
+	response.clear();
+
+	return serializedObject;
 }
 
 Communication::Abstractions::BaseDeserializableObject* Services::JsonService::deserializeRequest(String& content)
