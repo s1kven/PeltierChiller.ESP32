@@ -5,7 +5,7 @@ namespace Communication
         enum class RequestType
         {
             unknown,
-            chillerSettings
+            configuration
         };
     }
 }

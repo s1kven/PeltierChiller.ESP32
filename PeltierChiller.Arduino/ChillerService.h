@@ -4,7 +4,10 @@
 #include <LinkedList.h>
 #include "TemperatureService.h"
 #include "ChillerState.cpp"
+#include "PinsConfiguration.h"
+#include "TimersConfiguration.h"
 #include "ChillerConfiguration.h"
+#include "Configuration.h"
 #include "Button.h"
 
 namespace Services
@@ -12,17 +15,34 @@ namespace Services
 	class ChillerService
 	{
 	private:
-		const uint16_t _sensorsRequestDelay = 2000;
 
-		Communication::Models::ChillerConfiguration* _chillerConfiguration;
-		Services::TemperatureService* _temperatureService;
 		float _targetTemperature;
-		Models::Enums::ChillerState _state;
-		Models::Button* _powerButton;
-		uint8_t _powerButtonPin; 
-		uint8_t _chillerPsSignalPin; 
+		float _pcVoltageThreshold;
+
+		uint32_t _sensorsRequestDelay;
+		uint32_t _buttonMinPressTime;
+		uint32_t _computePidDelay;
+
+		uint16_t _potentiometerAddress;
+		uint16_t _maxPotentiometerValue;
+		uint16_t _minPotentiometerValue;
+		float _kp;
+		float _ki;
+		float _kd;
+		float _dt;
+		float _pidRatio;
+		float _minIntegral;
+		float _maxIntegral;
+
+		uint8_t _powerButtonPin;
+		uint8_t _chillerPsSignalPin;
 		uint8_t _chillerSignalPin;
 		uint8_t _powerSignalPin;
+
+		Communication::Models::Configurations::Configuration* _configuration;
+		Services::TemperatureService* _temperatureService;
+		Models::Enums::ChillerState _state;
+		Models::Button* _powerButton;
 
 		bool _powerSignalFlag = false;
 		uint32_t _powerSignalTimer = 0;
@@ -42,10 +62,9 @@ namespace Services
 
 	public:
 
-		ChillerService(uint8_t _temperatureSensorsPin, uint8_t _tSensorsCount, Models::TemperatureSensors::BaseSensor* _tSensors[],
-			Communication::Models::ChillerConfiguration* chillerConfiguration,
-			uint8_t powerButtonPin, uint8_t chillerPsSignalPin, uint8_t chillerSignalPin, uint8_t powerSignalPin);
+		ChillerService(Communication::Models::Configurations::Configuration* configuration);
 
 		void manageChiller(float pcVoltage);
+		Services::TemperatureService* getTemperatureService();
 	};
 }

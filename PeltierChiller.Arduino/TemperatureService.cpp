@@ -2,33 +2,18 @@
 
 #include "TemperatureService.h"
 
-Services::TemperatureService::TemperatureService(uint8_t _dallasTemperatureSensorsPin,
-	uint8_t _tSensorsCount, Models::TemperatureSensors::BaseSensor* _tSensors[])
-{ 
+Services::TemperatureService::TemperatureService(
+	Communication::Models::Configurations::TemperatureSensors::TemperatureSensorsConfiguration* configuration)
+{
+	_configuration = configuration;
 	_temperatureSensors = new LinkedList<Models::TemperatureSensors::BaseSensor*>();
 
-	dallasInit(_dallasTemperatureSensorsPin);
+	initConfiguration();
+}
 
-	for (uint8_t index = 0; index < _tSensorsCount; index++)
-	{
-		Models::TemperatureSensors::BaseSensor* currentSensor = _tSensors[index];
-		if (currentSensor->getSensorType() == Models::Enums::TemperatureSensorType::DS18B20)
-		{
-			Models::TemperatureSensors::DS18B20* ds = (Models::TemperatureSensors::DS18B20*)currentSensor;
-			ds->init(_dallasSensors, _temperaturePrecision);
-		}
-		else if (currentSensor->getSensorType() == Models::Enums::TemperatureSensorType::BME280)
-		{
-			Models::TemperatureSensors::BME280* bme = (Models::TemperatureSensors::BME280*)currentSensor;
-			bme->init();
-		}
-		else if (currentSensor->getSensorType() == Models::Enums::TemperatureSensorType::NTC)
-		{
-			// Init don't needed
-		}
-
-		(*_temperatureSensors).add(currentSensor);
-	}
+LinkedList<Models::TemperatureSensors::BaseSensor*>* Services::TemperatureService::getTemperatureSensors()
+{
+	return _temperatureSensors;
 }
 
 float Services::TemperatureService::getTemperatureForSpecificTarget(Models::Enums::TemperatureSensorTarget _sensorsTarget)
@@ -65,6 +50,73 @@ float Services::TemperatureService::getHumidityForSpecificTarget(Models::Enums::
 	}
 
 	return _humidity / _sensorsCounter;
+}
+
+void Services::TemperatureService::initConfiguration()
+{
+	_dallasTemperatureSensorsPin = _configuration->getDs18b20ListConfiguration()->getPin();
+	_temperaturePrecision = _configuration->getDs18b20ListConfiguration()->getTemperaturePrecision();
+
+	dallasInit();
+
+	LinkedList<Models::TemperatureSensors::BaseSensor*>* sensors = new LinkedList<Models::TemperatureSensors::BaseSensor*>();
+	LinkedList<Communication::Models::Configurations::TemperatureSensors::Ds18b20Configuration*>* ds18b20Items =
+		_configuration->getDs18b20ListConfiguration()->getItems();
+
+	for (int i = 0; i < ds18b20Items->size(); i++)
+	{
+		Communication::Models::Configurations::TemperatureSensors::Ds18b20Configuration* currentConfiguration = ds18b20Items->get(i);
+		sensors->add(new Models::TemperatureSensors::DS18B20(currentConfiguration->getAddress(),
+			currentConfiguration->getTarget()));
+	}
+
+	LinkedList<Communication::Models::Configurations::TemperatureSensors::NtcConfiguration*>* ntcItems =
+		_configuration->getNtcListConfiguration()->getItems();
+
+	for (int i = 0; i < ntcItems->size(); i++)
+	{
+		Communication::Models::Configurations::TemperatureSensors::NtcConfiguration* currentConfiguration = ntcItems->get(i);
+		sensors->add(new Models::TemperatureSensors::NTC(currentConfiguration->getAddress(),
+			currentConfiguration->getResistance(), currentConfiguration->getBCoefficient(), currentConfiguration->getResistanceNtc(),
+			currentConfiguration->getTarget(), currentConfiguration->getBaseTemperature(), currentConfiguration->getSupplyVoltage(),
+			_configuration->getNtcListConfiguration()->getAdcResolution()));
+	}
+
+	LinkedList < Communication::Models::Configurations::TemperatureSensors::Bme280Configuration*>* bme280Items =
+		_configuration->getBmeListConfiguration()->getItems();
+
+	for (int i = 0; i < bme280Items->size(); i++)
+	{
+		Communication::Models::Configurations::TemperatureSensors::Bme280Configuration* currentConfiguration = bme280Items->get(i);
+		sensors->add(new Models::TemperatureSensors::BME280(currentConfiguration->getAddress(),
+			currentConfiguration->getTarget()));
+	}
+
+	for (uint8_t index = 0; index < sensors->size(); index++)
+	{
+		Models::TemperatureSensors::BaseSensor* currentSensor = sensors->get(index);
+		if (currentSensor->getSensorType() == Models::Enums::TemperatureSensorType::DS18B20)
+		{
+			Models::TemperatureSensors::DS18B20* ds = (Models::TemperatureSensors::DS18B20*)currentSensor;
+			ds->init(_dallasSensors, _temperaturePrecision);
+		}
+		else if (currentSensor->getSensorType() == Models::Enums::TemperatureSensorType::BME280)
+		{
+			Models::TemperatureSensors::BME280* bme = (Models::TemperatureSensors::BME280*)currentSensor;
+			bme->init();
+		}
+		else if (currentSensor->getSensorType() == Models::Enums::TemperatureSensorType::NTC)
+		{
+			// Init don't needed
+		}
+
+		(*_temperatureSensors).add(currentSensor);
+	}
+
+	delete ds18b20Items;
+	delete ntcItems;
+	delete bme280Items;
+	delete sensors;
 }
 
 float Services::TemperatureService::getPressureForSpecificTarget(Models::Enums::TemperatureSensorTarget _sensorsTarget)
@@ -122,7 +174,7 @@ void Services::TemperatureService::requestSensors(uint16_t _sensorsRequestDelay)
 	}
 }
 
-void Services::TemperatureService::dallasInit(uint8_t _dallasTemperatureSensorsPin)
+void Services::TemperatureService::dallasInit()
 {
 	_oneWire = new OneWire(_dallasTemperatureSensorsPin);
 	_dallasSensors = new DallasTemperature(_oneWire);

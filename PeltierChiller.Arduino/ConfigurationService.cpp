@@ -6,13 +6,15 @@ Services::ConfigurationService::ConfigurationService(FileService* fileService, J
 	_jsonService = jsonService;
 }
 
-Communication::Models::ChillerConfiguration* Services::ConfigurationService::getConfiguration()
+void Services::ConfigurationService::readConfigurationFromSd()
 {
 	String content = _fileService->readFile(_configPath);
 
 	Communication::Abstractions::BaseDeserializableObject* deserializedObject = _jsonService->deserializeRequest(content);
-	Communication::Models::ChillerConfiguration* chillerConfiguration =
-		static_cast<Communication::Models::ChillerConfiguration*>(deserializedObject);
+	currentConfiguration = static_cast<Communication::Models::Configurations::Configuration*>(deserializedObject);
+}
 
-	return chillerConfiguration;
+Communication::Models::Configurations::Configuration* Services::ConfigurationService::getConfiguration()
+{
+	return currentConfiguration;
 }

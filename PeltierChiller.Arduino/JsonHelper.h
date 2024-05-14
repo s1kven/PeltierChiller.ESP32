@@ -1,5 +1,6 @@
 #pragma once
 
+#include <LinkedList.h>
 #include "BaseSerializableObject.h"
 #include "BaseSensor.h"
 #include "KeyValuePair.h"
@@ -13,7 +14,8 @@ namespace Helpers
 	class JsonHelper
 	{
 	public:
-		static KeyValuePair<BaseSerializableObject**, uint8_t> convertToBaseSerializableObjectArray(BaseSensor* _models[], uint8_t _arraySize);
+		static KeyValuePair<BaseSerializableObject**, uint8_t> convertToBaseSerializableObjectArray(
+			LinkedList<Models::TemperatureSensors::BaseSensor*>* temperatureSensors);
 	};
 }
 

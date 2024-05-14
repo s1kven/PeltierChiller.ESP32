@@ -46,6 +46,12 @@
     <Filter Include="Source Files\Communication\Abstractions">
       <UniqueIdentifier>{990df043-580c-4cff-9b1d-5c2dbef72b18}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Communication\Models\Configurations">
+      <UniqueIdentifier>{136bb6a9-0a8d-4bae-b94f-552d00e274c7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Communication\Models\Configurations\TemperatureSensors">
+      <UniqueIdentifier>{b435f77f-0392-4f15-b4f4-bbae7b34fb06}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\arduino folders read me.txt">
@@ -101,14 +107,44 @@
     <ClInclude Include="ConfigurationService.h">
       <Filter>Source Files\Services</Filter>
     </ClInclude>
-    <ClInclude Include="ChillerConfiguration.h">
-      <Filter>Source Files\Communication\Models</Filter>
-    </ClInclude>
     <ClInclude Include="BaseDeserializableObject.h">
       <Filter>Source Files\Communication\Abstractions</Filter>
     </ClInclude>
     <ClInclude Include="BaseSerializableObject.h">
       <Filter>Source Files\Communication\Abstractions</Filter>
+    </ClInclude>
+    <ClInclude Include="TimersConfiguration.h">
+      <Filter>Source Files\Communication\Models\Configurations</Filter>
+    </ClInclude>
+    <ClInclude Include="ChillerConfiguration.h">
+      <Filter>Source Files\Communication\Models\Configurations</Filter>
+    </ClInclude>
+    <ClInclude Include="Configuration.h">
+      <Filter>Source Files\Communication\Models\Configurations</Filter>
+    </ClInclude>
+    <ClInclude Include="PinsConfiguration.h">
+      <Filter>Source Files\Communication\Models\Configurations</Filter>
+    </ClInclude>
+    <ClInclude Include="TemperatureSensorsConfiguration.h">
+      <Filter>Source Files\Communication\Models\Configurations\TemperatureSensors</Filter>
+    </ClInclude>
+    <ClInclude Include="Bme280ListConfiguration.h">
+      <Filter>Source Files\Communication\Models\Configurations\TemperatureSensors</Filter>
+    </ClInclude>
+    <ClInclude Include="Bme280Configuration.h">
+      <Filter>Source Files\Communication\Models\Configurations\TemperatureSensors</Filter>
+    </ClInclude>
+    <ClInclude Include="NtcConfiguration.h">
+      <Filter>Source Files\Communication\Models\Configurations\TemperatureSensors</Filter>
+    </ClInclude>
+    <ClInclude Include="Ds18b20Configuration.h">
+      <Filter>Source Files\Communication\Models\Configurations\TemperatureSensors</Filter>
+    </ClInclude>
+    <ClInclude Include="NtcListConfiguration.h">
+      <Filter>Source Files\Communication\Models\Configurations\TemperatureSensors</Filter>
+    </ClInclude>
+    <ClInclude Include="Ds18b20ListConfiguration.h">
+      <Filter>Source Files\Communication\Models\Configurations\TemperatureSensors</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -173,11 +209,41 @@
     <ClCompile Include="RequestType.cpp">
       <Filter>Source Files\Communication\Enums</Filter>
     </ClCompile>
-    <ClCompile Include="ChillerConfiguration.cpp">
-      <Filter>Source Files\Communication\Models</Filter>
-    </ClCompile>
     <ClCompile Include="BaseSerializableObject.cpp">
       <Filter>Source Files\Communication\Abstractions</Filter>
+    </ClCompile>
+    <ClCompile Include="ChillerConfiguration.cpp">
+      <Filter>Source Files\Communication\Models\Configurations</Filter>
+    </ClCompile>
+    <ClCompile Include="Configuration.cpp">
+      <Filter>Source Files\Communication\Models\Configurations</Filter>
+    </ClCompile>
+    <ClCompile Include="PinsConfiguration.cpp">
+      <Filter>Source Files\Communication\Models\Configurations</Filter>
+    </ClCompile>
+    <ClCompile Include="TimersConfiguration.cpp">
+      <Filter>Source Files\Communication\Models\Configurations</Filter>
+    </ClCompile>
+    <ClCompile Include="TemperatureSensorsConfiguration.cpp">
+      <Filter>Source Files\Communication\Models\Configurations\TemperatureSensors</Filter>
+    </ClCompile>
+    <ClCompile Include="Bme280ListConfiguration.cpp">
+      <Filter>Source Files\Communication\Models\Configurations\TemperatureSensors</Filter>
+    </ClCompile>
+    <ClCompile Include="Bme280Configuration.cpp">
+      <Filter>Source Files\Communication\Models\Configurations\TemperatureSensors</Filter>
+    </ClCompile>
+    <ClCompile Include="NtcConfiguration.cpp">
+      <Filter>Source Files\Communication\Models\Configurations\TemperatureSensors</Filter>
+    </ClCompile>
+    <ClCompile Include="Ds18b20Configuration.cpp">
+      <Filter>Source Files\Communication\Models\Configurations\TemperatureSensors</Filter>
+    </ClCompile>
+    <ClCompile Include="NtcListConfiguration.cpp">
+      <Filter>Source Files\Communication\Models\Configurations\TemperatureSensors</Filter>
+    </ClCompile>
+    <ClCompile Include="Ds18b20ListConfiguration.cpp">
+      <Filter>Source Files\Communication\Models\Configurations\TemperatureSensors</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

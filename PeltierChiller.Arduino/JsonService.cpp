@@ -78,8 +78,8 @@ Communication::Abstractions::BaseDeserializableObject* Services::JsonService::de
 	{
 	case Communication::Enums::RequestType::unknown :
 		break;
-	case Communication::Enums::RequestType::chillerSettings:
-		content = DeserializeChillerConfiguration(data);
+	case Communication::Enums::RequestType::configuration:
+		content = deserializeConfiguration(data);
 		break;
 	default:
 		break;
@@ -99,15 +99,202 @@ void Services::JsonService::buildTemperatureSensorsResponse(JsonObject& _data,
 	}
 }
 
-#pragma endregion
+#pragma endregion buildResponse
 
 #pragma region Deserializers
 
-Communication::Models::ChillerConfiguration* Services::JsonService::DeserializeChillerConfiguration(JsonObject data)
-{
-	float temp = data["TargetTemperature"];
+#pragma region Configurations
 
-	return new Communication::Models::ChillerConfiguration(temp);
+Communication::Models::Configurations::Configuration* Services::JsonService::deserializeConfiguration(JsonObject data)
+{
+	Communication::Models::Configurations::Configuration* configuration = new Communication::Models::Configurations::Configuration();
+
+	float targetTemperature = data["TargetTemperature"];
+	float pcVoltageThreshold = data["PcVoltageThreshold"];
+
+	JsonObject pinsConfigurationJson = data["Pins"]; 
+	Communication::Models::Configurations::PinsConfiguration* pinsConfiguration = deserializePinsConfiguration(pinsConfigurationJson);
+
+	JsonObject timersConfigurationJson = data["Timers"];
+	Communication::Models::Configurations::TimersConfiguration* timersConfiguration = deserializeTimersConfiguration(timersConfigurationJson);
+
+	JsonObject chillerConfigurationJson = data["ChillerSettings"];
+	Communication::Models::Configurations::ChillerConfiguration* chillerConfiguration = deserializeChillerConfiguration(chillerConfigurationJson);
+	
+	JsonObject temperatureSensorsJson = data["TemperatureSensors"];
+	Communication::Models::Configurations::TemperatureSensors::TemperatureSensorsConfiguration* temperatureSensorsConfiguration =
+		deserializeTemperatureSensorsConfiguration(temperatureSensorsJson);
+
+	configuration->init(targetTemperature, pcVoltageThreshold, 
+		pinsConfiguration, timersConfiguration, chillerConfiguration, temperatureSensorsConfiguration);
+
+	return configuration;
 }
 
-#pragma endregion
+Communication::Models::Configurations::PinsConfiguration* Services::JsonService::deserializePinsConfiguration(JsonObject data)
+{
+	Communication::Models::Configurations::PinsConfiguration* pinsConfiguration = new Communication::Models::Configurations::PinsConfiguration();
+	uint8_t powerButtonPin = data["PowerButton"];
+	uint8_t powerSignalPin = data["PowerSignal"];
+	uint8_t chillerPsSignalPin = data["ChillerPsSignal"];
+	uint8_t chillerSignal = data["ChillerSignal"];
+	uint8_t pcVoltage = data["PcVoltage"];
+	pinsConfiguration->init(powerButtonPin, powerSignalPin, chillerPsSignalPin, chillerSignal, pcVoltage);
+
+	return pinsConfiguration;
+}
+
+Communication::Models::Configurations::TimersConfiguration* Services::JsonService::deserializeTimersConfiguration(JsonObject data)
+{
+	Communication::Models::Configurations::TimersConfiguration* timersConfiguration = new Communication::Models::Configurations::TimersConfiguration();
+	uint32_t buttonMinPressTime = data["ButtonMinPressTime"];
+	uint32_t communicationDelay = data["CommunicationDelay"];
+	uint32_t temperatureSensorsRequestDelay = data["TemperatureSensorsRequestDelay"];
+	timersConfiguration->init(buttonMinPressTime, communicationDelay, temperatureSensorsRequestDelay);
+
+	return timersConfiguration;
+}
+
+Communication::Models::Configurations::ChillerConfiguration* Services::JsonService::deserializeChillerConfiguration(JsonObject data)
+{
+	Communication::Models::Configurations::ChillerConfiguration* chillerConfiguration = new Communication::Models::Configurations::ChillerConfiguration();
+	uint16_t potentiometerAddress = data["PotentiometerAddress"];
+	uint16_t maxPotentiometerValue = data["MaxPotentiometerValue"];
+	uint16_t minPotentiometerValue = data["MinPotentiometerValue"];
+	float kp = data["Kp"];
+	float ki = data["Ki"];
+	float kd = data["Kd"];
+	float dt = data["Dt"];
+	float pidRatio = data["PidRatio"];
+	float minIntegral = data["MinIntegral"];
+	float maxIntegral = data["MaxIntegral"];
+	uint32_t computePidDelay = data["ComputePidDelay"];
+	chillerConfiguration->init(potentiometerAddress, maxPotentiometerValue, minPotentiometerValue, kp, ki, kd, dt, pidRatio,
+		minIntegral, maxIntegral, computePidDelay);
+
+	return chillerConfiguration;
+}
+
+Communication::Models::Configurations::TemperatureSensors::TemperatureSensorsConfiguration* 
+Services::JsonService::deserializeTemperatureSensorsConfiguration(JsonObject data)
+{
+	Communication::Models::Configurations::TemperatureSensors::TemperatureSensorsConfiguration* _temperatureSensorsConfiguration =
+		new Communication::Models::Configurations::TemperatureSensors::TemperatureSensorsConfiguration();
+
+	JsonObject bme280ListConfigurationJson = data["BME280"];
+	Communication::Models::Configurations::TemperatureSensors::Bme280ListConfiguration* bme280ListConfiguration = 
+		deserializeBme280ListConfiguration(bme280ListConfigurationJson);
+
+	JsonObject ntcListConfigurationJson = data["NTC"];
+	Communication::Models::Configurations::TemperatureSensors::NtcListConfiguration* ntcListConfiguration =
+		deserializeNtcListConfiguration(ntcListConfigurationJson);
+
+	JsonObject ds18b20ListConfigurationJson = data["DS18B20"];
+	Communication::Models::Configurations::TemperatureSensors::Ds18b20ListConfiguration* ds18b20ListConfiguration =
+		deserializeDs18b20ListConfiguration(ds18b20ListConfigurationJson);
+
+	_temperatureSensorsConfiguration->init(bme280ListConfiguration, ntcListConfiguration, ds18b20ListConfiguration);
+
+	return _temperatureSensorsConfiguration;
+}
+
+Communication::Models::Configurations::TemperatureSensors::Bme280ListConfiguration* 
+Services::JsonService::deserializeBme280ListConfiguration(JsonObject data)
+{
+	Communication::Models::Configurations::TemperatureSensors::Bme280ListConfiguration* _bme280ListConfiguration =
+		new Communication::Models::Configurations::TemperatureSensors::Bme280ListConfiguration();
+	JsonArray items = data["Items"];
+	if (items.size() > 0)
+	{
+		LinkedList<Communication::Models::Configurations::TemperatureSensors::Bme280Configuration*>* _bme280Items =
+			new LinkedList<Communication::Models::Configurations::TemperatureSensors::Bme280Configuration*>();
+		for (int i = 0; i < items.size(); i++)
+		{
+			Communication::Models::Configurations::TemperatureSensors::Bme280Configuration* _bme280Configuration =
+				new Communication::Models::Configurations::TemperatureSensors::Bme280Configuration();
+			uint16_t address = items[i]["Address"];
+			uint8_t digitTarget = items[i]["Target"];
+			TemperatureSensorTarget target = static_cast<TemperatureSensorTarget>(digitTarget);
+
+			_bme280Configuration->init(address, target);
+			_bme280Items->add(_bme280Configuration);
+		}
+		_bme280ListConfiguration->init(_bme280Items);
+	}
+
+	return _bme280ListConfiguration;
+}
+
+Communication::Models::Configurations::TemperatureSensors::NtcListConfiguration* 
+Services::JsonService::deserializeNtcListConfiguration(JsonObject data)
+{
+	Communication::Models::Configurations::TemperatureSensors::NtcListConfiguration* _ntcListConfiguration =
+		new Communication::Models::Configurations::TemperatureSensors::NtcListConfiguration();
+	uint8_t adcResolution = data["AdcResolution"];
+	JsonArray items = data["Items"];
+	if (items.size() > 0)
+	{
+		LinkedList<Communication::Models::Configurations::TemperatureSensors::NtcConfiguration*>* _ntcItems =
+			new LinkedList<Communication::Models::Configurations::TemperatureSensors::NtcConfiguration*>();
+		for (int i = 0; i < items.size(); i++)
+		{
+			Communication::Models::Configurations::TemperatureSensors::NtcConfiguration* _ntcConfiguration =
+				new Communication::Models::Configurations::TemperatureSensors::NtcConfiguration();
+			uint16_t address = items[i]["Address"];
+			uint8_t digitTarget = items[i]["Target"];
+			TemperatureSensorTarget target = static_cast<TemperatureSensorTarget>(digitTarget);
+			uint32_t resistance = items[i]["Resistance"];
+			uint32_t resistanceNtc = items[i]["ResistanceNTC"];
+			uint32_t bCoefficient = items[i]["BCoefficient"];
+			float baseTemperature = items[i]["BaseTemperature"];
+			float supplyVoltage = items[i]["SupplyVoltage"];
+
+			_ntcConfiguration->init(address, target, resistance, resistanceNtc,
+				bCoefficient, baseTemperature, supplyVoltage);
+			_ntcItems->add(_ntcConfiguration);
+		}
+		_ntcListConfiguration->init(adcResolution, _ntcItems);
+	}
+
+	return _ntcListConfiguration;
+}
+
+Communication::Models::Configurations::TemperatureSensors::Ds18b20ListConfiguration* 
+Services::JsonService::deserializeDs18b20ListConfiguration(JsonObject data)
+{
+	Communication::Models::Configurations::TemperatureSensors::Ds18b20ListConfiguration* _ds18b20ListConfiguration =
+		new Communication::Models::Configurations::TemperatureSensors::Ds18b20ListConfiguration();
+
+	uint8_t pin = data["Pin"];
+	uint8_t temperaturePrecision = data["TemperaturePrecision"];
+	JsonArray items = data["Items"];
+	if (items.size() > 0)
+	{
+		LinkedList<Communication::Models::Configurations::TemperatureSensors::Ds18b20Configuration*>* _ds18b20Items =
+			new LinkedList<Communication::Models::Configurations::TemperatureSensors::Ds18b20Configuration*>();
+		for (int i = 0; i < items.size(); i++)
+		{
+			Communication::Models::Configurations::TemperatureSensors::Ds18b20Configuration* _ds18b20Configuration =
+				new Communication::Models::Configurations::TemperatureSensors::Ds18b20Configuration();
+			JsonArray addressJson = items[i]["Address"];
+			DeviceAddress address;
+			for (int j = 0; j < addressJson.size(); j++)
+			{
+				address[j] = addressJson[j];
+			}
+
+			uint8_t digitTarget = items[i]["Target"];
+			TemperatureSensorTarget target = static_cast<TemperatureSensorTarget>(digitTarget);
+
+			_ds18b20Configuration->init(address, target);
+			_ds18b20Items->add(_ds18b20Configuration);
+		}
+		_ds18b20ListConfiguration->init(pin, temperaturePrecision, _ds18b20Items);
+	}
+
+	return _ds18b20ListConfiguration;
+}
+
+#pragma endregion Configurations
+
+#pragma endregion Deserializers

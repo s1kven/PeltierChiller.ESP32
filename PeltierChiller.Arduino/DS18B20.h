@@ -15,19 +15,19 @@ namespace Models::TemperatureSensors
 		const uint16_t _payloadSize = JSON_OBJECT_SIZE(3);
 
 		DallasTemperature* _sensor;
-		DeviceAddress* _sensorAddress;
+		uint8_t* _sensorAddress;
 
 	protected:
 
 
 	public:
 
-		DS18B20(DeviceAddress* sensorAddress, Models::Enums::TemperatureSensorTarget _sensorTarget);
+		DS18B20(uint8_t* sensorAddress, Models::Enums::TemperatureSensorTarget _sensorTarget);
 		void init(DallasTemperature* sensor, uint8_t _temperaturePrecision) ;
 		float getTemperature();
 		void sensorRequest() override;
 		DynamicJsonDocument createPayload() override;
-		DeviceAddress* getSensorAddress();
+		uint8_t* getSensorAddress();
 	};
 }
 

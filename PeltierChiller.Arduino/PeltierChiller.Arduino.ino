@@ -49,36 +49,14 @@
 //        SCK(13)             14
 //        MOSI(11)            13
 
-const uint8_t TSENSOR_PIN = 16;
-const uint8_t CHILLERPSSIGNAL_PIN = 32;
-const uint8_t CHILLERSIGNAL_PIN = 33;
-const uint8_t PCV_PIN = 25;
-const uint8_t POWERSIGNAL_PIN = 27;
-const uint8_t POWERBUTTON_PIN = 26;
-const uint8_t NTC_PIN = 34;
 const uint8_t SD_CS = 5;
+
+uint8_t PCV_PIN;
 
 float vin = 0;
 uint32_t _communicationSendTimer = 0;
 
-const uint16_t _communicationDelay = 2000;
-
-DeviceAddress room = { 0x28, 0xCD, 0x86, 0x56, 0xB5, 0x01, 0x3C, 0x1D };
-DeviceAddress hotCircuit = { 0x28, 0xD6, 0x93, 0x81, 0xE3, 0xBC, 0x3C, 0xB6 };
-DeviceAddress pcCase = { 0x28, 0x2B, 0x8E, 0x81,0xE3, 0xE4, 0x3C, 0x1F };
-DeviceAddress coldCircuit = { 0x28, 0xA7, 0xC6, 0x14, 0x00, 0x00, 0x00, 0x4F };
-
-
-Models::TemperatureSensors::BaseSensor* _tSensors[] =
-{ 
-	new Models::TemperatureSensors::DS18B20(&coldCircuit, Models::Enums::TemperatureSensorTarget::coldCircuit),
-	new Models::TemperatureSensors::DS18B20(&room, Models::Enums::TemperatureSensorTarget::room),
-	new Models::TemperatureSensors::DS18B20(&pcCase, Models::Enums::TemperatureSensorTarget::pcCase),
-	new Models::TemperatureSensors::NTC(NTC_PIN, 10000, 3950, 10000,
-		Models::Enums::TemperatureSensorTarget::room, 25, 3.3, 12),
-	new Models::TemperatureSensors::DS18B20(&hotCircuit, Models::Enums::TemperatureSensorTarget::hotCircuit),
-	new Models::TemperatureSensors::BME280(0x76, Models::Enums::TemperatureSensorTarget::room)
-};
+uint16_t _communicationDelay;
 
 Services::ChillerService * _chillerService;
  
@@ -97,20 +75,16 @@ void setup()
 	_communicationService = new Communication::Services::SerialCommunicationService(115200);
 	_communicationService->init();
 
-	pinMode(POWERBUTTON_PIN, INPUT_PULLUP);
-	pinMode(CHILLERPSSIGNAL_PIN, OUTPUT);
-	pinMode(CHILLERSIGNAL_PIN, OUTPUT);
-	pinMode(POWERSIGNAL_PIN, OUTPUT);
-
 	_fileService = new Services::FileService();
 	_fileService->init(SD_CS);
 
 	_jsonService = new Services::JsonService();
 
 	_configurationService = new Services::ConfigurationService(_fileService, _jsonService);
+	_configurationService->readConfigurationFromSd();
+	initGlobalConfiguration();
 
-	_chillerService = new Services::ChillerService(TSENSOR_PIN, sizeof(_tSensors) / sizeof(int), _tSensors,
-		_configurationService->getConfiguration(), POWERBUTTON_PIN, CHILLERPSSIGNAL_PIN, CHILLERSIGNAL_PIN, POWERSIGNAL_PIN);
+	_chillerService = new Services::ChillerService(_configurationService->getConfiguration());
 }
 
 
@@ -135,8 +109,14 @@ void sendDataByTimer()
 		_communicationSendTimer = millis();
 
 		String response = (*_jsonService).serializeObject(
-			Helpers::JsonHelper::convertToBaseSerializableObjectArray(_tSensors, sizeof(_tSensors) / sizeof(int)),
+			Helpers::JsonHelper::convertToBaseSerializableObjectArray(_chillerService->getTemperatureService()->getTemperatureSensors()),
 			Communication::Enums::ResponseType::temperatureSensors);
 		_communicationService->sendData(response);
 	}
+}
+
+void initGlobalConfiguration()
+{
+	_communicationDelay = _configurationService->getConfiguration()->getTimersConfiguration()->getCommunicationDelay();
+	PCV_PIN = _configurationService->getConfiguration()->getPinsConfiguration()->getPcVoltage();
 }

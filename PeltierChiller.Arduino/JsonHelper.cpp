@@ -2,18 +2,21 @@
 
 #include "JsonHelper.h"
 
-KeyValuePair<BaseSerializableObject**, uint8_t> Helpers::JsonHelper::convertToBaseSerializableObjectArray(BaseSensor* _models[], uint8_t _arraySize)
+KeyValuePair<BaseSerializableObject**, uint8_t> Helpers::JsonHelper::convertToBaseSerializableObjectArray(
+	LinkedList<Models::TemperatureSensors::BaseSensor*>* temperatureSensors)
 {
-	BaseSerializableObject** _resultArrayKey = new BaseSerializableObject * [_arraySize];
+	uint16_t listSize = temperatureSensors->size();
 
-	for (int i = 0; i < _arraySize; i++)
+	BaseSerializableObject** _resultArrayKey = new BaseSerializableObject * [listSize];
+
+	for (int i = 0; i < listSize; i++)
 	{
-		_resultArrayKey[i] = _models[i];
+		_resultArrayKey[i] = temperatureSensors->get(i);
 	}
 	KeyValuePair<BaseSerializableObject**, uint8_t> _result =
 	{
 		_resultArrayKey,
-		_arraySize
+		listSize
 	};
 
 	return _result;

@@ -2,7 +2,7 @@
 
 #include "DS18B20.h"
 
-Models::TemperatureSensors::DS18B20::DS18B20(DeviceAddress* sensorAddress, Models::Enums::TemperatureSensorTarget sensorTarget) :
+Models::TemperatureSensors::DS18B20::DS18B20(uint8_t* sensorAddress, Models::Enums::TemperatureSensorTarget sensorTarget) :
 	Models::TemperatureSensors::BaseSensor(sensorTarget, Models::Enums::TemperatureSensorType::DS18B20, _payloadSize)
 {
 	_sensorAddress = sensorAddress;
@@ -12,7 +12,7 @@ void Models::TemperatureSensors::DS18B20::init(DallasTemperature* sensor, uint8_
 {
 	_sensor = sensor;
 	(*_sensor).begin();
-	(*_sensor).setResolution((*_sensorAddress), _temperaturePrecision);
+	(*_sensor).setResolution(_sensorAddress, _temperaturePrecision);
 	BaseSensor::init();
 }
 
@@ -26,8 +26,8 @@ void Models::TemperatureSensors::DS18B20::sensorRequest()
 	if (millis() - _sensorRequestTimer >= 1000)
 	{
 		_sensorRequestTimer = millis();
-		(*_sensor).requestTemperaturesByAddress(*getSensorAddress());
-		_temperature = float((*_sensor).getTempC((*_sensorAddress)));
+		(*_sensor).requestTemperaturesByAddress(getSensorAddress());
+		_temperature = float((*_sensor).getTempC(_sensorAddress));
 	}
 }
 
@@ -36,7 +36,7 @@ DynamicJsonDocument Models::TemperatureSensors::DS18B20::createPayload()
 	return BaseSensor::createPayload();
 }
 
-DeviceAddress* Models::TemperatureSensors::DS18B20::getSensorAddress()
+uint8_t* Models::TemperatureSensors::DS18B20::getSensorAddress()
 {
 	return _sensorAddress;
 }

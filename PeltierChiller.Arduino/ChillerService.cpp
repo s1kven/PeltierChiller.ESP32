@@ -2,22 +2,24 @@
 
 #include "ChillerService.h"
 
-Services::ChillerService::ChillerService(uint8_t _temperatureSensorsPin, uint8_t _tSensorsCount,
-	Models::TemperatureSensors::BaseSensor* _tSensors[], Communication::Models::ChillerConfiguration* chillerConfiguration,
-	uint8_t powerButtonPin, uint8_t chillerPsSignalPin, uint8_t chillerSignalPin, uint8_t powerSignalPin)
+Services::ChillerService::ChillerService(Communication::Models::Configurations::Configuration* configuration)
 {
-	_temperatureService = new Services::TemperatureService(_temperatureSensorsPin, _tSensorsCount, _tSensors);
 	_state = Models::Enums::ChillerState::off;
-	_chillerConfiguration = chillerConfiguration;
+	_configuration = configuration;
 
-	_powerButtonPin = powerButtonPin;
-	_chillerPsSignalPin = chillerPsSignalPin;
-	_chillerSignalPin = chillerSignalPin;
-	_powerSignalPin = powerSignalPin;
+	initConfiguration();
+
+	_varResistorValue = _maxPotentiometerValue;
+
+	pinMode(_powerButtonPin, INPUT_PULLUP);
+	pinMode(_chillerPsSignalPin, OUTPUT);
+	pinMode(_chillerSignalPin, OUTPUT);
+	pinMode(_powerSignalPin, OUTPUT);
+
+	_temperatureService = new Services::TemperatureService(_configuration->getTemperatureSensorsConfiguration());
 
 	_powerButton = new Models::Button(_powerButtonPin, "POWER");
 	_powerButton->setLastPressTime(0);
-	initConfiguration();
 }
 
 void Services::ChillerService::manageChiller(float pcVoltage)
@@ -28,10 +30,38 @@ void Services::ChillerService::manageChiller(float pcVoltage)
 	handleChillerState(pcVoltage);
 }
 
+Services::TemperatureService* Services::ChillerService::getTemperatureService()
+{
+	return _temperatureService;
+}
+
 void Services::ChillerService::initConfiguration()
 {
-	_targetTemperature = _chillerConfiguration->getTargetCircuitTemperature();
-	_varResistorValue = 150;
+	_targetTemperature = _configuration->getTargetCircuitTemperature();
+	_pcVoltageThreshold = _configuration->getPcVoltageThreshold();
+
+	Communication::Models::Configurations::PinsConfiguration* pinsConfiguration = _configuration->getPinsConfiguration();
+	_powerButtonPin = pinsConfiguration->getPowerButton();
+	_chillerPsSignalPin = pinsConfiguration->getChillerPsSignal();
+	_chillerSignalPin = pinsConfiguration->getChillerSignal();
+	_powerSignalPin = pinsConfiguration->getPowerSignal();
+
+	Communication::Models::Configurations::TimersConfiguration* timersConfiguration = _configuration->getTimersConfiguration();
+	_sensorsRequestDelay = timersConfiguration->getTemperatureSensorsRequestDelay();
+	_buttonMinPressTime = timersConfiguration->getButtonMinPressTime();
+
+	Communication::Models::Configurations::ChillerConfiguration* chillerConfiguration = _configuration->getChillerConfiguration();
+	_computePidDelay = chillerConfiguration->getComputePidDelay();
+	_potentiometerAddress = chillerConfiguration->getPotentiometerAddress();
+	_maxPotentiometerValue = chillerConfiguration->getMaxPotentiometerValue();
+	_minPotentiometerValue = chillerConfiguration->getMinPotentiometerValue();
+	_kp = chillerConfiguration->getKp();
+	_ki = chillerConfiguration->getKi();
+	_kd = chillerConfiguration->getKd();
+	_dt = chillerConfiguration->getDt();
+	_pidRatio = chillerConfiguration->getPidRatio();
+	_minIntegral = chillerConfiguration->getMinIntegral();
+	_maxIntegral = chillerConfiguration->getMaxIntegral();
 }
 
 void Services::ChillerService::handlePowerButton()
@@ -42,7 +72,7 @@ void Services::ChillerService::handlePowerButton()
 		_powerButton->setFlag(true);
 		_powerButton->setLastPressTime(millis());
 	}
-	else if (!_powerButton->getState() && _powerButton->getFlag() && millis() - _powerButton->getLastPressTime() > 20)
+	else if (!_powerButton->getState() && _powerButton->getFlag() && millis() - _powerButton->getLastPressTime() > _buttonMinPressTime)
 	{
 		_powerButton->setFlag(false);
 		_powerButton->setLastPressMillis(millis() - _powerButton->getLastPressTime());
@@ -51,23 +81,23 @@ void Services::ChillerService::handlePowerButton()
 
 void Services::ChillerService::manageChillerLoad()
 {
-	if (millis() - _chillerLoadTimer >= 5000)
+	if (millis() - _chillerLoadTimer >= _computePidDelay)
 	{
 		float coldT = (*_temperatureService).getTemperatureForSpecificTarget(Models::Enums::TemperatureSensorTarget::coldCircuit);
 
 		_varResistorValue = computePID(coldT, _targetTemperature,
-			-50, -0.1, -100.0, 20) + 20;
+			_kp, _ki, _kd, _dt) + _pidRatio;
 		_chillerLoadTimer = millis();
 
-		if (_varResistorValue > 150)
+		if (_varResistorValue > _maxPotentiometerValue)
 		{
-			_varResistorValue = 150;
+			_varResistorValue = _maxPotentiometerValue;
 		}
-		else if (_varResistorValue < 50)
+		else if (_varResistorValue < _minPotentiometerValue)
 		{
-			_varResistorValue = 50;
+			_varResistorValue = _minPotentiometerValue;
 		}
-		Wire.beginTransmission(0x2E);
+		Wire.beginTransmission(_potentiometerAddress);
 		Wire.write(byte(0x00));
 		Wire.write(_varResistorValue);
 		Wire.endTransmission();
@@ -80,13 +110,13 @@ int Services::ChillerService::computePID(float _currentT, float _targetT, float 
 	static float integral = 0;
 	static float prevErr = 0;
 	integral += errT * _dt;
-	if (integral > 1000.0)
+	if (integral > _maxIntegral)
 	{
-		integral = 1000.0;
+		integral = _maxIntegral;
 	}
-	else if (integral < -1000.0)
+	else if (integral < _minIntegral)
 	{
-		integral = -1000.0;
+		integral = _minIntegral;
 	}
 	float D = (errT - prevErr) / _dt;
 	prevErr = errT;
@@ -95,7 +125,7 @@ int Services::ChillerService::computePID(float _currentT, float _targetT, float 
 
 void Services::ChillerService::handleChillerState(float pcVoltage)
 {
-	if (pcVoltage > 250 && _state != Models::Enums::ChillerState::enabling)
+	if (pcVoltage > _pcVoltageThreshold && _state != Models::Enums::ChillerState::enabling)
 	{
 		_state = Models::Enums::ChillerState::temperatureMaintaining;
 	}
@@ -147,7 +177,7 @@ void Services::ChillerService::handleChillerState(float pcVoltage)
 
 		digitalWrite(_chillerPsSignalPin, HIGH);
 		digitalWrite(_chillerSignalPin, HIGH);
-		if (pcVoltage < 250)
+		if (pcVoltage < _pcVoltageThreshold)
 		{
 			_state = Models::Enums::ChillerState::off;
 		}

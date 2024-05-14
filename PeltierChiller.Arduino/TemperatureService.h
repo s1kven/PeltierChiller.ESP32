@@ -7,6 +7,7 @@
 #include "DS18B20.h"
 #include "BME280.h"
 #include "NTC.h"
+#include "TemperatureSensorsConfiguration.h"
 
 namespace Services
 {
@@ -14,14 +15,18 @@ namespace Services
 	{
 	private:
 
-		const uint8_t _temperaturePrecision = 12;
+		uint8_t _temperaturePrecision;
 
 		OneWire* _oneWire;
 		DallasTemperature* _dallasSensors;
+		uint8_t _dallasTemperatureSensorsPin;
 		LinkedList<Models::TemperatureSensors::BaseSensor*>* _temperatureSensors;
 		uint32_t _sensorsRequestTimer = 0;
 
-		void dallasInit(uint8_t _dallasTemperatureSensorsPin);
+		Communication::Models::Configurations::TemperatureSensors::TemperatureSensorsConfiguration* _configuration;
+
+		void dallasInit();
+		void initConfiguration();
 
 	public:
 		float getTemperatureForSpecificTarget(Models::Enums::TemperatureSensorTarget);
@@ -31,6 +36,7 @@ namespace Services
 		String getSensorTarget(uint8_t);
 		const char* getTemperatureSensorTargetName(Models::Enums::TemperatureSensorTarget);
 		void requestSensors(uint16_t _sensorsRequestDelay);
-		TemperatureService(uint8_t _dallasTemperatureSensorsPin, uint8_t _tSensorsCount, Models::TemperatureSensors::BaseSensor* _tSensors[]);
+		TemperatureService(Communication::Models::Configurations::TemperatureSensors::TemperatureSensorsConfiguration* configuration);
+		LinkedList<Models::TemperatureSensors::BaseSensor*>* getTemperatureSensors();
 	};
 }
