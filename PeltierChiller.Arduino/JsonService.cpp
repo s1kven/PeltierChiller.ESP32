@@ -28,7 +28,8 @@ String Services::JsonService::serializeObject(
 
 Communication::Abstractions::BaseDeserializableObject* Services::JsonService::deserializeRequest(String& content)
 {
-	DynamicJsonDocument document(_baseResponseSize + content.length());
+	uint32_t documentSize = getDeserializedJsonSize(content);
+	DynamicJsonDocument document(documentSize);
 	JsonObject payload = document.to<JsonObject>();
 	DeserializationError err = deserializeJson(document, content);
 
@@ -49,6 +50,29 @@ uint16_t Services::JsonService::calculateJsonDocumentSize(
 		documentSize += (*_models.key[i]).GetJsonSize();
 	}
 	documentSize += _baseResponseSize + 8; // 8 - size of JsonArray
+
+	return documentSize;
+}
+
+
+uint32_t Services::JsonService::getDeserializedJsonSize(String& content)
+{
+	uint16_t objectsCount = 0;
+	uint16_t arraysCount = 0;
+
+	for (int i = 0; i < content.length(); i++)
+	{
+		if (content[i] == '{')
+		{
+			objectsCount++;
+		}
+		else if (content[i] == '[')
+		{
+			arraysCount++;
+		}
+	}
+
+	uint32_t documentSize = objectsCount * sizeof(JsonObject) + arraysCount * sizeof(JsonArray) + content.length();
 
 	return documentSize;
 }

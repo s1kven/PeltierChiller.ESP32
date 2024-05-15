@@ -29,6 +29,7 @@ namespace Services
 
 		void buildTemperatureSensorsResponse(JsonObject& _data,
 			Models::Abstractions::KeyValuePair<Communication::Abstractions::BaseSerializableObject**, uint8_t> _models);
+		uint32_t getDeserializedJsonSize(String& content);
 		Communication::Abstractions::BaseDeserializableObject* deserializeRequestByType(
 			Communication::Enums::RequestType _requestType, JsonObject data);
 		Communication::Models::Configurations::Configuration* deserializeConfiguration(JsonObject data);
