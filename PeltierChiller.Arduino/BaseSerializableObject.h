@@ -12,8 +12,11 @@ namespace Communication
 		private:
 			uint16_t _jsonSize;
 
+		protected:
+			void setJsonSize(uint16_t jsonSize);
+
 		public:
-			BaseSerializableObject(uint16_t jsonSize);
+			BaseSerializableObject();
 
 			virtual DynamicJsonDocument createPayload() = 0;
 			uint16_t GetJsonSize();

@@ -14,5 +14,6 @@ namespace Communication::Services
 		virtual void init() = 0;
 
 		virtual void sendData(String data) = 0;
+		virtual String readData() = 0;
 	};
 }

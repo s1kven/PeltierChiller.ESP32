@@ -2,6 +2,13 @@
 
 #include "JsonService.h"
 
+String Services::JsonService::serializeObject(Communication::Abstractions::BaseSerializableObject* response)
+{
+	String serializedObject = response->createPayload().as<String>();
+
+	return serializedObject;
+}
+
 String Services::JsonService::serializeObject(
 	Models::Abstractions::KeyValuePair<Communication::Abstractions::BaseSerializableObject**, uint8_t> _models,
 	Communication::Enums::ResponseType _responseType)
@@ -31,14 +38,22 @@ Communication::Abstractions::BaseDeserializableObject* Services::JsonService::de
 	uint32_t documentSize = getDeserializedJsonSize(content);
 	DynamicJsonDocument document(documentSize);
 	JsonObject payload = document.to<JsonObject>();
-	DeserializationError err = deserializeJson(document, content);
+	DeserializationError error = deserializeJson(document, content);
 
-	uint8_t type = document["RequestType"];
-	JsonObject data = document["Data"];
+	if (error)
+	{
+		Communication::Abstractions::BaseDeserializableObject* errorObject = buildError(error);
+		return errorObject;
+	}
+	else 
+	{
+		uint8_t type = document["RequestType"];
+		JsonObject data = document["Data"];
 
-	Communication::Abstractions::BaseDeserializableObject* deserializedObject = deserializeRequestByType(
-		static_cast<Communication::Enums::RequestType>(type), data);
-	return deserializedObject;
+		Communication::Abstractions::BaseDeserializableObject* deserializedObject = deserializeRequestByType(
+			static_cast<Communication::Enums::RequestType>(type), data);
+		return deserializedObject;
+	}
 }
 
 uint16_t Services::JsonService::calculateJsonDocumentSize(
@@ -75,6 +90,30 @@ uint32_t Services::JsonService::getDeserializedJsonSize(String& content)
 	uint32_t documentSize = objectsCount * sizeof(JsonObject) + arraysCount * sizeof(JsonArray) + content.length();
 
 	return documentSize;
+}
+
+Communication::Models::DeserializationError* Services::JsonService::buildError(DeserializationError error)
+{
+	return new Communication::Models::DeserializationError(errorCodeConverter(error), error.c_str());
+}
+
+Communication::Enums::ErrorCode Services::JsonService::errorCodeConverter(DeserializationError error)
+{
+	switch (error.code())
+	{
+	case error.Ok:
+		return Communication::Enums::ErrorCode::ok;
+	case error.EmptyInput:
+		return Communication::Enums::ErrorCode::emptyInput;
+	case error.IncompleteInput:
+		return Communication::Enums::ErrorCode::incompleteInput;
+	case error.InvalidInput:
+		return Communication::Enums::ErrorCode::invalidInput;
+	case error.NoMemory:
+		return Communication::Enums::ErrorCode::noMemory;
+	case error.TooDeep:
+		return Communication::Enums::ErrorCode::tooDeep;
+	}
 }
 
 void Services::JsonService::buildResponseBasedOnType(JsonObject& _data,

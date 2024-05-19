@@ -2,14 +2,16 @@
 
 #include "Rele.h"
 
-Models::Rele::Rele() : BaseSerializableObject(_payloadSize)
+Models::Rele::Rele()
 {
+	Communication::Abstractions::BaseSerializableObject::setJsonSize(_payloadSize);
 }
 
-Models::Rele::Rele(int8_t _relePin) : BaseSerializableObject(_payloadSize)
+Models::Rele::Rele(int8_t _relePin)
 {
 	_signalPin = _relePin;
 	_state = Models::Enums::ReleState::off;
+	Communication::Abstractions::BaseSerializableObject::setJsonSize(_payloadSize);
 }
 
 int8_t Models::Rele::getSignalPin()

@@ -10,8 +10,8 @@
 #include "Configuration.h"
 #include "BaseSerializableObject.h"
 #include "KeyValuePair.h"
-#include "ResponseType.cpp"
 #include "RequestType.cpp"
+#include "DeserializationError.h"
 
 namespace Services
 {
@@ -30,6 +30,10 @@ namespace Services
 		void buildTemperatureSensorsResponse(JsonObject& _data,
 			Models::Abstractions::KeyValuePair<Communication::Abstractions::BaseSerializableObject**, uint8_t> _models);
 		uint32_t getDeserializedJsonSize(String& content);
+
+		Communication::Models::DeserializationError* buildError(DeserializationError error);
+		Communication::Enums::ErrorCode errorCodeConverter(DeserializationError error);
+
 		Communication::Abstractions::BaseDeserializableObject* deserializeRequestByType(
 			Communication::Enums::RequestType _requestType, JsonObject data);
 		Communication::Models::Configurations::Configuration* deserializeConfiguration(JsonObject data);
@@ -47,6 +51,7 @@ namespace Services
 
 	public:
 
+		String serializeObject(Communication::Abstractions::BaseSerializableObject* response);
 		String serializeObject(
 			Models::Abstractions::KeyValuePair<Communication::Abstractions::BaseSerializableObject**, uint8_t> _models, 
 			Communication::Enums::ResponseType _responseType);

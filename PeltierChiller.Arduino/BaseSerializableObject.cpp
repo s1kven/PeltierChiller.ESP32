@@ -1,6 +1,11 @@
 #include "BaseSerializableObject.h"
 
-Communication::Abstractions::BaseSerializableObject::BaseSerializableObject(uint16_t jsonSize)
+Communication::Abstractions::BaseSerializableObject::BaseSerializableObject()
+{
+
+}
+
+void Communication::Abstractions::BaseSerializableObject::setJsonSize(uint16_t jsonSize)
 {
     _jsonSize = jsonSize;
 }

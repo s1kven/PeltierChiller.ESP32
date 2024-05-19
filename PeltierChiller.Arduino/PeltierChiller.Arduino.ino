@@ -56,6 +56,8 @@ uint8_t PCV_PIN;
 float vin = 0;
 uint32_t _communicationSendTimer = 0;
 
+Communication::Abstractions::BaseError* configurationError;
+
 uint16_t _communicationDelay;
 
 Services::ChillerService * _chillerService;
@@ -81,7 +83,15 @@ void setup()
 	_jsonService = new Services::JsonService();
 
 	_configurationService = new Services::ConfigurationService(_fileService, _jsonService);
-	_configurationService->readConfigurationFromSd();
+	configurationError = _configurationService->readConfigurationFromSd();
+	if (*configurationError)
+	{
+		String errorConfigurationRead = (*_jsonService).serializeObject(configurationError);
+
+		_communicationService->sendData(errorConfigurationRead);
+		return;
+	}
+
 	initGlobalConfiguration();
 
 	_chillerService = new Services::ChillerService(_configurationService->getConfiguration());
@@ -90,11 +100,18 @@ void setup()
 
 void loop() 
 {
+	if (*configurationError)
+	{
+		return;
+	}
+
 	handlePcVoltage();
 
 	(*_chillerService).manageChiller(vin);
 
 	sendDataByTimer();
+
+	processRequest();
 }
 
 void handlePcVoltage()
@@ -112,6 +129,15 @@ void sendDataByTimer()
 			Helpers::JsonHelper::convertToBaseSerializableObjectArray(_chillerService->getTemperatureService()->getTemperatureSensors()),
 			Communication::Enums::ResponseType::temperatureSensors);
 		_communicationService->sendData(response);
+	}
+}
+
+void processRequest()
+{
+	String request = _communicationService->readData();
+	if (request.length() > 0)
+	{
+		_communicationService->sendData(request);
 	}
 }
 

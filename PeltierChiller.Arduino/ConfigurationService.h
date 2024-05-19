@@ -1,7 +1,10 @@
 #pragma once
+
 #include "Configuration.h"
 #include "FileService.h"
 #include "JsonService.h"
+#include "BaseError.h"
+#include "DeserializationError.h"
 
 namespace Services
 {
@@ -18,7 +21,7 @@ namespace Services
 	public:
 		ConfigurationService(FileService* fileService, JsonService* jsonService);
 
-		void readConfigurationFromSd();
+		Communication::Abstractions::BaseError* readConfigurationFromSd();
 
 		Communication::Models::Configurations::Configuration* getConfiguration();
 	};

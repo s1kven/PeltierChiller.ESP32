@@ -4,8 +4,10 @@ namespace Communication
     {
         enum class ResponseType
         {
-            unknown,
-            temperatureSensors
+            unknown = 0,
+            temperatureSensors = 1,
+            //errors
+            errorConfiguration = 100
         };
     }
 }

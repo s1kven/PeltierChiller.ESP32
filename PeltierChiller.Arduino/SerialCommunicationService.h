@@ -21,5 +21,7 @@ namespace Communication::Services
 		void init() override;
 
 		void sendData(String data) override;
+
+		String readData() override;
 	};
 }

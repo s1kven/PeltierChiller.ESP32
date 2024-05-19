@@ -146,6 +146,12 @@
     <ClInclude Include="Ds18b20ListConfiguration.h">
       <Filter>Source Files\Communication\Models\Configurations\TemperatureSensors</Filter>
     </ClInclude>
+    <ClInclude Include="BaseError.h">
+      <Filter>Source Files\Communication\Abstractions</Filter>
+    </ClInclude>
+    <ClInclude Include="DeserializationError.h">
+      <Filter>Source Files\Communication\Models</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ReleState.cpp">
@@ -244,6 +250,15 @@
     </ClCompile>
     <ClCompile Include="Ds18b20ListConfiguration.cpp">
       <Filter>Source Files\Communication\Models\Configurations\TemperatureSensors</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseError.cpp">
+      <Filter>Source Files\Communication\Abstractions</Filter>
+    </ClCompile>
+    <ClCompile Include="ErrorCode.cpp">
+      <Filter>Source Files\Communication\Enums</Filter>
+    </ClCompile>
+    <ClCompile Include="DeserializationError.cpp">
+      <Filter>Source Files\Communication\Models</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

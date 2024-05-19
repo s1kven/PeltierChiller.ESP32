@@ -4,11 +4,12 @@
 
 
 Models::TemperatureSensors::BaseSensor::BaseSensor(Models::Enums::TemperatureSensorTarget sensorTarget, 
-	Models::Enums::TemperatureSensorType sensorType, uint16_t payloadSize) : BaseSerializableObject(payloadSize)
+	Models::Enums::TemperatureSensorType sensorType, uint16_t payloadSize)
 {
 	_payloadSize = payloadSize;
 	_sensorTarget = sensorTarget;
 	_sensorType = sensorType;
+	Communication::Abstractions::BaseSerializableObject::setJsonSize(_payloadSize);
 }
 
 void Models::TemperatureSensors::BaseSensor::init()

@@ -14,3 +14,8 @@ void Communication::Services::SerialCommunicationService::sendData(String data)
 {
 	Serial.println(data);
 }
+
+String Communication::Services::SerialCommunicationService::readData()
+{
+	return Serial.readString();
+}
