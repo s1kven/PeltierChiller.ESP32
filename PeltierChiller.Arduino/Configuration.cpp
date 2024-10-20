@@ -31,6 +31,12 @@ Communication::Models::Configurations::Configuration::getTemperatureSensorsConfi
 	return _temperatureSensorsConfiguration;
 }
 
+Communication::Models::Configurations::PwmsConfiguration* 
+Communication::Models::Configurations::Configuration::getPwmsConfiguration()
+{
+	return _pwmsConfiguration;
+}
+
 void Communication::Models::Configurations::Configuration::init()
 {
 }
@@ -41,13 +47,15 @@ Communication::Models::Configurations::Configuration::~Configuration()
 	delete _timersConfiguration;
 	delete _chillerConfiguration;
 	delete _temperatureSensorsConfiguration;
+	delete _pwmsConfiguration;
 }
 
 void Communication::Models::Configurations::Configuration::init(float targetCircuitTemperature,
 	float pcVoltageThreshold, Communication::Models::Configurations::PinsConfiguration* pinsConfiguration,
 	Communication::Models::Configurations::TimersConfiguration* timersConfiguration,
 	Communication::Models::Configurations::ChillerConfiguration* chillerConfiguration,
-	Communication::Models::Configurations::TemperatureSensors::TemperatureSensorsConfiguration* temperatureSensorsConfiguration)
+	Communication::Models::Configurations::TemperatureSensors::TemperatureSensorsConfiguration* temperatureSensorsConfiguration,
+	Communication::Models::Configurations::PwmsConfiguration* pwmsConfiguration)
 {
 	_targetCircuitTemperature = targetCircuitTemperature;
 	_pcVoltageThreshold = pcVoltageThreshold;
@@ -55,4 +63,5 @@ void Communication::Models::Configurations::Configuration::init(float targetCirc
 	_timersConfiguration = timersConfiguration;
 	_chillerConfiguration = chillerConfiguration;
 	_temperatureSensorsConfiguration = temperatureSensorsConfiguration;
+	_pwmsConfiguration = pwmsConfiguration;
 }

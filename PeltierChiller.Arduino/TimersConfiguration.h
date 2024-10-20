@@ -19,16 +19,19 @@ namespace Communication
 				uint32_t _buttonMinPressTime;
 				uint32_t _communicationDelay;
 				uint32_t _temperatureSensorsRequestDelay;
+				uint32_t _updatePwmDelay;
 
 			protected:
 				void init() override;
 
 			public:
-				void init(uint32_t buttonMinPressTime, uint32_t communicationDelay, uint32_t temperatureSensorsRequestDelay);
+				void init(uint32_t buttonMinPressTime, uint32_t communicationDelay, 
+					uint32_t temperatureSensorsRequestDelay, uint32_t updatePwmDelay);
 
 				uint32_t getButtonMinPressTime();
 				uint32_t getCommunicationDelay();
 				uint32_t getTemperatureSensorsRequestDelay();
+				uint32_t getUpdatePwmDelay();
 			};
 		}
 	}

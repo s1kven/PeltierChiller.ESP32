@@ -152,6 +152,24 @@
     <ClInclude Include="DeserializationError.h">
       <Filter>Source Files\Communication\Models</Filter>
     </ClInclude>
+    <ClInclude Include="PwmsConfiguration.h">
+      <Filter>Source Files\Communication\Models\Configurations</Filter>
+    </ClInclude>
+    <ClInclude Include="PwmConfiguration.h">
+      <Filter>Source Files\Communication\Models\Configurations</Filter>
+    </ClInclude>
+    <ClInclude Include="PwmItem.h">
+      <Filter>Source Files\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="PwmService.h">
+      <Filter>Source Files\Services</Filter>
+    </ClInclude>
+    <ClInclude Include="PwmValue.h">
+      <Filter>Source Files\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="PwmValueConfiguration.h">
+      <Filter>Source Files\Communication\Models\Configurations</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ReleState.cpp">
@@ -259,6 +277,27 @@
     </ClCompile>
     <ClCompile Include="DeserializationError.cpp">
       <Filter>Source Files\Communication\Models</Filter>
+    </ClCompile>
+    <ClCompile Include="PwmsConfiguration.cpp">
+      <Filter>Source Files\Communication\Models\Configurations</Filter>
+    </ClCompile>
+    <ClCompile Include="PwmConfiguration.cpp">
+      <Filter>Source Files\Communication\Models\Configurations</Filter>
+    </ClCompile>
+    <ClCompile Include="PwmItem.cpp">
+      <Filter>Source Files\Models</Filter>
+    </ClCompile>
+    <ClCompile Include="PwmService.cpp">
+      <Filter>Source Files\Services</Filter>
+    </ClCompile>
+    <ClCompile Include="PwmType.cpp">
+      <Filter>Source Files\Models\Enums</Filter>
+    </ClCompile>
+    <ClCompile Include="PwmValue.cpp">
+      <Filter>Source Files\Models</Filter>
+    </ClCompile>
+    <ClCompile Include="PwmValueConfiguration.cpp">
+      <Filter>Source Files\Communication\Models\Configurations</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

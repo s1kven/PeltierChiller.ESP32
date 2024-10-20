@@ -7,11 +7,13 @@
 #include "TimersConfiguration.h"
 #include "ChillerConfiguration.h"
 #include "TemperatureSensorsConfiguration.h"
+#include "PwmsConfiguration.h"
 #include "Configuration.h"
 #include "BaseSerializableObject.h"
 #include "KeyValuePair.h"
 #include "RequestType.cpp"
 #include "DeserializationError.h"
+#include "PwmValueConfiguration.h"
 
 namespace Services
 {
@@ -48,6 +50,7 @@ namespace Services
 			deserializeNtcListConfiguration(JsonObject data);
 		Communication::Models::Configurations::TemperatureSensors::Ds18b20ListConfiguration*
 			deserializeDs18b20ListConfiguration(JsonObject data);
+		Communication::Models::Configurations::PwmsConfiguration* deserializePwmsConfiguration(JsonArray items);
 
 	public:
 

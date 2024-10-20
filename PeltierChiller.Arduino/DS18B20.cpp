@@ -13,6 +13,7 @@ void Models::TemperatureSensors::DS18B20::init(DallasTemperature* sensor, uint8_
 	_sensor = sensor;
 	(*_sensor).begin();
 	(*_sensor).setResolution(_sensorAddress, _temperaturePrecision);
+	(*_sensor).setWaitForConversion(false);
 	BaseSensor::init();
 }
 

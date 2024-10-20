@@ -6,6 +6,7 @@
 
 #pragma once
 #if defined(ARDUINO) && ARDUINO >= 100
+#include "Test.h"
 #include "arduino.h"
 #else
 #include "WProgram.h"
@@ -32,22 +33,7 @@
 #include "SerialCommunicationService.h"
 #include "FileService.h"
 #include "ConfigurationService.h"
-
-//      arduino      ->      esp32
-//        SCL                 22
-//        SDA                 21
-//        CS(10)              15
-//        DC(9)               4
-//        RST(8)              17
-//    TSENSOR_PIN(7)          16
-// CHILLERPSSIGNAL_PIN(A1)    32
-//   CHILLERSIGNAL_PIN(A2)    33
-//       PCV_PIN(A3)          25
-//    POWERBUTTON_PIN(A5)     26
-//        NTC_PIN(A0)         34
-//    POWERSIGNAL_PIN(5)      27
-//        SCK(13)             14
-//        MOSI(11)            13
+#include "PwmService.h"
 
 const uint8_t SD_CS = 5;
 
@@ -69,6 +55,8 @@ Communication::Services::CommunicationService* _communicationService;
 Services::FileService* _fileService;
 
 Services::ConfigurationService* _configurationService;
+
+Services::PwmService* _pwmService;
 
 void setup()  
 {
@@ -95,6 +83,11 @@ void setup()
 	initGlobalConfiguration();
 
 	_chillerService = new Services::ChillerService(_configurationService->getConfiguration());
+
+	_pwmService = new Services::PwmService(
+		_configurationService->getConfiguration()->getTimersConfiguration()->getUpdatePwmDelay(), 
+		_configurationService->getConfiguration()->getPwmsConfiguration(),
+		_chillerService->getTemperatureService());
 }
 
 
@@ -108,10 +101,9 @@ void loop()
 	handlePcVoltage();
 
 	(*_chillerService).manageChiller(vin);
+	_pwmService->handlePwms();
 
 	sendDataByTimer();
-
-	processRequest();
 }
 
 void handlePcVoltage()
@@ -129,15 +121,6 @@ void sendDataByTimer()
 			Helpers::JsonHelper::convertToBaseSerializableObjectArray(_chillerService->getTemperatureService()->getTemperatureSensors()),
 			Communication::Enums::ResponseType::temperatureSensors);
 		_communicationService->sendData(response);
-	}
-}
-
-void processRequest()
-{
-	String request = _communicationService->readData();
-	if (request.length() > 0)
-	{
-		_communicationService->sendData(request);
 	}
 }
 

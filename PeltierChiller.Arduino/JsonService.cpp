@@ -188,8 +188,13 @@ Communication::Models::Configurations::Configuration* Services::JsonService::des
 	Communication::Models::Configurations::TemperatureSensors::TemperatureSensorsConfiguration* temperatureSensorsConfiguration =
 		deserializeTemperatureSensorsConfiguration(temperatureSensorsJson);
 
+	JsonArray pwmsJson = data["PWMs"];
+	Communication::Models::Configurations::PwmsConfiguration* pwmsConfiguration =
+		deserializePwmsConfiguration(pwmsJson);
+
 	configuration->init(targetTemperature, pcVoltageThreshold, 
-		pinsConfiguration, timersConfiguration, chillerConfiguration, temperatureSensorsConfiguration);
+		pinsConfiguration, timersConfiguration, chillerConfiguration, 
+		temperatureSensorsConfiguration, pwmsConfiguration);
 
 	return configuration;
 }
@@ -213,7 +218,8 @@ Communication::Models::Configurations::TimersConfiguration* Services::JsonServic
 	uint32_t buttonMinPressTime = data["ButtonMinPressTime"];
 	uint32_t communicationDelay = data["CommunicationDelay"];
 	uint32_t temperatureSensorsRequestDelay = data["TemperatureSensorsRequestDelay"];
-	timersConfiguration->init(buttonMinPressTime, communicationDelay, temperatureSensorsRequestDelay);
+	uint32_t updatePwmDelay = data["UpdatePwmDelay"];
+	timersConfiguration->init(buttonMinPressTime, communicationDelay, temperatureSensorsRequestDelay, updatePwmDelay);
 
 	return timersConfiguration;
 }
@@ -356,6 +362,40 @@ Services::JsonService::deserializeDs18b20ListConfiguration(JsonObject data)
 	}
 
 	return _ds18b20ListConfiguration;
+}
+
+Communication::Models::Configurations::PwmsConfiguration* Services::JsonService::deserializePwmsConfiguration(JsonArray items)
+{
+	Communication::Models::Configurations::PwmsConfiguration* pwmsConfiguration =
+		new Communication::Models::Configurations::PwmsConfiguration();
+	if (items.size() > 0)
+	{
+		LinkedList<Communication::Models::Configurations::PwmConfiguration*>* pwmItems =
+			new LinkedList<Communication::Models::Configurations::PwmConfiguration*>();
+		for (int i = 0; i < items.size(); i++)
+		{
+			Communication::Models::Configurations::PwmConfiguration* pwmConfiguration =
+				new Communication::Models::Configurations::PwmConfiguration();
+			uint8_t tachoPin = items[i]["Tacho"];
+			uint8_t pwmPin = items[i]["PWM"];
+			String name = items[i]["Name"];
+			JsonArray value = items[i]["Value"];
+			LinkedList<Communication::Models::Configurations::PwmValueConfiguration*>* pwmValues = 
+				new LinkedList<Communication::Models::Configurations::PwmValueConfiguration*>();
+			for (int j = 0; j < value.size(); j++)
+			{
+				pwmValues->add(
+					new Communication::Models::Configurations::PwmValueConfiguration(value[j]["Temperature"], value[j]["Load"]));
+			}
+			uint8_t type = items[i]["ControlType"];
+			Models::Enums::PwmType controlType = static_cast<Models::Enums::PwmType>(type);
+			pwmConfiguration->init(tachoPin, pwmPin, name, pwmValues, controlType);
+			pwmItems->add(pwmConfiguration);
+		}
+		pwmsConfiguration->init(pwmItems);
+	}
+
+	return pwmsConfiguration;
 }
 
 #pragma endregion Configurations
