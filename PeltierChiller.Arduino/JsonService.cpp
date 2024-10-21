@@ -185,6 +185,8 @@ Communication::Models::Configurations::Configuration* Services::JsonService::des
 {
 	Communication::Models::Configurations::Configuration* configuration = new Communication::Models::Configurations::Configuration();
 
+	uint8_t chillerTypeDigit = data["ChillerType"];
+	ChillerType chillerType = static_cast<ChillerType>(chillerTypeDigit);
 	float targetTemperature = data["TargetTemperature"];
 	float pcVoltageThreshold = data["PcVoltageThreshold"];
 
@@ -205,7 +207,7 @@ Communication::Models::Configurations::Configuration* Services::JsonService::des
 	Communication::Models::Configurations::PwmsConfiguration* pwmsConfiguration =
 		deserializePwmsConfiguration(pwmsJson);
 
-	configuration->init(targetTemperature, pcVoltageThreshold, 
+	configuration->init(chillerType, targetTemperature, pcVoltageThreshold, 
 		pinsConfiguration, timersConfiguration, chillerConfiguration, 
 		temperatureSensorsConfiguration, pwmsConfiguration);
 

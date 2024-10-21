@@ -37,7 +37,13 @@ Services::TemperatureService* Services::ChillerService::getTemperatureService()
 
 void Services::ChillerService::initConfiguration()
 {
-	_targetTemperature = _configuration->getTargetCircuitTemperature();
+	_chillerType = _configuration->getChillerType();
+	_setTemperature = _configuration->getTargetCircuitTemperature();
+	if (_chillerType == ChillerType::fixedTemperature)
+	{
+		_targetTemperature = _setTemperature;
+	}
+
 	_pcVoltageThreshold = _configuration->getPcVoltageThreshold();
 
 	Communication::Models::Configurations::PinsConfiguration* pinsConfiguration = _configuration->getPinsConfiguration();
@@ -85,6 +91,11 @@ void Services::ChillerService::manageChillerLoad()
 	{
 		float coldT = (*_temperatureService).getTemperatureForSpecificTarget(Models::Enums::TemperatureSensorTarget::coldCircuit);
 
+		if (_chillerType == ChillerType::deltaTemperature)
+		{
+			_targetTemperature = (*_temperatureService)
+				.getTemperatureForSpecificTarget(Models::Enums::TemperatureSensorTarget::room) + _setTemperature;
+		}
 		_varResistorValue = computePID(coldT, _targetTemperature,
 			_kp, _ki, _kd, _dt) + _pidRatio;
 		_chillerLoadTimer = millis();
@@ -150,7 +161,7 @@ void Services::ChillerService::handleChillerState(float pcVoltage)
 		digitalWrite(_chillerSignalPin, HIGH);
 		if (_powerButton->getLastPressMillis() > 0 &&
 			_temperatureService->getTemperatureForSpecificTarget(Models::Enums::TemperatureSensorTarget::coldCircuit) <=
-			_targetTemperature)
+			_setTemperature)
 		{
 			digitalWrite(_powerSignalPin, HIGH);
 			if (_powerSignalTimer == _oldPowerSignalTimer)

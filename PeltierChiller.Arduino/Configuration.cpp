@@ -1,5 +1,10 @@
 #include "Configuration.h"
 
+ChillerType Communication::Models::Configurations::Configuration::getChillerType()
+{
+	return _chillerType;
+}
+
 float Communication::Models::Configurations::Configuration::getTargetCircuitTemperature()
 {
 	return _targetCircuitTemperature;
@@ -50,13 +55,14 @@ Communication::Models::Configurations::Configuration::~Configuration()
 	delete _pwmsConfiguration;
 }
 
-void Communication::Models::Configurations::Configuration::init(float targetCircuitTemperature,
+void Communication::Models::Configurations::Configuration::init(ChillerType chillerType, float targetCircuitTemperature,
 	float pcVoltageThreshold, Communication::Models::Configurations::PinsConfiguration* pinsConfiguration,
 	Communication::Models::Configurations::TimersConfiguration* timersConfiguration,
 	Communication::Models::Configurations::ChillerConfiguration* chillerConfiguration,
 	Communication::Models::Configurations::TemperatureSensors::TemperatureSensorsConfiguration* temperatureSensorsConfiguration,
 	Communication::Models::Configurations::PwmsConfiguration* pwmsConfiguration)
 {
+	_chillerType = chillerType;
 	_targetCircuitTemperature = targetCircuitTemperature;
 	_pcVoltageThreshold = pcVoltageThreshold;
 	_pinsConfiguration = pinsConfiguration;

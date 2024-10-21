@@ -115,6 +115,7 @@
     <ClCompile Include="Bme280Configuration.cpp" />
     <ClCompile Include="Bme280ListConfiguration.cpp" />
     <ClCompile Include="ChillerConfiguration.cpp" />
+    <ClCompile Include="ChillerType.cpp" />
     <ClCompile Include="Configuration.cpp" />
     <ClCompile Include="CommunicationService.cpp" />
     <ClCompile Include="ConfigurationService.cpp" />

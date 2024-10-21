@@ -9,15 +9,17 @@
 #include "ChillerConfiguration.h"
 #include "Configuration.h"
 #include "Button.h"
+#include "ChillerType.cpp"
 
 namespace Services
 {
 	class ChillerService
 	{
 	private:
-
-		float _targetTemperature;
+		Models::Enums::ChillerType _chillerType;
+		float _setTemperature;
 		float _pcVoltageThreshold;
+		float _targetTemperature;
 
 		uint32_t _sensorsRequestDelay;
 		uint32_t _buttonMinPressTime;

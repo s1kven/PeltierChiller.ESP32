@@ -14,6 +14,7 @@
 #include "RequestType.cpp"
 #include "DeserializationError.h"
 #include "PwmValueConfiguration.h"
+#include "ChillerType.cpp"
 
 namespace Services
 {

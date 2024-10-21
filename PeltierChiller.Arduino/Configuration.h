@@ -10,6 +10,7 @@
 #include "ChillerConfiguration.h"
 #include "TemperatureSensorsConfiguration.h"
 #include "PwmsConfiguration.h"
+#include "ChillerType.cpp"
 
 namespace Communication
 {
@@ -21,6 +22,7 @@ namespace Communication
 				public Abstractions::BaseDeserializableObject
 			{
 			private:
+				ChillerType _chillerType;
 				float _targetCircuitTemperature;
 				float _pcVoltageThreshold;
 
@@ -35,13 +37,14 @@ namespace Communication
 
 			public:
 				~Configuration();
-				void init(float targetCircuitTemperature, float pcVoltageThreshold,
+				void init(ChillerType chillerType, float targetCircuitTemperature, float pcVoltageThreshold,
 					Communication::Models::Configurations::PinsConfiguration* pinsConfiguration,
 					Communication::Models::Configurations::TimersConfiguration* timersConfiguration,
 					Communication::Models::Configurations::ChillerConfiguration* chillerConfiguration,
 					Communication::Models::Configurations::TemperatureSensors::TemperatureSensorsConfiguration* temperatureSensorsConfiguration,
 					Communication::Models::Configurations::PwmsConfiguration* pwmsConfiguration);
 
+				ChillerType getChillerType();
 				float getTargetCircuitTemperature();
 				float getPcVoltageThreshold();
 				Communication::Models::Configurations::PinsConfiguration* getPinsConfiguration();

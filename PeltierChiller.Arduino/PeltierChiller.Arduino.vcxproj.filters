@@ -299,5 +299,8 @@
     <ClCompile Include="PwmValueConfiguration.cpp">
       <Filter>Source Files\Communication\Models\Configurations</Filter>
     </ClCompile>
+    <ClCompile Include="ChillerType.cpp">
+      <Filter>Source Files\Models\Enums</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
