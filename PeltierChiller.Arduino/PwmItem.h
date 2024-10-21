@@ -4,12 +4,15 @@
 #include "Arduino.h"
 #include "PwmValue.h"
 #include "PwmType.cpp"
+#include "BaseSerializableObject.h"
 
 namespace Models
 {
-	class PwmItem
+	class PwmItem :
+		public Communication::Abstractions::BaseSerializableObject
 	{
 	private:
+		const uint16_t _payloadSize = JSON_OBJECT_SIZE(3);
 
 		uint8_t _tachoPin; 
 		uint8_t _pwmPin; 
@@ -19,6 +22,7 @@ namespace Models
 		uint16_t _rpm;
 		uint16_t _count = 0; 
 		uint32_t _rpmTimer;
+		uint32_t _updatePwmDelay;
 
 		void init();
 		static void interruptHandler(void* ptr);
@@ -28,12 +32,14 @@ namespace Models
 
 	public:
 
-		PwmItem(uint8_t tachoPin, uint8_t pwmPin, String name, LinkedList<Models::PwmValue*>* values, Models::Enums::PwmType controlType);
+		PwmItem(uint8_t tachoPin, uint8_t pwmPin, String name, LinkedList<Models::PwmValue*>* values, 
+			Models::Enums::PwmType controlType, uint32_t updatePwmDelay);
 		uint8_t getTachoPin();
 		uint8_t getPwmPin();
 		String getName();
 		LinkedList<Models::PwmValue*>* getValues();
 		Models::Enums::PwmType getControlType();
-		uint16_t getRpm(uint16_t getRpmDelay);
+		uint16_t getRpm();
+		DynamicJsonDocument createPayload() override;
 	};
 }

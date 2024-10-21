@@ -27,5 +27,6 @@ namespace Services
 		PwmService(uint32_t updatePwmDelay, Communication::Models::Configurations::PwmsConfiguration* configuration,
 			Services::TemperatureService* temperatureService);
 		void handlePwms();
+		LinkedList<Models::PwmItem*>* getPwmItems();
 	};
 }

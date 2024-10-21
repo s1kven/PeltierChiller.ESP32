@@ -4,6 +4,7 @@
 #include "BaseSerializableObject.h"
 #include "BaseSensor.h"
 #include "KeyValuePair.h"
+#include "PwmItem.h"
 
 using namespace Communication::Abstractions;
 using namespace Models::Abstractions;
@@ -16,6 +17,8 @@ namespace Helpers
 	public:
 		static KeyValuePair<BaseSerializableObject**, uint8_t> convertToBaseSerializableObjectArray(
 			LinkedList<Models::TemperatureSensors::BaseSensor*>* temperatureSensors);
+		static KeyValuePair<BaseSerializableObject**, uint8_t> convertToBaseSerializableObjectArray(
+			LinkedList<Models::PwmItem*>* pwmItems);
 	};
 }
 

@@ -126,8 +126,11 @@ void Services::JsonService::buildResponseBasedOnType(JsonObject& _data,
 		break;
 	case Communication::Enums::ResponseType::temperatureSensors:
 		buildTemperatureSensorsResponse(_data, _models);
-
 		break;
+	case Communication::Enums::ResponseType::pwms:
+		buildPwmsResponse(_data, _models);
+		break;
+
 	default:
 		break;
 	}
@@ -156,6 +159,16 @@ void Services::JsonService::buildTemperatureSensorsResponse(JsonObject& _data,
 	Models::Abstractions::KeyValuePair<Communication::Abstractions::BaseSerializableObject**, uint8_t> _models)
 {
 	JsonArray temperatureSensors = _data.createNestedArray("TemperatureSensors");
+	for (int i = 0; i < _models.value; i++)
+	{
+		temperatureSensors.add((*_models.key[i]).createPayload());
+	}
+}
+
+void Services::JsonService::buildPwmsResponse(JsonObject& _data,
+	Models::Abstractions::KeyValuePair<Communication::Abstractions::BaseSerializableObject**, uint8_t> _models)
+{
+	JsonArray temperatureSensors = _data.createNestedArray("Pwms");
 	for (int i = 0; i < _models.value; i++)
 	{
 		temperatureSensors.add((*_models.key[i]).createPayload());

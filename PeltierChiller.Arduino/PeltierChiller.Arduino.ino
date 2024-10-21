@@ -117,10 +117,15 @@ void sendDataByTimer()
 	{
 		_communicationSendTimer = millis();
 
-		String response = (*_jsonService).serializeObject(
+		String temperatureResponse = (*_jsonService).serializeObject(
 			Helpers::JsonHelper::convertToBaseSerializableObjectArray(_chillerService->getTemperatureService()->getTemperatureSensors()),
 			Communication::Enums::ResponseType::temperatureSensors);
-		_communicationService->sendData(response);
+		_communicationService->sendData(temperatureResponse);
+
+		String pwmsResponse = (*_jsonService).serializeObject(
+			Helpers::JsonHelper::convertToBaseSerializableObjectArray(_pwmService->getPwmItems()),
+			Communication::Enums::ResponseType::pwms);
+		_communicationService->sendData(pwmsResponse);
 	}
 }
 

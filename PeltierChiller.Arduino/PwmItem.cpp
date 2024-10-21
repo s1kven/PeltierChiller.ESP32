@@ -1,12 +1,14 @@
 #include "PwmItem.h"
 
-Models::PwmItem::PwmItem(uint8_t tachoPin, uint8_t pwmPin, String name, LinkedList<Models::PwmValue*>* values, Models::Enums::PwmType controlType)
+Models::PwmItem::PwmItem(uint8_t tachoPin, uint8_t pwmPin, String name, LinkedList<Models::PwmValue*>* values, 
+	Models::Enums::PwmType controlType, uint32_t updatePwmDelay)
 {
 	_tachoPin = tachoPin;
 	_pwmPin = pwmPin;
 	_name = name;
 	_values = values;
 	_controlType = controlType;
+	_updatePwmDelay = updatePwmDelay;
 	init();
 }
 
@@ -35,14 +37,24 @@ Models::Enums::PwmType Models::PwmItem::getControlType()
 	return _controlType;
 }
 
-uint16_t Models::PwmItem::getRpm(uint16_t getRpmDelay)
+uint16_t Models::PwmItem::getRpm()
 {
-	float errorCorrection = ((float)getRpmDelay / (float)(millis() - _rpmTimer));
-	float multiplier = 30.0 * (1000.0 / (float)getRpmDelay);
+	float errorCorrection = ((float)_updatePwmDelay / (float)(millis() - _rpmTimer));
+	float multiplier = 30.0 * (1000.0 / (float)_updatePwmDelay);
 	_rpm = _count * multiplier * errorCorrection;
 	_count = 0;
 	_rpmTimer = millis();
 	return _rpm;
+}
+
+DynamicJsonDocument Models::PwmItem::createPayload()
+{
+	DynamicJsonDocument document(_payloadSize + getName().length());
+	JsonObject payload = document.to<JsonObject>();
+	payload["ControlType"] = static_cast<uint16_t>(getControlType());
+	payload["Name"] = getName();
+	payload["RPM"] = getRpm();
+	return document;
 }
 
 void Models::PwmItem::init()

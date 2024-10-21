@@ -24,6 +24,11 @@ void Services::PwmService::handlePwms()
 	}
 }
 
+LinkedList<Models::PwmItem*>* Services::PwmService::getPwmItems()
+{
+	return _pwmItems;
+}
+
 void Services::PwmService::initConfiguration()
 {
 	LinkedList<Communication::Models::Configurations::PwmConfiguration*>* pwmConfigurations = _configuration->getPwmsListConfiguration();
@@ -43,7 +48,8 @@ void Services::PwmService::initConfiguration()
 			currentItemConfiguration->getPwmPin(),
 			currentItemConfiguration->getName(),
 			pwmValues,
-			currentItemConfiguration->getPwmType());
+			currentItemConfiguration->getPwmType(),
+			_updatePwmDelay);
 		_pwmItems->add(currentItem);
 	}
 }
