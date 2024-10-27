@@ -58,6 +58,7 @@ namespace Services
 		int computePID(float _currentT, float _targetT, float _kp, float _ki, float _kd, float _dt);
 		void handleChillerState(float pcVoltage);
 		void handlePowerButton();
+		void setPotentiometerValue(uint16_t address, uint16_t value);
 
 	protected:
 

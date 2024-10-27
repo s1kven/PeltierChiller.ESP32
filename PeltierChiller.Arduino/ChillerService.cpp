@@ -85,33 +85,45 @@ void Services::ChillerService::handlePowerButton()
 	}
 }
 
+void Services::ChillerService::setPotentiometerValue(uint16_t address, uint16_t value)
+{
+	Wire.beginTransmission(address);
+	Wire.write(byte(0x00));
+	Wire.write(value);
+	Wire.endTransmission();
+}
+
 void Services::ChillerService::manageChillerLoad()
 {
 	if (millis() - _chillerLoadTimer >= _computePidDelay)
 	{
-		float coldT = (*_temperatureService).getTemperatureForSpecificTarget(Models::Enums::TemperatureSensorTarget::coldCircuit);
+		if (_state == Models::Enums::ChillerState::enabling)
+		{
+			setPotentiometerValue(_potentiometerAddress, _maxPotentiometerValue);
+		}
+		else
+		{
+			float coldT = (*_temperatureService).getTemperatureForSpecificTarget(Models::Enums::TemperatureSensorTarget::coldCircuit);
 
-		if (_chillerType == ChillerType::deltaTemperature)
-		{
-			_targetTemperature = (*_temperatureService)
-				.getTemperatureForSpecificTarget(Models::Enums::TemperatureSensorTarget::room) + _setTemperature;
-		}
-		_varResistorValue = computePID(coldT, _targetTemperature,
-			_kp, _ki, _kd, _dt) + _pidRatio;
-		_chillerLoadTimer = millis();
+			if (_chillerType == ChillerType::deltaTemperature)
+			{
+				_targetTemperature = (*_temperatureService)
+					.getTemperatureForSpecificTarget(Models::Enums::TemperatureSensorTarget::room) + _setTemperature;
+			}
+			_varResistorValue = computePID(coldT, _targetTemperature,
+				_kp, _ki, _kd, _dt) + _pidRatio;
+			_chillerLoadTimer = millis();
 
-		if (_varResistorValue > _maxPotentiometerValue)
-		{
-			_varResistorValue = _maxPotentiometerValue;
+			if (_varResistorValue > _maxPotentiometerValue)
+			{
+				_varResistorValue = _maxPotentiometerValue;
+			}
+			else if (_varResistorValue < _minPotentiometerValue)
+			{
+				_varResistorValue = _minPotentiometerValue;
+			}
+			setPotentiometerValue(_potentiometerAddress, _varResistorValue);
 		}
-		else if (_varResistorValue < _minPotentiometerValue)
-		{
-			_varResistorValue = _minPotentiometerValue;
-		}
-		Wire.beginTransmission(_potentiometerAddress);
-		Wire.write(byte(0x00));
-		Wire.write(_varResistorValue);
-		Wire.endTransmission();
 	}
 }
 
@@ -136,7 +148,12 @@ int Services::ChillerService::computePID(float _currentT, float _targetT, float 
 
 void Services::ChillerService::handleChillerState(float pcVoltage)
 {
-	if (pcVoltage > _pcVoltageThreshold && _state != Models::Enums::ChillerState::enabling)
+	if (pcVoltage < _pcVoltageThreshold && _state != Models::Enums::ChillerState::enabling)
+	{
+		_state = Models::Enums::ChillerState::off;
+	}
+	else if (pcVoltage > _pcVoltageThreshold && 
+		_state != Models::Enums::ChillerState::enabling && _state != Models::Enums::ChillerState::disabling)
 	{
 		_state = Models::Enums::ChillerState::temperatureMaintaining;
 	}
@@ -161,7 +178,7 @@ void Services::ChillerService::handleChillerState(float pcVoltage)
 		digitalWrite(_chillerSignalPin, HIGH);
 		if (_powerButton->getLastPressMillis() > 0 &&
 			_temperatureService->getTemperatureForSpecificTarget(Models::Enums::TemperatureSensorTarget::coldCircuit) <=
-			_setTemperature)
+			_targetTemperature)
 		{
 			digitalWrite(_powerSignalPin, HIGH);
 			if (_powerSignalTimer == _oldPowerSignalTimer)
@@ -188,33 +205,35 @@ void Services::ChillerService::handleChillerState(float pcVoltage)
 
 		digitalWrite(_chillerPsSignalPin, HIGH);
 		digitalWrite(_chillerSignalPin, HIGH);
-		if (pcVoltage < _pcVoltageThreshold)
+		if (_powerButton->getLastPressMillis() != 0)
 		{
-			_state = Models::Enums::ChillerState::off;
+			_state = Models::Enums::ChillerState::disabling;
 		}
-		/*if (_powerButton->getLastPressMillis() != 0)
-		{
-			Serial.println("temperatureMaintaining high");
-			digitalWrite(_powerSignalPin, HIGH);
-			(*_chillerService).SetChillerState(Models::Enums::ChillerState::disabling);
-		}*/
 		break;
 	case Models::Enums::ChillerState::disabling:
 
-		//Serial.println("disabling");
-		//digitalWrite(_chillerPsSignalPin, HIGH);
-		//digitalWrite(_chillerSignalPin, HIGH);
-		if (!_powerButton->getFlag() && millis() - _powerButton->getLastTime() < _powerButton->getLastPressMillis() &&
-			_powerButton->getLastPressMillis() != 0)
+		if (_powerButton->getLastPressMillis() > 0)
 		{
-			//Serial.println("disabling high");
 			digitalWrite(_powerSignalPin, HIGH);
+			if (_powerSignalTimer == _oldPowerSignalTimer)
+			{
+				_powerSignalTimer = millis();
+			}
+			if (_powerSignalFlag)
+			{
+				_powerSignalTimer = millis();
+				_oldPowerSignalTimer = _powerSignalTimer;
+				_powerButton->setLastPressMillis(0);
+				_powerSignalFlag = false;
+			}
+			else if (millis() - _powerButton->getLastPressMillis() >= _powerSignalTimer)
+			{
+				_powerSignalFlag = true;
+			}
 		}
 		else
 		{
-			//Serial.println("disabling low");
 			digitalWrite(_powerSignalPin, LOW);
-			_state = Models::Enums::ChillerState::off;
 		}
 		break;
 
