@@ -62,7 +62,7 @@ float Services::PwmService::getCurrentHotToRoomDeltaT()
 
 uint8_t Services::PwmService::getCurrentPwmValue(Models::PwmItem* currentItem, float deltaT)
 {
-	if (currentItem->getControlType() == Models::Enums::PwmType::unknown)
+	if (currentItem->getControlType() == Models::Enums::PwmType::unknown || isnan(deltaT))
 	{
 		return 255;
 	}

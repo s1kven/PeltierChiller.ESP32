@@ -4,11 +4,17 @@ namespace Communication
     {
         enum class ErrorCode {
             ok,
+            // read configuration
             emptyInput,
             incompleteInput,
             invalidInput,
             noMemory,
-            tooDeep
+            tooDeep,
+            // validate configuration
+            emptySensors,
+            emptyColdCircuitSensors,
+            emptyRoomSensors,
+            invalidBmeConfiguration
         };
     }
 }

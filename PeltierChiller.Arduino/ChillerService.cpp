@@ -113,8 +113,6 @@ void Services::ChillerService::manageChillerLoad()
 			}
 			else if (_chillerType == ChillerType::dewPointTemperature)
 			{
-				Serial.print("_targetTemperature = ");
-				Serial.println(_targetTemperature);
 				_targetTemperature = (*_temperatureService)
 					.getDewPointTemperature(Models::Enums::TemperatureSensorTarget::room) + _setTemperature;
 			}

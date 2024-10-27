@@ -289,10 +289,10 @@ Services::JsonService::deserializeBme280ListConfiguration(JsonObject data)
 	Communication::Models::Configurations::TemperatureSensors::Bme280ListConfiguration* _bme280ListConfiguration =
 		new Communication::Models::Configurations::TemperatureSensors::Bme280ListConfiguration();
 	JsonArray items = data["Items"];
+	LinkedList<Communication::Models::Configurations::TemperatureSensors::Bme280Configuration*>* _bme280Items =
+		new LinkedList<Communication::Models::Configurations::TemperatureSensors::Bme280Configuration*>();
 	if (items.size() > 0)
 	{
-		LinkedList<Communication::Models::Configurations::TemperatureSensors::Bme280Configuration*>* _bme280Items =
-			new LinkedList<Communication::Models::Configurations::TemperatureSensors::Bme280Configuration*>();
 		for (int i = 0; i < items.size(); i++)
 		{
 			Communication::Models::Configurations::TemperatureSensors::Bme280Configuration* _bme280Configuration =
@@ -304,8 +304,8 @@ Services::JsonService::deserializeBme280ListConfiguration(JsonObject data)
 			_bme280Configuration->init(address, target);
 			_bme280Items->add(_bme280Configuration);
 		}
-		_bme280ListConfiguration->init(_bme280Items);
 	}
+	_bme280ListConfiguration->init(_bme280Items);
 
 	return _bme280ListConfiguration;
 }
@@ -317,10 +317,10 @@ Services::JsonService::deserializeNtcListConfiguration(JsonObject data)
 		new Communication::Models::Configurations::TemperatureSensors::NtcListConfiguration();
 	uint8_t adcResolution = data["AdcResolution"];
 	JsonArray items = data["Items"];
+	LinkedList<Communication::Models::Configurations::TemperatureSensors::NtcConfiguration*>* _ntcItems =
+		new LinkedList<Communication::Models::Configurations::TemperatureSensors::NtcConfiguration*>();
 	if (items.size() > 0)
 	{
-		LinkedList<Communication::Models::Configurations::TemperatureSensors::NtcConfiguration*>* _ntcItems =
-			new LinkedList<Communication::Models::Configurations::TemperatureSensors::NtcConfiguration*>();
 		for (int i = 0; i < items.size(); i++)
 		{
 			Communication::Models::Configurations::TemperatureSensors::NtcConfiguration* _ntcConfiguration =
@@ -338,8 +338,8 @@ Services::JsonService::deserializeNtcListConfiguration(JsonObject data)
 				bCoefficient, baseTemperature, supplyVoltage);
 			_ntcItems->add(_ntcConfiguration);
 		}
-		_ntcListConfiguration->init(adcResolution, _ntcItems);
 	}
+	_ntcListConfiguration->init(adcResolution, _ntcItems);
 
 	return _ntcListConfiguration;
 }
@@ -353,10 +353,10 @@ Services::JsonService::deserializeDs18b20ListConfiguration(JsonObject data)
 	uint8_t pin = data["Pin"];
 	uint8_t temperaturePrecision = data["TemperaturePrecision"];
 	JsonArray items = data["Items"];
+	LinkedList<Communication::Models::Configurations::TemperatureSensors::Ds18b20Configuration*>* _ds18b20Items =
+		new LinkedList<Communication::Models::Configurations::TemperatureSensors::Ds18b20Configuration*>();
 	if (items.size() > 0)
 	{
-		LinkedList<Communication::Models::Configurations::TemperatureSensors::Ds18b20Configuration*>* _ds18b20Items =
-			new LinkedList<Communication::Models::Configurations::TemperatureSensors::Ds18b20Configuration*>();
 		for (int i = 0; i < items.size(); i++)
 		{
 			Communication::Models::Configurations::TemperatureSensors::Ds18b20Configuration* _ds18b20Configuration =
@@ -374,8 +374,8 @@ Services::JsonService::deserializeDs18b20ListConfiguration(JsonObject data)
 			_ds18b20Configuration->init(address, target);
 			_ds18b20Items->add(_ds18b20Configuration);
 		}
-		_ds18b20ListConfiguration->init(pin, temperaturePrecision, _ds18b20Items);
 	}
+	_ds18b20ListConfiguration->init(pin, temperaturePrecision, _ds18b20Items);
 
 	return _ds18b20ListConfiguration;
 }

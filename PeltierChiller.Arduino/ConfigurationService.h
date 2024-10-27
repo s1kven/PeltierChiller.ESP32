@@ -5,6 +5,12 @@
 #include "JsonService.h"
 #include "BaseError.h"
 #include "DeserializationError.h"
+#include "ConfigurationError.h"
+#include "ChillerType.cpp"
+#include "TemperatureSensorTarget.cpp"
+#include "Bme280Configuration.h"
+#include "Ds18b20Configuration.h"
+#include "NtcConfiguration.h"
 
 namespace Services
 {
@@ -18,6 +24,9 @@ namespace Services
 
 		Communication::Models::Configurations::Configuration* currentConfiguration;
 
+		Communication::Abstractions::BaseError* validateConfiguration(Communication::Models::Configurations::Configuration* configuration);
+		bool isSensorsAvailable(Communication::Models::Configurations::Configuration* configuration, Models::Enums::TemperatureSensorTarget target);
+		bool anyBmeTargetToRoom(Communication::Models::Configurations::TemperatureSensors::Bme280ListConfiguration* bme280ListConfiguration);
 	public:
 		ConfigurationService(FileService* fileService, JsonService* jsonService);
 

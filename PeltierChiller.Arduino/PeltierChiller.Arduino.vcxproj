@@ -118,6 +118,7 @@
     <ClCompile Include="ChillerType.cpp" />
     <ClCompile Include="Configuration.cpp" />
     <ClCompile Include="CommunicationService.cpp" />
+    <ClCompile Include="ConfigurationError.cpp" />
     <ClCompile Include="ConfigurationService.cpp" />
     <ClCompile Include="DeserializationError.cpp" />
     <ClCompile Include="Ds18b20Configuration.cpp" />
@@ -160,6 +161,7 @@
     <ClInclude Include="ChillerConfiguration.h" />
     <ClInclude Include="Configuration.h" />
     <ClInclude Include="CommunicationService.h" />
+    <ClInclude Include="ConfigurationError.h" />
     <ClInclude Include="ConfigurationService.h" />
     <ClInclude Include="DeserializationError.h" />
     <ClInclude Include="Ds18b20Configuration.h" />
