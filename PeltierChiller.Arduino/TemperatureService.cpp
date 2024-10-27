@@ -138,6 +138,17 @@ float Services::TemperatureService::getPressureForSpecificTarget(Models::Enums::
 	return _pressure / _sensorsCounter;
 }
 
+// a = 17.27 b = 237.7
+// f(T, R) = (a * T) / (b + T) + ln(R / 100)
+// Td = (b * f(T, R)) / (a - f(T, R))
+float Services::TemperatureService::getDewPointTemperature(Models::Enums::TemperatureSensorTarget target)
+{
+	float roomTemperature = getTemperatureForSpecificTarget(Models::Enums::TemperatureSensorTarget::room);
+	double function = ((a * roomTemperature) / (b + roomTemperature)) + log((getHumidityForSpecificTarget(Models::Enums::TemperatureSensorTarget::room) / 100.0));
+	double dewPointTemperature = (b * function) / (a - function);
+	return dewPointTemperature;
+}
+
 float Services::TemperatureService::getSensorTemperature(uint8_t sensorIndex)
 {
 	Models::TemperatureSensors::BaseSensor* sensor = (*_temperatureSensors).get(sensorIndex);

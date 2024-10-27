@@ -111,6 +111,13 @@ void Services::ChillerService::manageChillerLoad()
 				_targetTemperature = (*_temperatureService)
 					.getTemperatureForSpecificTarget(Models::Enums::TemperatureSensorTarget::room) + _setTemperature;
 			}
+			else if (_chillerType == ChillerType::dewPointTemperature)
+			{
+				Serial.print("_targetTemperature = ");
+				Serial.println(_targetTemperature);
+				_targetTemperature = (*_temperatureService)
+					.getDewPointTemperature(Models::Enums::TemperatureSensorTarget::room) + _setTemperature;
+			}
 			_varResistorValue = computePID(coldT, _targetTemperature,
 				_kp, _ki, _kd, _dt) + _pidRatio;
 			_chillerLoadTimer = millis();

@@ -14,7 +14,8 @@ namespace Services
 	class TemperatureService
 	{
 	private:
-
+		float const a = 17.27;
+		float const b = 237.7;
 		uint8_t _temperaturePrecision;
 
 		OneWire* _oneWire;
@@ -32,6 +33,7 @@ namespace Services
 		float getTemperatureForSpecificTarget(Models::Enums::TemperatureSensorTarget);
 		float getHumidityForSpecificTarget(Models::Enums::TemperatureSensorTarget);
 		float getPressureForSpecificTarget(Models::Enums::TemperatureSensorTarget);
+		float getDewPointTemperature(Models::Enums::TemperatureSensorTarget);
 		float getSensorTemperature(uint8_t);
 		String getSensorTarget(uint8_t);
 		const char* getTemperatureSensorTargetName(Models::Enums::TemperatureSensorTarget);

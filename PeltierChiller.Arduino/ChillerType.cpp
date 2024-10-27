@@ -8,7 +8,8 @@ namespace Models
         {
             unknown = 0,
             fixedTemperature = 1,
-            deltaTemperature = 2
+            deltaTemperature = 2,
+            dewPointTemperature = 3
         };
     }
 }
