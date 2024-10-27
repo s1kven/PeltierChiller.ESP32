@@ -45,6 +45,7 @@ void Services::ChillerService::initConfiguration()
 	}
 
 	_pcVoltageThreshold = _configuration->getPcVoltageThreshold();
+	_isDelayEnablingPc = _configuration->getIsDelayEnablingPc();
 
 	Communication::Models::Configurations::PinsConfiguration* pinsConfiguration = _configuration->getPinsConfiguration();
 	_powerButtonPin = pinsConfiguration->getPowerButton();
@@ -177,8 +178,8 @@ void Services::ChillerService::handleChillerState(float pcVoltage)
 		digitalWrite(_chillerPsSignalPin, HIGH);
 		digitalWrite(_chillerSignalPin, HIGH);
 		if (_powerButton->getLastPressMillis() > 0 &&
-			_temperatureService->getTemperatureForSpecificTarget(Models::Enums::TemperatureSensorTarget::coldCircuit) <=
-			_targetTemperature)
+			(_temperatureService->getTemperatureForSpecificTarget(Models::Enums::TemperatureSensorTarget::coldCircuit) <=
+			_targetTemperature || !_isDelayEnablingPc))
 		{
 			digitalWrite(_powerSignalPin, HIGH);
 			if (_powerSignalTimer == _oldPowerSignalTimer)

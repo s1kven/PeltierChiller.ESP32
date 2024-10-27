@@ -20,6 +20,7 @@ namespace Services
 		float _setTemperature;
 		float _pcVoltageThreshold;
 		float _targetTemperature;
+		bool _isDelayEnablingPc;
 
 		uint32_t _sensorsRequestDelay;
 		uint32_t _buttonMinPressTime;
