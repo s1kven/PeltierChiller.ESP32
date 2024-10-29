@@ -35,6 +35,8 @@
 #include "ConfigurationService.h"
 #include "PwmService.h"
 
+const String SOFTWARE_VERSION = "0.1.0";
+
 const uint8_t SD_CS = 5;
 
 uint8_t PCV_PIN;
