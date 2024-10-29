@@ -59,9 +59,6 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="__vm\.PeltierChiller.Arduino.vsarduino.h">
-      <Filter>Header Files</Filter>
-    </ClInclude>
     <ClInclude Include="Rele.h">
       <Filter>Source Files\Models</Filter>
     </ClInclude>
@@ -173,6 +170,9 @@
     <ClInclude Include="ConfigurationError.h">
       <Filter>Source Files\Communication\Models</Filter>
     </ClInclude>
+    <ClInclude Include="__vm\.PeltierChiller.Esp32.vsarduino.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ReleState.cpp">
@@ -211,7 +211,6 @@
     <ClCompile Include="NTC.cpp">
       <Filter>Source Files\Models\TemperatureSensors</Filter>
     </ClCompile>
-    <ClCompile Include="PeltierChiller.Arduino.ino" />
     <ClCompile Include="JsonService.cpp">
       <Filter>Source Files\Services</Filter>
     </ClCompile>
@@ -308,5 +307,6 @@
     <ClCompile Include="ConfigurationError.cpp">
       <Filter>Source Files\Communication\Models</Filter>
     </ClCompile>
+    <ClCompile Include="PeltierChiller.Esp32.ino" />
   </ItemGroup>
 </Project>
