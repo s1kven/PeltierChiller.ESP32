@@ -191,7 +191,7 @@ Communication::Models::Configurations::Configuration* Services::JsonService::des
 	float voltmeterThreshold = data["VoltmeterThreshold"];
 	uint32_t voltmeterR1 = data["VoltmeterR1"];
 	uint32_t voltmeterR2 = data["VoltmeterR2"];
-	bool isDelayEnablingPc = data["IsDelayEnablingPc"];
+	bool isDelayEnablingPc = data["StartupPcAfterFeatTargetTemperature"];
 
 	JsonObject pinsConfigurationJson = data["Pins"]; 
 	Communication::Models::Configurations::PinsConfiguration* pinsConfiguration = deserializePinsConfiguration(pinsConfigurationJson);

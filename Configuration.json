@@ -13,7 +13,7 @@
         "VoltmeterThreshold": 8.0,
         "VoltmeterR1": 1000,
         "VoltmeterR2": 150,
-        "IsDelayEnablingPc": false,
+        "StartupPcAfterFeatTargetTemperature": false,
         "ChillerSettings": {
             "PotentiometerAddress": 46,
             "MaxPotentiometerValue": 130,
