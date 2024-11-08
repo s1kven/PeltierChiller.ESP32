@@ -188,7 +188,9 @@ Communication::Models::Configurations::Configuration* Services::JsonService::des
 	uint8_t chillerTypeDigit = data["ChillerType"];
 	ChillerType chillerType = static_cast<ChillerType>(chillerTypeDigit);
 	float targetTemperature = data["TargetTemperature"];
-	float pcVoltageThreshold = data["PcVoltageThreshold"];
+	float voltmeterThreshold = data["VoltmeterThreshold"];
+	uint32_t voltmeterR1 = data["VoltmeterR1"];
+	uint32_t voltmeterR2 = data["VoltmeterR2"];
 	bool isDelayEnablingPc = data["IsDelayEnablingPc"];
 
 	JsonObject pinsConfigurationJson = data["Pins"]; 
@@ -208,8 +210,8 @@ Communication::Models::Configurations::Configuration* Services::JsonService::des
 	Communication::Models::Configurations::PwmsConfiguration* pwmsConfiguration =
 		deserializePwmsConfiguration(pwmsJson);
 
-	configuration->init(chillerType, targetTemperature, pcVoltageThreshold, isDelayEnablingPc,
-		pinsConfiguration, timersConfiguration, chillerConfiguration, 
+	configuration->init(chillerType, targetTemperature, voltmeterThreshold, voltmeterR1, voltmeterR2,
+		isDelayEnablingPc, pinsConfiguration, timersConfiguration, chillerConfiguration, 
 		temperatureSensorsConfiguration, pwmsConfiguration);
 
 	return configuration;
