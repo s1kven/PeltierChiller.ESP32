@@ -24,7 +24,9 @@ namespace Communication
 			private:
 				ChillerType _chillerType;
 				float _targetCircuitTemperature;
-				float _pcVoltageThreshold;
+				float _voltmeterThreshold;
+				uint32_t _voltmeterR1;
+				uint32_t _voltmeterR2;
 				bool _isDelayEnablingPc;
 
 				Communication::Models::Configurations::PinsConfiguration* _pinsConfiguration;
@@ -38,7 +40,8 @@ namespace Communication
 
 			public:
 				~Configuration();
-				void init(ChillerType chillerType, float targetCircuitTemperature, float pcVoltageThreshold, bool isDelayEnablingPc,
+				void init(ChillerType chillerType, float targetCircuitTemperature, float voltmeterThreshold,
+					uint32_t voltmeterR1, uint32_t voltmeterR2, bool isDelayEnablingPc,
 					Communication::Models::Configurations::PinsConfiguration* pinsConfiguration,
 					Communication::Models::Configurations::TimersConfiguration* timersConfiguration,
 					Communication::Models::Configurations::ChillerConfiguration* chillerConfiguration,
@@ -47,7 +50,9 @@ namespace Communication
 
 				ChillerType getChillerType();
 				float getTargetCircuitTemperature();
-				float getPcVoltageThreshold();
+				float getVoltmeterThreshold();
+				uint32_t getVoltmeterR1();
+				uint32_t getVoltmeterR2();
 				bool getIsDelayEnablingPc();
 				Communication::Models::Configurations::PinsConfiguration* getPinsConfiguration();
 				Communication::Models::Configurations::TimersConfiguration* getTimersConfiguration();
