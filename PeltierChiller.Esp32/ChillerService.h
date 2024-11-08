@@ -10,6 +10,7 @@
 #include "Configuration.h"
 #include "Button.h"
 #include "ChillerType.cpp"
+#include <ESP32AnalogRead.h>
 
 namespace Services
 {
@@ -18,7 +19,12 @@ namespace Services
 	private:
 		Models::Enums::ChillerType _chillerType;
 		float _setTemperature;
-		float _pcVoltageThreshold;
+		uint8_t _pcVoltagePin;
+		ESP32AnalogRead _adc;
+		float _vin = 0;
+		float _voltmeterThreshold;
+		uint32_t _voltmeterR1;
+		uint32_t _voltmeterR2;
 		float _targetTemperature;
 		bool _isDelayEnablingPc;
 
@@ -54,7 +60,8 @@ namespace Services
 		uint32_t _chillerLoadTimer = 0;
 		int16_t _varResistorValue;
 
-		void initConfiguration();
+		void initConfiguration(); 
+		void handlePcVoltage();
 		void manageChillerLoad();
 		int computePID(float _currentT, float _targetT, float _kp, float _ki, float _kd, float _dt);
 		void handleChillerState(float pcVoltage);
@@ -68,7 +75,7 @@ namespace Services
 
 		ChillerService(Communication::Models::Configurations::Configuration* configuration);
 
-		void manageChiller(float pcVoltage);
+		void manageChiller();
 		Services::TemperatureService* getTemperatureService();
 	};
 }

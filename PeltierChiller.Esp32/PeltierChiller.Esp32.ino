@@ -39,9 +39,6 @@ const String SOFTWARE_VERSION = "0.1.0";
 
 const uint8_t SD_CS = 5;
 
-uint8_t PCV_PIN;
-
-float vin = 0;
 uint32_t _communicationSendTimer = 0;
 
 Communication::Abstractions::BaseError* configurationError;
@@ -100,17 +97,10 @@ void loop()
 		return;
 	}
 
-	handlePcVoltage();
-
-	(*_chillerService).manageChiller(vin);
+	(*_chillerService).manageChiller();
 	_pwmService->handlePwms();
 
 	sendDataByTimer();
-}
-
-void handlePcVoltage()
-{
-	vin = float(analogRead(PCV_PIN));
 }
 
 void sendDataByTimer()
@@ -134,5 +124,4 @@ void sendDataByTimer()
 void initGlobalConfiguration()
 {
 	_communicationDelay = _configurationService->getConfiguration()->getTimersConfiguration()->getCommunicationDelay();
-	PCV_PIN = _configurationService->getConfiguration()->getPinsConfiguration()->getPcVoltage();
 }
