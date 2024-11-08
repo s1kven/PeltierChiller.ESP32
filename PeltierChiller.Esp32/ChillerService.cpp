@@ -22,12 +22,13 @@ Services::ChillerService::ChillerService(Communication::Models::Configurations::
 	_powerButton->setLastPressTime(0);
 }
 
-void Services::ChillerService::manageChiller(float pcVoltage)
+void Services::ChillerService::manageChiller()
 {
+	handlePcVoltage();
 	handlePowerButton();
 	manageChillerLoad();
 	(*_temperatureService).requestSensors(_sensorsRequestDelay);
-	handleChillerState(pcVoltage);
+	handleChillerState(_vin);
 }
 
 Services::TemperatureService* Services::ChillerService::getTemperatureService()
@@ -44,14 +45,18 @@ void Services::ChillerService::initConfiguration()
 		_targetTemperature = _setTemperature;
 	}
 
-	_pcVoltageThreshold = _configuration->getPcVoltageThreshold();
-	_isDelayEnablingPc = _configuration->getIsDelayEnablingPc();
-
 	Communication::Models::Configurations::PinsConfiguration* pinsConfiguration = _configuration->getPinsConfiguration();
 	_powerButtonPin = pinsConfiguration->getPowerButton();
 	_chillerPsSignalPin = pinsConfiguration->getChillerPsSignal();
 	_chillerSignalPin = pinsConfiguration->getChillerSignal();
 	_powerSignalPin = pinsConfiguration->getPowerSignal();
+	_pcVoltagePin = pinsConfiguration->getPcVoltage();
+
+	_voltmeterThreshold = _configuration->getVoltmeterThreshold();
+	_adc.attach(_pcVoltagePin);
+	_voltmeterR1 = _configuration->getVoltmeterR1();
+	_voltmeterR2 = _configuration->getVoltmeterR2();
+	_isDelayEnablingPc = _configuration->getIsDelayEnablingPc();
 
 	Communication::Models::Configurations::TimersConfiguration* timersConfiguration = _configuration->getTimersConfiguration();
 	_sensorsRequestDelay = timersConfiguration->getTemperatureSensorsRequestDelay();
@@ -69,6 +74,11 @@ void Services::ChillerService::initConfiguration()
 	_pidRatio = chillerConfiguration->getPidRatio();
 	_minIntegral = chillerConfiguration->getMinIntegral();
 	_maxIntegral = chillerConfiguration->getMaxIntegral();
+}
+
+void Services::ChillerService::handlePcVoltage()
+{
+	_vin = _adc.readVoltage() / (float(_voltmeterR2) / (float(_voltmeterR1) + float(_voltmeterR2)));
 }
 
 void Services::ChillerService::handlePowerButton()
@@ -154,11 +164,11 @@ int Services::ChillerService::computePID(float _currentT, float _targetT, float 
 
 void Services::ChillerService::handleChillerState(float pcVoltage)
 {
-	if (pcVoltage < _pcVoltageThreshold && _state != Models::Enums::ChillerState::enabling)
+	if (pcVoltage < _voltmeterThreshold && _state != Models::Enums::ChillerState::enabling)
 	{
 		_state = Models::Enums::ChillerState::off;
 	}
-	else if (pcVoltage > _pcVoltageThreshold && 
+	else if (pcVoltage > _voltmeterThreshold &&
 		_state != Models::Enums::ChillerState::enabling && _state != Models::Enums::ChillerState::disabling)
 	{
 		_state = Models::Enums::ChillerState::temperatureMaintaining;

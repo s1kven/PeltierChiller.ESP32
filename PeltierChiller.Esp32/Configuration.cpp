@@ -10,9 +10,19 @@ float Communication::Models::Configurations::Configuration::getTargetCircuitTemp
 	return _targetCircuitTemperature;
 }
 
-float Communication::Models::Configurations::Configuration::getPcVoltageThreshold()
+float Communication::Models::Configurations::Configuration::getVoltmeterThreshold()
 {
-	return _pcVoltageThreshold;
+	return _voltmeterThreshold;
+}
+
+uint32_t Communication::Models::Configurations::Configuration::getVoltmeterR1()
+{
+	return _voltmeterR1;
+}
+
+uint32_t Communication::Models::Configurations::Configuration::getVoltmeterR2()
+{
+	return _voltmeterR2;
 }
 
 bool Communication::Models::Configurations::Configuration::getIsDelayEnablingPc()
@@ -61,7 +71,8 @@ Communication::Models::Configurations::Configuration::~Configuration()
 }
 
 void Communication::Models::Configurations::Configuration::init(ChillerType chillerType, float targetCircuitTemperature,
-	float pcVoltageThreshold, bool isDelayEnablingPc, Communication::Models::Configurations::PinsConfiguration* pinsConfiguration,
+	float voltmeterThreshold, uint32_t voltmeterR1, uint32_t voltmeterR2,
+	bool isDelayEnablingPc, Communication::Models::Configurations::PinsConfiguration* pinsConfiguration,
 	Communication::Models::Configurations::TimersConfiguration* timersConfiguration,
 	Communication::Models::Configurations::ChillerConfiguration* chillerConfiguration,
 	Communication::Models::Configurations::TemperatureSensors::TemperatureSensorsConfiguration* temperatureSensorsConfiguration,
@@ -69,7 +80,9 @@ void Communication::Models::Configurations::Configuration::init(ChillerType chil
 {
 	_chillerType = chillerType;
 	_targetCircuitTemperature = targetCircuitTemperature;
-	_pcVoltageThreshold = pcVoltageThreshold;
+	_voltmeterThreshold = voltmeterThreshold;
+	_voltmeterR1 = voltmeterR1;
+	_voltmeterR2 = voltmeterR2;
 	_isDelayEnablingPc = isDelayEnablingPc;
 	_pinsConfiguration = pinsConfiguration;
 	_timersConfiguration = timersConfiguration;

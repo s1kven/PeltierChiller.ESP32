@@ -9,8 +9,10 @@
             "PcVoltage": 25
         },
         "ChillerType": 2,
-        "TargetTemperature": -2.0,
-        "PcVoltageThreshold": 250.0,
+        "TargetTemperature": -4.0,
+        "VoltmeterThreshold": 8.0,
+        "VoltmeterR1": 1000,
+        "VoltmeterR2": 150,
         "IsDelayEnablingPc": false,
         "ChillerSettings": {
             "PotentiometerAddress": 46,
@@ -20,7 +22,7 @@
             "Ki": -0.1,
             "Kd": -100.0,
             "Dt": 20.0,
-            "PidRatio": 30.0,
+            "PidRatio": 45.0,
             "MinIntegral": -450.0,
             "MaxIntegral": 450.0,
             "ComputePidDelay": 5000
@@ -47,12 +49,12 @@
                     {
                         "Address": 34,
                         "Name": "",
-                        "Target": 2,
+                        "Target": 1,
                         "Resistance": 10000,
                         "ResistanceNTC": 10000,
                         "BCoefficient": 3950,
                         "BaseTemperature": 25,
-                        "SupplyVoltage": 4.96
+                        "SupplyVoltage": 3.3
                     }
                 ]
             },
