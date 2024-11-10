@@ -1,11 +1,12 @@
 #include "PwmItem.h"
 
-Models::PwmItem::PwmItem(uint8_t tachoPin, uint8_t pwmPin, String name, LinkedList<Models::PwmValue*>* values, 
-	Models::Enums::PwmType controlType, uint32_t updatePwmDelay)
+Models::PwmItem::PwmItem(uint8_t tachoPin, uint8_t pwmPin, String name, int8_t setToMaxWhenChillerLoad,
+	LinkedList<Models::PwmValue*>* values, Models::Enums::PwmType controlType, uint32_t updatePwmDelay)
 {
 	_tachoPin = tachoPin;
 	_pwmPin = pwmPin;
 	_name = name;
+	_setToMaxWhenChillerLoad = setToMaxWhenChillerLoad;
 	_values = values;
 	_controlType = controlType;
 	_updatePwmDelay = updatePwmDelay;
@@ -25,6 +26,11 @@ uint8_t Models::PwmItem::getPwmPin()
 String Models::PwmItem::getName()
 {
 	return _name;
+}
+
+int8_t Models::PwmItem::getSetToMaxWhenChillerLoad()
+{
+	return _setToMaxWhenChillerLoad;
 }
 
 LinkedList<Models::PwmValue*>* Models::PwmItem::getValues()

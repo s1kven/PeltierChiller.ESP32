@@ -90,6 +90,7 @@
                 "Tacho": 4,
                 "PWM": 2,
                 "Name": "Radiators fans",
+                "SetToMaxWhenChillerLoad": 60,
                 "Value": [
                     {
                         "Temperature": 2.0,

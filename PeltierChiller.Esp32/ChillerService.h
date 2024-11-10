@@ -59,6 +59,7 @@ namespace Services
 
 		uint32_t _chillerLoadTimer = 0;
 		int16_t _varResistorValue;
+		uint8_t _chillerLoadPercentage = 0;
 
 		void initConfiguration(); 
 		void handlePcVoltage();
@@ -77,5 +78,6 @@ namespace Services
 
 		void manageChiller();
 		Services::TemperatureService* getTemperatureService();
+		uint8_t getChillerLoadPercentage();
 	};
 }

@@ -397,6 +397,7 @@ Communication::Models::Configurations::PwmsConfiguration* Services::JsonService:
 			uint8_t tachoPin = items[i]["Tacho"];
 			uint8_t pwmPin = items[i]["PWM"];
 			String name = items[i]["Name"];
+			int8_t setToMaxWhenChillerLoad = items[i]["SetToMaxWhenChillerLoad"];
 			JsonArray value = items[i]["Value"];
 			LinkedList<Communication::Models::Configurations::PwmValueConfiguration*>* pwmValues = 
 				new LinkedList<Communication::Models::Configurations::PwmValueConfiguration*>();
@@ -407,7 +408,7 @@ Communication::Models::Configurations::PwmsConfiguration* Services::JsonService:
 			}
 			uint8_t type = items[i]["ControlType"];
 			Models::Enums::PwmType controlType = static_cast<Models::Enums::PwmType>(type);
-			pwmConfiguration->init(tachoPin, pwmPin, name, pwmValues, controlType);
+			pwmConfiguration->init(tachoPin, pwmPin, name, setToMaxWhenChillerLoad, pwmValues, controlType);
 			pwmItems->add(pwmConfiguration);
 		}
 		pwmsConfiguration->init(pwmItems);
