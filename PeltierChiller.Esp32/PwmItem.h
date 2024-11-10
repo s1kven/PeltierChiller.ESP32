@@ -17,6 +17,7 @@ namespace Models
 		uint8_t _tachoPin; 
 		uint8_t _pwmPin; 
 		String _name;
+		int8_t _setToMaxWhenChillerLoad;
 		LinkedList<Models::PwmValue*>* _values;
 		Models::Enums::PwmType _controlType;
 		uint16_t _rpm;
@@ -32,11 +33,12 @@ namespace Models
 
 	public:
 
-		PwmItem(uint8_t tachoPin, uint8_t pwmPin, String name, LinkedList<Models::PwmValue*>* values, 
-			Models::Enums::PwmType controlType, uint32_t updatePwmDelay);
+		PwmItem(uint8_t tachoPin, uint8_t pwmPin, String name, int8_t setToMaxWhenChillerLoad, 
+			LinkedList<Models::PwmValue*>* values, Models::Enums::PwmType controlType, uint32_t updatePwmDelay);
 		uint8_t getTachoPin();
 		uint8_t getPwmPin();
 		String getName();
+		int8_t getSetToMaxWhenChillerLoad();
 		LinkedList<Models::PwmValue*>* getValues();
 		Models::Enums::PwmType getControlType();
 		uint16_t getRpm();

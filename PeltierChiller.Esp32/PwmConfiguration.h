@@ -24,6 +24,7 @@ namespace Communication
 				uint8_t _tachoPin;
 				uint8_t _pwmPin;
 				String _name;
+				int8_t _setToMaxWhenChillerLoad;
 				LinkedList<Communication::Models::Configurations::PwmValueConfiguration*>* _pwmValues;
 				PwmType _type;
 
@@ -31,12 +32,13 @@ namespace Communication
 				void init() override;
 
 			public:
-				void init(uint8_t tachoPin, uint8_t pwmPin, String name, 
+				void init(uint8_t tachoPin, uint8_t pwmPin, String name, int8_t setToMaxWhenChillerLoad,
 					LinkedList<Communication::Models::Configurations::PwmValueConfiguration*>* pwmValues, PwmType type);
 
 				uint8_t getTachoPin();
 				uint8_t getPwmPin();
 				String getName();
+				int8_t getSetToMaxWhenChillerLoad();
 				LinkedList<Communication::Models::Configurations::PwmValueConfiguration*>* getPwmValues();
 				PwmType getPwmType();
 			};

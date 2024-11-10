@@ -98,7 +98,7 @@ void loop()
 	}
 
 	(*_chillerService).manageChiller();
-	_pwmService->handlePwms();
+	_pwmService->handlePwms((*_chillerService).getChillerLoadPercentage());
 
 	sendDataByTimer();
 }

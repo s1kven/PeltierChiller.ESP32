@@ -36,6 +36,11 @@ Services::TemperatureService* Services::ChillerService::getTemperatureService()
 	return _temperatureService;
 }
 
+uint8_t Services::ChillerService::getChillerLoadPercentage()
+{
+	return _chillerLoadPercentage;
+}
+
 void Services::ChillerService::initConfiguration()
 {
 	_chillerType = _configuration->getChillerType();
@@ -138,6 +143,7 @@ void Services::ChillerService::manageChillerLoad()
 			{
 				_varResistorValue = _minPotentiometerValue;
 			}
+			_chillerLoadPercentage = ((float)_varResistorValue / (float)_maxPotentiometerValue) * 100.0;
 			setPotentiometerValue(_potentiometerAddress, _varResistorValue);
 		}
 	}
