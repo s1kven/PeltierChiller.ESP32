@@ -26,7 +26,7 @@ namespace Services
 	public:
 		PwmService(uint32_t updatePwmDelay, Communication::Models::Configurations::PwmsConfiguration* configuration,
 			Services::TemperatureService* temperatureService);
-		void handlePwms();
+		void handlePwms(uint8_t currentChillerLoad);
 		LinkedList<Models::PwmItem*>* getPwmItems();
 	};
 }
