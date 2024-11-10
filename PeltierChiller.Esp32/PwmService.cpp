@@ -10,7 +10,7 @@ Services::PwmService::PwmService(uint32_t updatePwmDelay, Communication::Models:
 	initConfiguration();
 }
 
-void Services::PwmService::handlePwms()
+void Services::PwmService::handlePwms(uint8_t currentChillerLoad)
 {
 	if (millis() - _updatePwmTimer >= _updatePwmDelay)
 	{
@@ -19,7 +19,14 @@ void Services::PwmService::handlePwms()
 		for (uint8_t i = 0; i < _pwmItems->size(); i++)
 		{
 			Models::PwmItem* currentItem = _pwmItems->get(i);
-			analogWrite(currentItem->getPwmPin(), getCurrentPwmValue(currentItem, hotToRoomDeltaT));
+			if (currentItem->getSetToMaxWhenChillerLoad() != -1 && currentChillerLoad > currentItem->getSetToMaxWhenChillerLoad())
+			{
+				analogWrite(currentItem->getPwmPin(), 255);
+			}
+			else
+			{
+				analogWrite(currentItem->getPwmPin(), getCurrentPwmValue(currentItem, hotToRoomDeltaT));
+			}
 		}
 	}
 }
@@ -47,6 +54,7 @@ void Services::PwmService::initConfiguration()
 			currentItemConfiguration->getTachoPin(),
 			currentItemConfiguration->getPwmPin(),
 			currentItemConfiguration->getName(),
+			currentItemConfiguration->getSetToMaxWhenChillerLoad(),
 			pwmValues,
 			currentItemConfiguration->getPwmType(),
 			_updatePwmDelay);
