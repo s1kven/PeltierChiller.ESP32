@@ -37,7 +37,6 @@ Communication::Abstractions::BaseDeserializableObject* Services::JsonService::de
 {
 	uint32_t documentSize = getDeserializedJsonSize(content);
 	DynamicJsonDocument document(documentSize);
-	JsonObject payload = document.to<JsonObject>();
 	DeserializationError error = deserializeJson(document, content);
 
 	if (error)
@@ -72,22 +71,12 @@ uint16_t Services::JsonService::calculateJsonDocumentSize(
 
 uint32_t Services::JsonService::getDeserializedJsonSize(String& content)
 {
-	uint16_t objectsCount = 0;
-	uint16_t arraysCount = 0;
+	DynamicJsonDocument cacheDocument(65536); //64 KB
+	DeserializationError error = deserializeJson(cacheDocument, content);
 
-	for (int i = 0; i < content.length(); i++)
-	{
-		if (content[i] == '{')
-		{
-			objectsCount++;
-		}
-		else if (content[i] == '[')
-		{
-			arraysCount++;
-		}
-	}
+	uint32_t documentSize = cacheDocument.memoryUsage();
 
-	uint32_t documentSize = objectsCount * sizeof(JsonObject) + arraysCount * sizeof(JsonArray) + content.length();
+	cacheDocument.clear();
 
 	return documentSize;
 }
