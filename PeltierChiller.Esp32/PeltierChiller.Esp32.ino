@@ -39,8 +39,6 @@ const String SOFTWARE_VERSION = "0.1.0";
 
 const uint8_t SD_CS = 5;
 
-uint32_t _communicationSendTimer = 0;
-
 Communication::Abstractions::BaseError* configurationError;
 
 uint16_t _communicationDelay;
@@ -87,28 +85,78 @@ void setup()
 		_configurationService->getConfiguration()->getTimersConfiguration()->getUpdatePwmDelay(), 
 		_configurationService->getConfiguration()->getPwmsConfiguration(),
 		_chillerService->getTemperatureService());
+
+	SemaphoreHandle_t mutex = xSemaphoreCreateMutex();
+
+	xTaskCreate(
+		manageChillerTask,
+		"manageChillerTask",
+		4096,
+		mutex,
+		3,
+		NULL
+	);
+
+	xTaskCreate(
+		handlePwmsTask,
+		"handlePwmsTask",
+		4096,
+		mutex,
+		3,
+		NULL
+	);
+
+	xTaskCreate(
+		sendCommunicationDataTask,
+		"sendCommunicationDataTask",
+		4096,
+		mutex,
+		3,
+		NULL
+	);
+
+	xTaskCreate(
+		readCommunicationDataTask,
+		"readCommunicationDataTask",
+		4096,
+		mutex,
+		3,
+		NULL
+	);
 }
 
+void loop() { }
 
-void loop() 
+void manageChillerTask(void* argument)
 {
-	if (*configurationError)
+	SemaphoreHandle_t mutex = (SemaphoreHandle_t)argument;
+	while (true)
 	{
-		return;
+		xSemaphoreTake(mutex, portMAX_DELAY);
+		(*_chillerService).manageChiller();
+		xSemaphoreGive(mutex);
 	}
-
-	(*_chillerService).manageChiller();
-	_pwmService->handlePwms((*_chillerService).getChillerLoadPercentage());
-
-	sendDataByTimer();
 }
 
-void sendDataByTimer()
+void handlePwmsTask(void* argument)
 {
-	if (millis() - _communicationSendTimer >= _communicationDelay)
+	SemaphoreHandle_t mutex = (SemaphoreHandle_t)argument;
+	while (true)
 	{
-		_communicationSendTimer = millis();
+		vTaskDelay(_pwmService->getUpdatePwmDelay() / portTICK_PERIOD_MS);
+		xSemaphoreTake(mutex, portMAX_DELAY);
+		_pwmService->handlePwms((*_chillerService).getChillerLoadPercentage());
+		xSemaphoreGive(mutex);
+	}
+}
 
+void sendCommunicationDataTask(void* argument)
+{
+	SemaphoreHandle_t mutex = (SemaphoreHandle_t)argument;
+	while (true)
+	{
+		vTaskDelay(_communicationDelay / portTICK_PERIOD_MS);
+		xSemaphoreTake(mutex, portMAX_DELAY);
 		String temperatureResponse = (*_jsonService).serializeObject(
 			Helpers::JsonHelper::convertToBaseSerializableObjectArray(_chillerService->getTemperatureService()->getTemperatureSensors()),
 			Communication::Enums::ResponseType::temperatureSensors);
@@ -118,6 +166,15 @@ void sendDataByTimer()
 			Helpers::JsonHelper::convertToBaseSerializableObjectArray(_pwmService->getPwmItems()),
 			Communication::Enums::ResponseType::pwms);
 		_communicationService->sendData(pwmsResponse);
+		xSemaphoreGive(mutex);
+	}
+}
+
+void readCommunicationDataTask(void* argument)
+{
+	while (true)
+	{
+		String request = _communicationService->readData();
 	}
 }
 

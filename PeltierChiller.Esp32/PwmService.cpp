@@ -12,21 +12,17 @@ Services::PwmService::PwmService(uint32_t updatePwmDelay, Communication::Models:
 
 void Services::PwmService::handlePwms(uint8_t currentChillerLoad)
 {
-	if (millis() - _updatePwmTimer >= _updatePwmDelay)
+	float hotToRoomDeltaT = getCurrentHotToRoomDeltaT();
+	for (uint8_t i = 0; i < _pwmItems->size(); i++)
 	{
-		_updatePwmTimer = millis();
-		float hotToRoomDeltaT = getCurrentHotToRoomDeltaT();
-		for (uint8_t i = 0; i < _pwmItems->size(); i++)
+		Models::PwmItem* currentItem = _pwmItems->get(i);
+		if (currentItem->getSetToMaxWhenChillerLoad() != -1 && currentChillerLoad > currentItem->getSetToMaxWhenChillerLoad())
 		{
-			Models::PwmItem* currentItem = _pwmItems->get(i);
-			if (currentItem->getSetToMaxWhenChillerLoad() != -1 && currentChillerLoad > currentItem->getSetToMaxWhenChillerLoad())
-			{
-				analogWrite(currentItem->getPwmPin(), 255);
-			}
-			else
-			{
-				analogWrite(currentItem->getPwmPin(), getCurrentPwmValue(currentItem, hotToRoomDeltaT));
-			}
+			analogWrite(currentItem->getPwmPin(), 255);
+		}
+		else
+		{
+			analogWrite(currentItem->getPwmPin(), getCurrentPwmValue(currentItem, hotToRoomDeltaT));
 		}
 	}
 }
@@ -34,6 +30,11 @@ void Services::PwmService::handlePwms(uint8_t currentChillerLoad)
 LinkedList<Models::PwmItem*>* Services::PwmService::getPwmItems()
 {
 	return _pwmItems;
+}
+
+uint32_t Services::PwmService::getUpdatePwmDelay()
+{
+	return _updatePwmDelay;
 }
 
 void Services::PwmService::initConfiguration()

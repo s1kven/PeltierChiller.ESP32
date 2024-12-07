@@ -12,7 +12,6 @@ namespace Services
 	private:
 
 		uint32_t _updatePwmDelay;
-		uint32_t _updatePwmTimer = 0;
 		LinkedList<Models::PwmItem*>* _pwmItems;
 
 		Communication::Models::Configurations::PwmsConfiguration* _configuration;
@@ -28,5 +27,6 @@ namespace Services
 			Services::TemperatureService* temperatureService);
 		void handlePwms(uint8_t currentChillerLoad);
 		LinkedList<Models::PwmItem*>* getPwmItems();
+		uint32_t getUpdatePwmDelay();
 	};
 }
