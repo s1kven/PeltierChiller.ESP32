@@ -34,6 +34,8 @@
 #include "FileService.h"
 #include "ConfigurationService.h"
 #include "PwmService.h"
+#include "CommandService.h"
+#include "CommandError.h"
 
 const String SOFTWARE_VERSION = "0.1.0";
 
@@ -55,12 +57,16 @@ Services::ConfigurationService* _configurationService;
 
 Services::PwmService* _pwmService;
 
+Services::CommandService* _commandService;
+
 void setup()  
 {
 	Wire.begin();
 
-	_communicationService = new Communication::Services::SerialCommunicationService(115200);
+	_communicationService = new Communication::Services::SerialCommunicationService(460800);
 	_communicationService->init();
+
+	_commandService = new Services::CommandService();
 
 	_fileService = new Services::FileService();
 	_fileService->init(SD_CS);
@@ -69,6 +75,16 @@ void setup()
 
 	_configurationService = new Services::ConfigurationService(_fileService, _jsonService);
 	configurationError = _configurationService->readConfigurationFromSd();
+
+	xTaskCreate(
+		readCommunicationDataTask,
+		"readCommunicationDataTask",
+		4096,
+		NULL,
+		3,
+		NULL
+	);
+
 	if (*configurationError)
 	{
 		String errorConfigurationRead = (*_jsonService).serializeObject(configurationError);
@@ -109,15 +125,6 @@ void setup()
 	xTaskCreate(
 		sendCommunicationDataTask,
 		"sendCommunicationDataTask",
-		4096,
-		mutex,
-		3,
-		NULL
-	);
-
-	xTaskCreate(
-		readCommunicationDataTask,
-		"readCommunicationDataTask",
 		4096,
 		mutex,
 		3,
@@ -175,6 +182,26 @@ void readCommunicationDataTask(void* argument)
 	while (true)
 	{
 		String request = _communicationService->readData();
+		if (request.length() > 0)
+		{
+			Models::Abstractions::BaseCommand* command = _jsonService->deserializeCommand(request);
+			if (command != nullptr)
+			{
+				_commandService->handleCommand(command);
+			}
+			else
+			{
+				Communication::Models::Errors::CommandError* commandError =
+					new Communication::Models::Errors::CommandError(request);
+				String errorCommandJson = (*_jsonService).serializeObject(commandError);
+				_communicationService->sendData(errorCommandJson);
+
+				errorCommandJson.clear();
+				delete commandError;
+			}
+		}
+
+		request.clear();
 	}
 }
 

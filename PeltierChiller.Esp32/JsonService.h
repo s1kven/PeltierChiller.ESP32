@@ -15,6 +15,7 @@
 #include "DeserializationError.h"
 #include "PwmValueConfiguration.h"
 #include "ChillerType.cpp"
+#include "SoftResetCommand.h"
 
 namespace Services
 {
@@ -37,11 +38,12 @@ namespace Services
 
 		uint32_t getDeserializedJsonSize(String& content);
 
-		Communication::Models::DeserializationError* buildError(DeserializationError error);
+		Communication::Models::Errors::DeserializationError* buildError(DeserializationError error, String content);
 		Communication::Enums::ErrorCode errorCodeConverter(DeserializationError error);
 
 		Communication::Abstractions::BaseDeserializableObject* deserializeRequestByType(
-			Communication::Enums::RequestType _requestType, JsonObject data);
+			Communication::Enums::RequestType _requestType, JsonObject data, String request);
+
 		Communication::Models::Configurations::Configuration* deserializeConfiguration(JsonObject data);
 		Communication::Models::Configurations::PinsConfiguration* deserializePinsConfiguration(JsonObject data);
 		Communication::Models::Configurations::TimersConfiguration* deserializeTimersConfiguration(JsonObject data);
@@ -56,6 +58,8 @@ namespace Services
 			deserializeDs18b20ListConfiguration(JsonObject data);
 		Communication::Models::Configurations::PwmsConfiguration* deserializePwmsConfiguration(JsonArray items);
 
+		Communication::Models::SoftResetCommand* deserializeSoftReset();
+
 	public:
 
 		String serializeObject(Communication::Abstractions::BaseSerializableObject* response);
@@ -63,6 +67,7 @@ namespace Services
 			Models::Abstractions::KeyValuePair<Communication::Abstractions::BaseSerializableObject**, uint8_t> _models, 
 			Communication::Enums::ResponseType _responseType);
 		Communication::Abstractions::BaseDeserializableObject* deserializeRequest(String& content);
+		Models::Abstractions::BaseCommand* deserializeCommand(String& content);
 	};
 }
 

@@ -1,4 +1,5 @@
 #pragma once
+
 #include "BaseError.h"
 
 namespace Communication
@@ -7,15 +8,17 @@ namespace Communication
 	{
 		namespace Errors
 		{
-			class DeserializationError :
+			class CommandError :
 				public Communication::Abstractions::BaseError
 			{
+			private:
+
 			protected:
 				void init() override;
 				virtual DynamicJsonDocument createPayload() override;
 
 			public:
-				DeserializationError(Communication::Enums::ErrorCode code, const char* errorMessage, String invalidPayload);
+				CommandError(String invalidCommand);
 			};
 		}
 	}

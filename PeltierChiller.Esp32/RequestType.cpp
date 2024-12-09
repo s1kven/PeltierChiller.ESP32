@@ -4,8 +4,9 @@ namespace Communication
     {
         enum class RequestType
         {
-            unknown,
-            configuration
+            unknown = 0,
+            configuration = 1,
+            softReset = 2
         };
     }
 }

@@ -24,7 +24,7 @@ namespace Services
 
 		Communication::Models::Configurations::Configuration* currentConfiguration;
 
-		Communication::Abstractions::BaseError* validateConfiguration(Communication::Models::Configurations::Configuration* configuration);
+		Communication::Abstractions::BaseError* validateConfiguration(Communication::Models::Configurations::Configuration* configuration, String content);
 		bool isSensorsAvailable(Communication::Models::Configurations::Configuration* configuration, Models::Enums::TemperatureSensorTarget target);
 		bool anyBmeTargetToRoom(Communication::Models::Configurations::TemperatureSensors::Bme280ListConfiguration* bme280ListConfiguration);
 	public:

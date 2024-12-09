@@ -1,20 +1,20 @@
 #include "ConfigurationError.h"
 
-Communication::Models::ConfigurationError::ConfigurationError(Communication::Enums::ErrorCode code, const char* errorMessage) :
-	Communication::Abstractions::BaseError(code, getErrorMessageByCode(code))
+Communication::Models::Errors::ConfigurationError::ConfigurationError(Communication::Enums::ErrorCode code, const char* errorMessage, String invalidConfiguration) :
+	Communication::Abstractions::BaseError(Communication::Enums::ResponseType::errorConfiguration, code, getErrorMessageByCode(code), invalidConfiguration)
 {
 }
 
-void Communication::Models::ConfigurationError::init()
+void Communication::Models::Errors::ConfigurationError::init()
 {
 }
 
-DynamicJsonDocument Communication::Models::ConfigurationError::createPayload()
+DynamicJsonDocument Communication::Models::Errors::ConfigurationError::createPayload()
 {
 	return Communication::Abstractions::BaseError::createPayload();
 }
 
-const char* Communication::Models::ConfigurationError::getErrorMessageByCode(Communication::Enums::ErrorCode code)
+const char* Communication::Models::Errors::ConfigurationError::getErrorMessageByCode(Communication::Enums::ErrorCode code)
 {
 	switch (code)
 	{

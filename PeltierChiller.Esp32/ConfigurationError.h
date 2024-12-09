@@ -5,16 +5,19 @@ namespace Communication
 {
 	namespace Models
 	{
-		class ConfigurationError :
-			public Communication::Abstractions::BaseError
+		namespace Errors
 		{
-		protected:
-			void init() override;
-			virtual DynamicJsonDocument createPayload() override;
-			const char* getErrorMessageByCode(Communication::Enums::ErrorCode code);
+			class ConfigurationError :
+				public Communication::Abstractions::BaseError
+			{
+			protected:
+				void init() override;
+				virtual DynamicJsonDocument createPayload() override;
+				const char* getErrorMessageByCode(Communication::Enums::ErrorCode code);
 
-		public:
-			ConfigurationError(Communication::Enums::ErrorCode code, const char* errorMessage);
-		};
+			public:
+				ConfigurationError(Communication::Enums::ErrorCode code, const char* errorMessage, String invalidConfiguration);
+			};
+		}
 	}
 }

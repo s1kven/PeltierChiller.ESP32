@@ -14,7 +14,9 @@ namespace Communication
             emptySensors,
             emptyColdCircuitSensors,
             emptyRoomSensors,
-            invalidBmeConfiguration
+            invalidBmeConfiguration,
+            //errorCommand
+            invalidCommand
         };
     }
 }

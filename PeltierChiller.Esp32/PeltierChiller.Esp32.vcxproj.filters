@@ -52,6 +52,9 @@
     <Filter Include="Source Files\Communication\Models\Configurations\TemperatureSensors">
       <UniqueIdentifier>{b435f77f-0392-4f15-b4f4-bbae7b34fb06}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Communication\Models\Errors">
+      <UniqueIdentifier>{37470389-e076-436f-a901-4296bfd74520}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\arduino folders read me.txt">
@@ -146,9 +149,6 @@
     <ClInclude Include="BaseError.h">
       <Filter>Source Files\Communication\Abstractions</Filter>
     </ClInclude>
-    <ClInclude Include="DeserializationError.h">
-      <Filter>Source Files\Communication\Models</Filter>
-    </ClInclude>
     <ClInclude Include="PwmsConfiguration.h">
       <Filter>Source Files\Communication\Models\Configurations</Filter>
     </ClInclude>
@@ -167,11 +167,26 @@
     <ClInclude Include="PwmValueConfiguration.h">
       <Filter>Source Files\Communication\Models\Configurations</Filter>
     </ClInclude>
-    <ClInclude Include="ConfigurationError.h">
-      <Filter>Source Files\Communication\Models</Filter>
-    </ClInclude>
     <ClInclude Include="__vm\.PeltierChiller.Esp32.vsarduino.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="CommandService.h">
+      <Filter>Source Files\Services</Filter>
+    </ClInclude>
+    <ClInclude Include="SoftResetCommand.h">
+      <Filter>Source Files\Communication\Models</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseCommand.h">
+      <Filter>Source Files\Models\Abstractions</Filter>
+    </ClInclude>
+    <ClInclude Include="CommandError.h">
+      <Filter>Source Files\Communication\Models\Errors</Filter>
+    </ClInclude>
+    <ClInclude Include="ConfigurationError.h">
+      <Filter>Source Files\Communication\Models\Errors</Filter>
+    </ClInclude>
+    <ClInclude Include="DeserializationError.h">
+      <Filter>Source Files\Communication\Models\Errors</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -277,9 +292,6 @@
     <ClCompile Include="ErrorCode.cpp">
       <Filter>Source Files\Communication\Enums</Filter>
     </ClCompile>
-    <ClCompile Include="DeserializationError.cpp">
-      <Filter>Source Files\Communication\Models</Filter>
-    </ClCompile>
     <ClCompile Include="PwmsConfiguration.cpp">
       <Filter>Source Files\Communication\Models\Configurations</Filter>
     </ClCompile>
@@ -304,9 +316,24 @@
     <ClCompile Include="ChillerType.cpp">
       <Filter>Source Files\Models\Enums</Filter>
     </ClCompile>
-    <ClCompile Include="ConfigurationError.cpp">
+    <ClCompile Include="PeltierChiller.Esp32.ino" />
+    <ClCompile Include="CommandService.cpp">
+      <Filter>Source Files\Services</Filter>
+    </ClCompile>
+    <ClCompile Include="SoftResetCommand.cpp">
       <Filter>Source Files\Communication\Models</Filter>
     </ClCompile>
-    <ClCompile Include="PeltierChiller.Esp32.ino" />
+    <ClCompile Include="BaseCommand.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="CommandError.cpp">
+      <Filter>Source Files\Communication\Models\Errors</Filter>
+    </ClCompile>
+    <ClCompile Include="ConfigurationError.cpp">
+      <Filter>Source Files\Communication\Models\Errors</Filter>
+    </ClCompile>
+    <ClCompile Include="DeserializationError.cpp">
+      <Filter>Source Files\Communication\Models\Errors</Filter>
+    </ClCompile>
   </ItemGroup>
 </Project>
