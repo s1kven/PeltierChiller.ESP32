@@ -7,6 +7,7 @@ Communication::Services::SerialCommunicationService::SerialCommunicationService(
 
 void Communication::Services::SerialCommunicationService::init()
 {
+	Serial.setTimeout(1);
 	Serial.begin(_baudRate);
 }
 
@@ -17,5 +18,9 @@ void Communication::Services::SerialCommunicationService::sendData(String data)
 
 String Communication::Services::SerialCommunicationService::readData()
 {
-	return Serial.readString();
+	if (Serial.available())
+	{
+		return Serial.readString();
+	}
+	return "";
 }

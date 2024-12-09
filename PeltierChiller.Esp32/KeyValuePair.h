@@ -1,12 +1,15 @@
 #pragma once
 
-namespace Models::Abstractions
+namespace Models
 {
-	template<class KeyType, class ValueType>
-	struct KeyValuePair
+	namespace Abstractions
 	{
-	public:
-		KeyType key;
-		ValueType value;
-	};
+		template<class KeyType, class ValueType>
+		struct KeyValuePair
+		{
+		public:
+			KeyType key;
+			ValueType value;
+		};
+	}
 }

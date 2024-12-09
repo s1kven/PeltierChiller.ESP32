@@ -11,7 +11,7 @@ Communication::Abstractions::BaseError* Services::ConfigurationService::readConf
 	String content = _fileService->readFile(_configPath);
 
 	Communication::Abstractions::BaseDeserializableObject* deserializedObject = _jsonService->deserializeRequest(content);
-	Communication::Models::DeserializationError* error = dynamic_cast<Communication::Models::DeserializationError*>(deserializedObject);
+	Communication::Models::Errors::DeserializationError* error = dynamic_cast<Communication::Models::Errors::DeserializationError*>(deserializedObject);
 	if (error)
 	{
 		return error;
@@ -19,7 +19,7 @@ Communication::Abstractions::BaseError* Services::ConfigurationService::readConf
 	else
 	{
 		currentConfiguration = static_cast<Communication::Models::Configurations::Configuration*>(deserializedObject);
-		return validateConfiguration(currentConfiguration);
+		return validateConfiguration(currentConfiguration, content);
 	}
 }
 
@@ -29,33 +29,33 @@ Communication::Models::Configurations::Configuration* Services::ConfigurationSer
 }
 
 Communication::Abstractions::BaseError* 
-	Services::ConfigurationService::validateConfiguration(Communication::Models::Configurations::Configuration* configuration)
+	Services::ConfigurationService::validateConfiguration(Communication::Models::Configurations::Configuration* configuration, String content)
 {
 	if (configuration->getTemperatureSensorsConfiguration()->getBmeListConfiguration()->getItems()->size() == 0
 		&& configuration->getTemperatureSensorsConfiguration()->getDs18b20ListConfiguration()->getItems()->size() == 0
 		&& configuration->getTemperatureSensorsConfiguration()->getNtcListConfiguration()->getItems()->size() == 0)
 	{
-		return new Communication::Models::ConfigurationError(Communication::Enums::ErrorCode::emptySensors, nullptr);
+		return new Communication::Models::Errors::ConfigurationError(Communication::Enums::ErrorCode::emptySensors, nullptr, content);
 	}
 	if (!isSensorsAvailable(configuration, Models::Enums::TemperatureSensorTarget::coldCircuit))
 	{
-		return new Communication::Models::ConfigurationError(Communication::Enums::ErrorCode::emptyColdCircuitSensors, nullptr);
+		return new Communication::Models::Errors::ConfigurationError(Communication::Enums::ErrorCode::emptyColdCircuitSensors, nullptr, content);
 	}
 	if (configuration->getChillerType() == Models::Enums::ChillerType::deltaTemperature)
 	{
 		if (!isSensorsAvailable(configuration, Models::Enums::TemperatureSensorTarget::room))
 		{
-			return new Communication::Models::ConfigurationError(Communication::Enums::ErrorCode::emptyRoomSensors, nullptr);
+			return new Communication::Models::Errors::ConfigurationError(Communication::Enums::ErrorCode::emptyRoomSensors, nullptr, content);
 		}
 	}
 	if (configuration->getChillerType() == Models::Enums::ChillerType::dewPointTemperature 
 		&& (configuration->getTemperatureSensorsConfiguration()->getBmeListConfiguration()->getItems()->size() == 0 
 		   || !anyBmeTargetToRoom(configuration->getTemperatureSensorsConfiguration()->getBmeListConfiguration())))
 	{
-		return new Communication::Models::ConfigurationError(Communication::Enums::ErrorCode::invalidBmeConfiguration, nullptr);
+		return new Communication::Models::Errors::ConfigurationError(Communication::Enums::ErrorCode::invalidBmeConfiguration, nullptr, content);
 	}
 
-	return new Communication::Models::DeserializationError(Communication::Enums::ErrorCode::ok, nullptr);
+	return new Communication::Models::Errors::DeserializationError(Communication::Enums::ErrorCode::ok, nullptr, content);
 }
 
 bool Services::ConfigurationService::isSensorsAvailable(Communication::Models::Configurations::Configuration* configuration,
