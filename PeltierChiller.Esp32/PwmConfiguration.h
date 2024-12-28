@@ -1,4 +1,6 @@
 #pragma once
+#ifndef _PwmConfiguration_
+#define _PwmConfiguration_ 
 #if defined(ARDUINO) && ARDUINO >= 100
 #include "arduino.h"
 #else
@@ -6,6 +8,7 @@
 #endif
 #include <LinkedList.h>
 #include "BaseDeserializableObject.h"
+#include "BaseSerializableObject.h"
 #include "PwmValueConfiguration.h"
 #include "PwmType.cpp"
 
@@ -18,9 +21,11 @@ namespace Communication
 		namespace Configurations
 		{
 			class PwmConfiguration :
-				public Abstractions::BaseDeserializableObject
+				public Abstractions::BaseDeserializableObject,
+				public Abstractions::BaseSerializableObject
 			{
 			private:
+				const uint16_t _payloadSize = JSON_OBJECT_SIZE(6);
 				uint8_t _tachoPin;
 				uint8_t _pwmPin;
 				String _name;
@@ -34,6 +39,7 @@ namespace Communication
 			public:
 				void init(uint8_t tachoPin, uint8_t pwmPin, String name, int8_t setToMaxWhenChillerLoad,
 					LinkedList<Communication::Models::Configurations::PwmValueConfiguration*>* pwmValues, PwmType type);
+				void clear();
 
 				uint8_t getTachoPin();
 				uint8_t getPwmPin();
@@ -41,7 +47,10 @@ namespace Communication
 				int8_t getSetToMaxWhenChillerLoad();
 				LinkedList<Communication::Models::Configurations::PwmValueConfiguration*>* getPwmValues();
 				PwmType getPwmType();
+
+				DynamicJsonDocument createPayload() override;
 			};
 		}
 	}
 }
+#endif

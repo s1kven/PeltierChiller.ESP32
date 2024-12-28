@@ -1,21 +1,23 @@
 #pragma once
+#ifndef _SoftResetCommand_
+#define _SoftResetCommand_ 
 
 #include "Esp.h"
 #include "BaseDeserializableObject.h"
 #include "BaseCommand.h"
 
-namespace Communication
+namespace Commands
 {
-	namespace Models
+	class SoftResetCommand :
+		public ::Models::Abstractions::BaseCommand
 	{
-		class SoftResetCommand :
-			public ::Models::Abstractions::BaseCommand
-		{
-		protected:
-			void init() override;
+	protected:
+		void init() override;
 
-		public:
-			void invoke() override;
-		};
-	}
+	public:
+		SoftResetCommand();
+		void invoke() override;
+		void clear() override;
+	};
 }
+#endif

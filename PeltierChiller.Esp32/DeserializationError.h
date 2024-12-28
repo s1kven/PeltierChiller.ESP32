@@ -1,4 +1,6 @@
 #pragma once
+#ifndef _DeserializationError_
+#define _DeserializationError_ 
 #include "BaseError.h"
 
 namespace Communication
@@ -20,3 +22,4 @@ namespace Communication
 		}
 	}
 }
+#endif

@@ -55,6 +55,9 @@
     <Filter Include="Source Files\Communication\Models\Errors">
       <UniqueIdentifier>{37470389-e076-436f-a901-4296bfd74520}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Commands">
+      <UniqueIdentifier>{eb586c41-d67d-4c77-87a5-f812dd1862e9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\arduino folders read me.txt">
@@ -173,9 +176,6 @@
     <ClInclude Include="CommandService.h">
       <Filter>Source Files\Services</Filter>
     </ClInclude>
-    <ClInclude Include="SoftResetCommand.h">
-      <Filter>Source Files\Communication\Models</Filter>
-    </ClInclude>
     <ClInclude Include="BaseCommand.h">
       <Filter>Source Files\Models\Abstractions</Filter>
     </ClInclude>
@@ -186,6 +186,15 @@
       <Filter>Source Files\Communication\Models\Errors</Filter>
     </ClInclude>
     <ClInclude Include="DeserializationError.h">
+      <Filter>Source Files\Communication\Models\Errors</Filter>
+    </ClInclude>
+    <ClInclude Include="SoftResetCommand.h">
+      <Filter>Source Files\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="UpdateConfigurationCommand.h">
+      <Filter>Source Files\Commands</Filter>
+    </ClInclude>
+    <ClInclude Include="SdError.h">
       <Filter>Source Files\Communication\Models\Errors</Filter>
     </ClInclude>
   </ItemGroup>
@@ -320,12 +329,6 @@
     <ClCompile Include="CommandService.cpp">
       <Filter>Source Files\Services</Filter>
     </ClCompile>
-    <ClCompile Include="SoftResetCommand.cpp">
-      <Filter>Source Files\Communication\Models</Filter>
-    </ClCompile>
-    <ClCompile Include="BaseCommand.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
     <ClCompile Include="CommandError.cpp">
       <Filter>Source Files\Communication\Models\Errors</Filter>
     </ClCompile>
@@ -333,6 +336,18 @@
       <Filter>Source Files\Communication\Models\Errors</Filter>
     </ClCompile>
     <ClCompile Include="DeserializationError.cpp">
+      <Filter>Source Files\Communication\Models\Errors</Filter>
+    </ClCompile>
+    <ClCompile Include="SoftResetCommand.cpp">
+      <Filter>Source Files\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="BaseCommand.cpp">
+      <Filter>Source Files\Models\Abstractions</Filter>
+    </ClCompile>
+    <ClCompile Include="UpdateConfigurationCommand.cpp">
+      <Filter>Source Files\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="SdError.cpp">
       <Filter>Source Files\Communication\Models\Errors</Filter>
     </ClCompile>
   </ItemGroup>

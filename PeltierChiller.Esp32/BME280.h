@@ -1,35 +1,40 @@
 // BME280.h
 #pragma once
+#ifndef _BME280_
+#define _BME280_ 
 
 #include <GyverBME280.h>
 #include "BaseSensor.h"
 
-namespace Models::TemperatureSensors
+namespace Models
 {
-
-	class BME280 :
-		public Models::TemperatureSensors::BaseSensor
+	namespace TemperatureSensors
 	{
-	private:
-		const uint16_t _payloadSize = JSON_OBJECT_SIZE(5);
+		class BME280 :
+			public Models::TemperatureSensors::BaseSensor
+		{
+		private:
+			const uint16_t _payloadSize = JSON_OBJECT_SIZE(5);
 
-		GyverBME280 bme;
-		uint8_t _sensorAddress;
-		float _humidity = 0.0;
-		float _pressure = 0.0;
+			GyverBME280 bme;
+			uint8_t _sensorAddress;
+			float _humidity = 0.0;
+			float _pressure = 0.0;
 
-	protected:
+		protected:
 
 
-	public:
+		public:
 
-		BME280(uint8_t sensorAddress, Models::Enums::TemperatureSensorTarget _sensorTarget);
-		void init();
-		float getTemperature();
-		float getHumidity();
-		float getPressure();
-		void sensorRequest() override;
-		DynamicJsonDocument createPayload() override;
-		uint8_t getSensorAddress();
-	};
+			BME280(uint8_t sensorAddress, Models::Enums::TemperatureSensorTarget _sensorTarget);
+			void init();
+			float getTemperature();
+			float getHumidity();
+			float getPressure();
+			void sensorRequest() override;
+			DynamicJsonDocument createPayload() override;
+			uint8_t getSensorAddress();
+		};
+	}
 }
+#endif

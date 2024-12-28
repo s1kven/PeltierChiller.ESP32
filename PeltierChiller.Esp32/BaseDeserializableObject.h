@@ -1,4 +1,6 @@
 #pragma once
+#ifndef _BaseDeserializableObject_
+#define _BaseDeserializableObject_ 
 
 namespace Communication
 {
@@ -11,3 +13,4 @@ namespace Communication
 		};
 	}
 }
+#endif

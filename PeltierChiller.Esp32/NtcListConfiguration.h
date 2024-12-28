@@ -1,4 +1,6 @@
 #pragma once
+#ifndef _NtcListConfiguration_
+#define _NtcListConfiguration_ 
 #if defined(ARDUINO) && ARDUINO >= 100
 #include "arduino.h"
 #else
@@ -6,6 +8,7 @@
 #endif
 #include <LinkedList.h>
 #include "BaseDeserializableObject.h"
+#include "BaseSerializableObject.h"
 #include "NtcConfiguration.h"
 
 namespace Communication
@@ -17,9 +20,11 @@ namespace Communication
 			namespace TemperatureSensors
 			{
 				class NtcListConfiguration :
-					public Abstractions::BaseDeserializableObject
+					public Abstractions::BaseDeserializableObject,
+					public Abstractions::BaseSerializableObject
 				{
 				private:
+					const uint16_t _payloadSize = JSON_OBJECT_SIZE(2);
 					uint8_t _adcResolution;
 					LinkedList<NtcConfiguration*>* _items;
 
@@ -27,14 +32,17 @@ namespace Communication
 					void init() override;
 
 				public:
-					~NtcListConfiguration();
 					void init(uint8_t adcResolution, LinkedList<NtcConfiguration*>* items);
+					void clear();
 
 					LinkedList<NtcConfiguration*>* getItems();
 					uint8_t getAdcResolution();
+
+					DynamicJsonDocument createPayload() override;
 				};
 			}
 		}
 	}
 }
+#endif
 

@@ -1,10 +1,13 @@
 #pragma once
+#ifndef _Ds18b20Configuration_
+#define _Ds18b20Configuration_ 
 #if defined(ARDUINO) && ARDUINO >= 100
 #include "arduino.h"
 #else
 #include "WProgram.h"
 #endif
 #include "BaseDeserializableObject.h"
+#include "BaseSerializableObject.h"
 #include "TemperatureSensorTarget.cpp"
 
 using namespace Models::Enums;
@@ -18,11 +21,13 @@ namespace Communication
 			namespace TemperatureSensors
 			{
 				class Ds18b20Configuration :
-					public Abstractions::BaseDeserializableObject
+					public Abstractions::BaseDeserializableObject,
+					public Abstractions::BaseSerializableObject
 				{
-
 				private:
+					const uint16_t _payloadSize = JSON_OBJECT_SIZE(3) + JSON_ARRAY_SIZE(8);
 					uint8_t _address[8];
+					String _name;
 					TemperatureSensorTarget _target;
 
 				protected:
@@ -30,12 +35,16 @@ namespace Communication
 
 				public:
 					~Ds18b20Configuration();
-					void init(uint8_t* address, TemperatureSensorTarget target);
+					void init(uint8_t* address, String name, TemperatureSensorTarget target);
 
 					uint8_t* getAddress();
+					String getName();
 					TemperatureSensorTarget getTarget();
+
+					DynamicJsonDocument createPayload() override;
 				};
 			}
 		}
 	}
 }
+#endif

@@ -1,3 +1,4 @@
+
 /*
  Name:		PeltierChiller.ino
  Created:	3/7/2022 10:10:28 PM
@@ -5,6 +6,8 @@
 */
 
 #pragma once
+#ifndef _ENTRYPOINT_
+#define _ENTRYPOINT_ 
 #if defined(ARDUINO) && ARDUINO >= 100
 #include "Test.h"
 #include "arduino.h"
@@ -36,6 +39,7 @@
 #include "PwmService.h"
 #include "CommandService.h"
 #include "CommandError.h"
+#include "UpdateConfigurationCommand.h"
 
 const String SOFTWARE_VERSION = "0.1.0";
 
@@ -73,14 +77,15 @@ void setup()
 
 	_jsonService = new Services::JsonService();
 
-	_configurationService = new Services::ConfigurationService(_fileService, _jsonService);
+	_configurationService = new Services::ConfigurationService();
 	configurationError = _configurationService->readConfigurationFromSd();
 
+	SemaphoreHandle_t communicationMutex = xSemaphoreCreateMutex();
 	xTaskCreate(
 		readCommunicationDataTask,
 		"readCommunicationDataTask",
 		4096,
-		NULL,
+		communicationMutex,
 		3,
 		NULL
 	);
@@ -126,7 +131,7 @@ void setup()
 		sendCommunicationDataTask,
 		"sendCommunicationDataTask",
 		4096,
-		mutex,
+		communicationMutex,
 		3,
 		NULL
 	);
@@ -139,6 +144,7 @@ void manageChillerTask(void* argument)
 	SemaphoreHandle_t mutex = (SemaphoreHandle_t)argument;
 	while (true)
 	{
+		vTaskDelay(10 / portTICK_PERIOD_MS);
 		xSemaphoreTake(mutex, portMAX_DELAY);
 		(*_chillerService).manageChiller();
 		xSemaphoreGive(mutex);
@@ -179,8 +185,10 @@ void sendCommunicationDataTask(void* argument)
 
 void readCommunicationDataTask(void* argument)
 {
+	SemaphoreHandle_t mutex = (SemaphoreHandle_t)argument;
 	while (true)
 	{
+		xSemaphoreTake(mutex, portMAX_DELAY);
 		String request = _communicationService->readData();
 		if (request.length() > 0)
 		{
@@ -193,7 +201,7 @@ void readCommunicationDataTask(void* argument)
 			{
 				Communication::Models::Errors::CommandError* commandError =
 					new Communication::Models::Errors::CommandError(request);
-				String errorCommandJson = (*_jsonService).serializeObject(commandError);
+				String errorCommandJson = _jsonService->serializeObject(commandError);
 				_communicationService->sendData(errorCommandJson);
 
 				errorCommandJson.clear();
@@ -202,6 +210,7 @@ void readCommunicationDataTask(void* argument)
 		}
 
 		request.clear();
+		xSemaphoreGive(mutex);
 	}
 }
 
@@ -209,3 +218,5 @@ void initGlobalConfiguration()
 {
 	_communicationDelay = _configurationService->getConfiguration()->getTimersConfiguration()->getCommunicationDelay();
 }
+
+#endif

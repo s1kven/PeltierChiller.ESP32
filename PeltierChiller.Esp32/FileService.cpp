@@ -16,3 +16,27 @@ String Services::FileService::readFile(const char* path)
 	}
 	return content;
 }
+
+uint32_t Services::FileService::appendFile(const char* path, String content)
+{
+	uint32_t bytesWrite = 0;
+	File file = SD.open(path, FILE_APPEND);
+	if (file)
+	{
+		bytesWrite = file.println(content);
+		file.close();
+	}
+	return bytesWrite;
+}
+
+uint32_t Services::FileService::writeFile(const char* path, String content)
+{
+	uint32_t bytesWrite = 0;
+	File file = SD.open(path, FILE_WRITE);
+	if (file)
+	{
+		bytesWrite = file.println(content);
+		file.close();
+	}
+	return bytesWrite;
+}

@@ -1,4 +1,6 @@
 #pragma once
+#ifndef _JsonService_
+#define _JsonService_ 
 
 #include <ArduinoJson.h>
 #include <ArduinoJson.hpp>
@@ -11,11 +13,11 @@
 #include "Configuration.h"
 #include "BaseSerializableObject.h"
 #include "KeyValuePair.h"
-#include "RequestType.cpp"
 #include "DeserializationError.h"
 #include "PwmValueConfiguration.h"
 #include "ChillerType.cpp"
 #include "SoftResetCommand.h"
+#include "UpdateConfigurationCommand.h"
 
 namespace Services
 {
@@ -58,16 +60,20 @@ namespace Services
 			deserializeDs18b20ListConfiguration(JsonObject data);
 		Communication::Models::Configurations::PwmsConfiguration* deserializePwmsConfiguration(JsonArray items);
 
-		Communication::Models::SoftResetCommand* deserializeSoftReset();
+		Commands::SoftResetCommand* deserializeSoftResetCommand();
+		Commands::UpdateConfigurationCommand* deserializeUpdateConfigurationCommand(JsonObject data);
 
 	public:
 
+		String serializeObject(Communication::Enums::ResponseType _responseType, bool _success);
 		String serializeObject(Communication::Abstractions::BaseSerializableObject* response);
 		String serializeObject(
 			Models::Abstractions::KeyValuePair<Communication::Abstractions::BaseSerializableObject**, uint8_t> _models, 
 			Communication::Enums::ResponseType _responseType);
+		String serializeRequest(Communication::Abstractions::BaseSerializableObject* request, Communication::Enums::RequestType requestType);
 		Communication::Abstractions::BaseDeserializableObject* deserializeRequest(String& content);
 		Models::Abstractions::BaseCommand* deserializeCommand(String& content);
 	};
 }
+#endif
 

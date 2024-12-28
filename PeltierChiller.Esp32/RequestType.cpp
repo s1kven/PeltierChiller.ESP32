@@ -6,7 +6,9 @@ namespace Communication
         {
             unknown = 0,
             configuration = 1,
-            softReset = 2
+            //commands
+            softReset = 50,
+            updateConfiguration = 51
         };
     }
 }

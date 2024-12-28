@@ -1,4 +1,6 @@
 #pragma once
+#ifndef _ConfigurationError_
+#define _ConfigurationError_ 
 #include "BaseError.h"
 
 namespace Communication
@@ -21,3 +23,4 @@ namespace Communication
 		}
 	}
 }
+#endif

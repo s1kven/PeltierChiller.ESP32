@@ -1,10 +1,13 @@
 #pragma once
+#ifndef _PinsConfiguration_
+#define _PinsConfiguration_ 
 #if defined(ARDUINO) && ARDUINO >= 100
 #include "arduino.h"
 #else
 #include "WProgram.h"
 #endif
 #include "BaseDeserializableObject.h"
+#include "BaseSerializableObject.h"
 
 namespace Communication
 {
@@ -13,9 +16,11 @@ namespace Communication
 		namespace Configurations 
 		{
 			class PinsConfiguration :
-				public Abstractions::BaseDeserializableObject
+				public Abstractions::BaseDeserializableObject,
+				public Abstractions::BaseSerializableObject
 			{
 			private:
+				const uint16_t _payloadSize = JSON_OBJECT_SIZE(5);
 				uint8_t _powerButton;
 				uint8_t _powerSignal;
 				uint8_t _chillerPsSignal;
@@ -34,8 +39,11 @@ namespace Communication
 				uint8_t getChillerPsSignal();
 				uint8_t getChillerSignal();
 				uint8_t getPcVoltage();
+
+				DynamicJsonDocument createPayload() override;
 			};
 		}
 	}
 }
+#endif
 

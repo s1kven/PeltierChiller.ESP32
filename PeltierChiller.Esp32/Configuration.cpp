@@ -57,17 +57,38 @@ Communication::Models::Configurations::Configuration::getPwmsConfiguration()
 	return _pwmsConfiguration;
 }
 
-void Communication::Models::Configurations::Configuration::init()
+DynamicJsonDocument Communication::Models::Configurations::Configuration::createPayload()
 {
+	DynamicJsonDocument document(Communication::Abstractions::BaseSerializableObject::getJsonSize());
+	JsonObject payload = document.to<JsonObject>();
+
+	JsonObject pinsConfiguration = payload.createNestedObject("Pins");
+	pinsConfiguration.set(_pinsConfiguration->createPayload().as<JsonObjectConst>());
+
+	payload["ChillerType"] = static_cast<uint16_t>(_chillerType);
+	payload["TargetTemperature"] = serialized(String(_targetCircuitTemperature, 1));
+	payload["VoltmeterThreshold"] = serialized(String(_voltmeterThreshold, 1));
+	payload["VoltmeterR1"] = _voltmeterR1;
+	payload["VoltmeterR2"] = _voltmeterR2;
+	payload["StartupPcAfterFeatTargetTemperature"] = _isDelayEnablingPc;
+
+	JsonObject chillerSettingsConfiguration = payload.createNestedObject("ChillerSettings");
+	chillerSettingsConfiguration.set(_chillerConfiguration->createPayload().as<JsonObjectConst>());
+
+	JsonObject timersConfiguration = payload.createNestedObject("Timers");
+	timersConfiguration.set(_timersConfiguration->createPayload().as<JsonObjectConst>());
+
+	JsonObject temperatureSensorsConfiguration = payload.createNestedObject("TemperatureSensors");
+	temperatureSensorsConfiguration.set(_temperatureSensorsConfiguration->createPayload().as<JsonObjectConst>());
+
+	JsonArray pwmsConfiguration = payload.createNestedArray("PWMs");
+	pwmsConfiguration.set(_pwmsConfiguration->createPayload().as<JsonArrayConst>());
+
+	return document;
 }
 
-Communication::Models::Configurations::Configuration::~Configuration()
+void Communication::Models::Configurations::Configuration::init()
 {
-	delete _pinsConfiguration;
-	delete _timersConfiguration;
-	delete _chillerConfiguration;
-	delete _temperatureSensorsConfiguration;
-	delete _pwmsConfiguration;
 }
 
 void Communication::Models::Configurations::Configuration::init(ChillerType chillerType, float targetCircuitTemperature,
@@ -84,9 +105,36 @@ void Communication::Models::Configurations::Configuration::init(ChillerType chil
 	_voltmeterR1 = voltmeterR1;
 	_voltmeterR2 = voltmeterR2;
 	_isDelayEnablingPc = isDelayEnablingPc;
-	_pinsConfiguration = pinsConfiguration;
-	_timersConfiguration = timersConfiguration;
-	_chillerConfiguration = chillerConfiguration;
-	_temperatureSensorsConfiguration = temperatureSensorsConfiguration;
-	_pwmsConfiguration = pwmsConfiguration;
+	_pinsConfiguration = new Communication::Models::Configurations::PinsConfiguration(*pinsConfiguration);
+	_timersConfiguration = new Communication::Models::Configurations::TimersConfiguration(*timersConfiguration);
+	_chillerConfiguration = new Communication::Models::Configurations::ChillerConfiguration(*chillerConfiguration);
+	_temperatureSensorsConfiguration 
+		= new Communication::Models::Configurations::TemperatureSensors::TemperatureSensorsConfiguration(*temperatureSensorsConfiguration);
+	_pwmsConfiguration = new Communication::Models::Configurations::PwmsConfiguration(*pwmsConfiguration);
+
+	uint16_t resultedPayloadSize = _payloadSize
+		+ _pinsConfiguration->getJsonSize()
+		+ _chillerConfiguration->getJsonSize()
+		+ _timersConfiguration->getJsonSize()
+		+ _temperatureSensorsConfiguration->getJsonSize()
+		+ _pwmsConfiguration->getJsonSize()
+		+ Helpers::JsonHelper::getFloatJsonSizeWorkaround(2);
+	Communication::Abstractions::BaseSerializableObject::setJsonSize(resultedPayloadSize);
+
+	delete pinsConfiguration;
+	delete timersConfiguration;
+	delete chillerConfiguration;
+	delete temperatureSensorsConfiguration;
+	delete pwmsConfiguration;
+}
+
+void Communication::Models::Configurations::Configuration::clear()
+{
+	delete _pinsConfiguration;
+	delete _timersConfiguration;
+	delete _chillerConfiguration;
+	_temperatureSensorsConfiguration->clear();
+	delete _temperatureSensorsConfiguration;
+	_pwmsConfiguration->clear();
+	delete _pwmsConfiguration;
 }

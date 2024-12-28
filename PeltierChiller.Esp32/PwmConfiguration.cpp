@@ -13,6 +13,24 @@ void Communication::Models::Configurations::PwmConfiguration::init(uint8_t tacho
 	_setToMaxWhenChillerLoad = setToMaxWhenChillerLoad;
 	_pwmValues = pwmValues;
 	_type = type;
+	uint16_t itemsJsonSize = JSON_ARRAY_SIZE(_pwmValues->size());
+	for (int i = 0; i < _pwmValues->size(); i++)
+	{
+		itemsJsonSize += _pwmValues->get(i)->getJsonSize();
+	}
+	Communication::Abstractions::BaseSerializableObject::setJsonSize(_payloadSize 
+		+ itemsJsonSize + JSON_STRING_SIZE(_name.length()));
+}
+
+void Communication::Models::Configurations::PwmConfiguration::clear()
+{
+	for (int i = 0; i < _pwmValues->size(); i++)
+	{
+		delete _pwmValues->get(i);
+	}
+	_pwmValues->clear();
+	delete _pwmValues;
+	_name.clear();
 }
 
 uint8_t Communication::Models::Configurations::PwmConfiguration::getTachoPin()
@@ -43,4 +61,24 @@ LinkedList<Communication::Models::Configurations::PwmValueConfiguration*>* Commu
 PwmType Communication::Models::Configurations::PwmConfiguration::getPwmType()
 {
 	return _type;
+}
+
+DynamicJsonDocument Communication::Models::Configurations::PwmConfiguration::createPayload()
+{
+	DynamicJsonDocument document(Communication::Abstractions::BaseSerializableObject::getJsonSize());
+
+	document["Tacho"] = _tachoPin;
+	document["PWM"] = _pwmPin;
+	document["Name"] = _name;
+	document["SetToMaxWhenChillerLoad"] = _setToMaxWhenChillerLoad;
+
+	JsonArray valueConfiguration = document.createNestedArray("Value");
+	for (int i = 0; i < _pwmValues->size(); i++)
+	{
+		valueConfiguration.add((_pwmValues->get(i))->createPayload());
+	}
+
+	document["ControlType"] = static_cast<uint16_t>(_type);
+
+	return document;
 }

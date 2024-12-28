@@ -1,4 +1,6 @@
 #pragma once
+#ifndef _BaseSerializableObject_
+#define _BaseSerializableObject_ 
 
 #include <ArduinoJson.h>
 #include <ArduinoJson.hpp>
@@ -19,8 +21,9 @@ namespace Communication
 			BaseSerializableObject();
 
 			virtual DynamicJsonDocument createPayload() = 0;
-			uint16_t GetJsonSize();
+			uint16_t getJsonSize();
 		};
 	}
 }
+#endif
  

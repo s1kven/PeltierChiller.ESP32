@@ -1,35 +1,40 @@
 #pragma once
+#ifndef _BaseSensor_
+#define _BaseSensor_ 
 
 #include "TemperatureSensorTarget.cpp"
 #include "TemperatureSensorType.cpp"
 #include "BaseSerializableObject.h"
 
-namespace Models::TemperatureSensors
+namespace Models
 {
-
-	class BaseSensor :
-		public Communication::Abstractions::BaseSerializableObject
+	namespace TemperatureSensors
 	{
-	private:
-		uint16_t _payloadSize;
+		class BaseSensor :
+			public Communication::Abstractions::BaseSerializableObject
+		{
+		private:
+			uint16_t _payloadSize;
 
-		Models::Enums::TemperatureSensorTarget _sensorTarget;
-		Models::Enums::TemperatureSensorType _sensorType;
+			Models::Enums::TemperatureSensorTarget _sensorTarget;
+			Models::Enums::TemperatureSensorType _sensorType;
 
-	protected:
+		protected:
 
-		float _temperature = 0.0;
-		uint32_t _sensorRequestTimer = 0;
+			float _temperature = 0.0;
+			uint32_t _sensorRequestTimer = 0;
 
-	public:
+		public:
 
-		BaseSensor(Models::Enums::TemperatureSensorTarget _sensorTarget, Models::Enums::TemperatureSensorType _sensorType,
-			uint16_t payloadSize);
-		void init();
-		float getTemperature();
-		virtual void sensorRequest() = 0;
-		virtual DynamicJsonDocument createPayload() override;
-		Models::Enums::TemperatureSensorTarget getSensorTarget();
-		Models::Enums::TemperatureSensorType getSensorType();
-	};
+			BaseSensor(Models::Enums::TemperatureSensorTarget _sensorTarget, Models::Enums::TemperatureSensorType _sensorType,
+				uint16_t payloadSize);
+			void init();
+			float getTemperature();
+			virtual void sensorRequest() = 0;
+			virtual DynamicJsonDocument createPayload() override;
+			Models::Enums::TemperatureSensorTarget getSensorTarget();
+			Models::Enums::TemperatureSensorType getSensorType();
+		};
+	}
 }
+#endif

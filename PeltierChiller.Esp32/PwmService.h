@@ -1,4 +1,6 @@
 #pragma once
+#ifndef _PwmService_
+#define _PwmService_ 
 
 #include <LinkedList.h>
 #include "PwmsConfiguration.h"
@@ -30,3 +32,4 @@ namespace Services
 		uint32_t getUpdatePwmDelay();
 	};
 }
+#endif

@@ -1,6 +1,10 @@
 #pragma once
+#ifndef _CommandService_
+#define _CommandService_ 
 
 #include "BaseCommand.h"
+#include "SoftResetCommand.h"
+#include "UpdateConfigurationCommand.h"
 
 namespace Services
 {
@@ -12,3 +16,4 @@ namespace Services
 		void handleCommand(Models::Abstractions::BaseCommand* command);
 	};
 }
+#endif

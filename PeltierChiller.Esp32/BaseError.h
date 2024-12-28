@@ -1,4 +1,6 @@
 #pragma once
+#ifndef _BaseError_
+#define _BaseError_ 
 
 #include "BaseDeserializableObject.h"
 #include "BaseSerializableObject.h"
@@ -34,3 +36,4 @@ namespace Communication
 		};
 	}
 }
+#endif
