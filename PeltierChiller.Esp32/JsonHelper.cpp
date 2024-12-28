@@ -43,3 +43,8 @@ KeyValuePair<BaseSerializableObject**, uint8_t> Helpers::JsonHelper::convertToBa
 
 	return _result;
 }
+
+uint16_t Helpers::JsonHelper::getFloatJsonSizeWorkaround(uint16_t objectsCount)
+{
+	return JSON_STRING_SIZE(5) * objectsCount;
+}

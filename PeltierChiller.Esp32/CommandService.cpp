@@ -5,4 +5,5 @@
 void Services::CommandService::handleCommand(Models::Abstractions::BaseCommand* command)
 {
 	command->invoke();
+	command->clear();
 }

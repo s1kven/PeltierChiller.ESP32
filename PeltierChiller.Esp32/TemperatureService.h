@@ -1,4 +1,6 @@
 #pragma once
+#ifndef _TemperatureService_
+#define _TemperatureService_ 
 
 #include <LinkedList.h>
 #include <OneWire.h>
@@ -42,3 +44,4 @@ namespace Services
 		LinkedList<Models::TemperatureSensors::BaseSensor*>* getTemperatureSensors();
 	};
 }
+#endif

@@ -8,6 +8,7 @@ void Communication::Models::Configurations::PinsConfiguration::init(uint8_t powe
 	_chillerPsSignal = chillerPsSignal;
 	_chillerSignal = chillerSignal;
 	_pcVoltage = pcVoltage;
+	Communication::Abstractions::BaseSerializableObject::setJsonSize(_payloadSize);
 }
 
 uint8_t Communication::Models::Configurations::PinsConfiguration::getPowerButton()
@@ -33,6 +34,19 @@ uint8_t Communication::Models::Configurations::PinsConfiguration::getChillerSign
 uint8_t Communication::Models::Configurations::PinsConfiguration::getPcVoltage()
 {
 	return _pcVoltage;
+}
+
+DynamicJsonDocument Communication::Models::Configurations::PinsConfiguration::createPayload()
+{
+	DynamicJsonDocument document(Communication::Abstractions::BaseSerializableObject::getJsonSize());
+
+	document["PowerButton"] = _powerButton;
+	document["PowerSignal"] = _powerSignal;
+	document["ChillerPsSignal"] = _chillerPsSignal;
+	document["ChillerSignal"] = _chillerSignal;
+	document["PcVoltage"] = _pcVoltage;
+
+	return document;
 }
 
 void Communication::Models::Configurations::PinsConfiguration::init()

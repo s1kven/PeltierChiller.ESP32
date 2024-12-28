@@ -10,7 +10,7 @@ void Communication::Abstractions::BaseSerializableObject::setJsonSize(uint16_t j
     _jsonSize = jsonSize;
 }
 
-uint16_t Communication::Abstractions::BaseSerializableObject::GetJsonSize()
+uint16_t Communication::Abstractions::BaseSerializableObject::getJsonSize()
 {
     return _jsonSize;
 }

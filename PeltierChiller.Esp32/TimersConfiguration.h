@@ -1,10 +1,13 @@
 #pragma once
+#ifndef _TimersConfiguration_
+#define _TimersConfiguration_ 
 #if defined(ARDUINO) && ARDUINO >= 100
 #include "arduino.h"
 #else
 #include "WProgram.h"
 #endif
 #include "BaseDeserializableObject.h"
+#include "BaseSerializableObject.h"
 
 namespace Communication
 {
@@ -13,9 +16,11 @@ namespace Communication
 		namespace Configurations 
 		{
 			class TimersConfiguration :
-				public Abstractions::BaseDeserializableObject
+				public Abstractions::BaseDeserializableObject,
+				public Abstractions::BaseSerializableObject
 			{
 			private:
+				const uint16_t _payloadSize = JSON_OBJECT_SIZE(4);
 				uint32_t _buttonMinPressTime;
 				uint32_t _communicationDelay;
 				uint32_t _temperatureSensorsRequestDelay;
@@ -32,7 +37,10 @@ namespace Communication
 				uint32_t getCommunicationDelay();
 				uint32_t getTemperatureSensorsRequestDelay();
 				uint32_t getUpdatePwmDelay();
+
+				DynamicJsonDocument createPayload() override;
 			};
 		}
 	}
 }
+#endif

@@ -2,6 +2,23 @@
 
 #include "JsonService.h"
 
+String Services::JsonService::serializeObject(Communication::Enums::ResponseType _responseType, bool _success)
+{
+	StaticJsonDocument<JSON_OBJECT_SIZE(3)> response;
+	JsonObject responsePayload = response.to<JsonObject>();
+
+	responsePayload["ResponseType"] = static_cast<uint16_t>(_responseType);
+
+	JsonObject data = responsePayload.createNestedObject("Data");
+	data["Success"] = _success;
+
+	String serializedObject = response.as<String>();
+
+	response.clear();
+
+	return serializedObject;
+}
+
 String Services::JsonService::serializeObject(Communication::Abstractions::BaseSerializableObject* response)
 {
 	String serializedObject = response->createPayload().as<String>();
@@ -31,6 +48,23 @@ String Services::JsonService::serializeObject(
 	response.clear();
 
 	return serializedObject;
+}
+
+String Services::JsonService::serializeRequest(Communication::Abstractions::BaseSerializableObject* request,
+	Communication::Enums::RequestType requestType)
+{
+	DynamicJsonDocument requestJson(request->getJsonSize() + JSON_OBJECT_SIZE(2));
+
+	requestJson["RequestType"] = static_cast<uint16_t>(requestType);
+	
+	JsonObject dataJson = requestJson.createNestedObject("Data");
+	dataJson.set(request->createPayload().as<JsonObjectConst>());
+
+	String serializedRequest;
+	serializeJson(requestJson, serializedRequest);
+
+	requestJson.clear();
+	return serializedRequest;
 }
 
 Communication::Abstractions::BaseDeserializableObject* Services::JsonService::deserializeRequest(String& content)
@@ -82,7 +116,7 @@ uint16_t Services::JsonService::calculateJsonDocumentSize(
 	uint16_t documentSize = 0;
 	for (int i = 0; i < _models.value; i++)
 	{
-		documentSize += (*_models.key[i]).GetJsonSize();
+		documentSize += (*_models.key[i]).getJsonSize();
 	}
 	documentSize += _baseResponseSize + 8; // 8 - size of JsonArray
 
@@ -159,10 +193,15 @@ Communication::Abstractions::BaseDeserializableObject* Services::JsonService::de
 		content = deserializeConfiguration(data);
 		break;
 	case Communication::Enums::RequestType::softReset:
-		content = deserializeSoftReset();
+		content = deserializeSoftResetCommand();
+		break;
+	case Communication::Enums::RequestType::updateConfiguration:
+		content = deserializeUpdateConfigurationCommand(data);
+		break;
 	default:
 		break;
 	}
+
 	return content;
 }
 
@@ -313,10 +352,11 @@ Services::JsonService::deserializeBme280ListConfiguration(JsonObject data)
 			Communication::Models::Configurations::TemperatureSensors::Bme280Configuration* _bme280Configuration =
 				new Communication::Models::Configurations::TemperatureSensors::Bme280Configuration();
 			uint16_t address = items[i]["Address"];
+			String name = items[i]["Name"];
 			uint8_t digitTarget = items[i]["Target"];
 			TemperatureSensorTarget target = static_cast<TemperatureSensorTarget>(digitTarget);
 
-			_bme280Configuration->init(address, target);
+			_bme280Configuration->init(address, name, target);
 			_bme280Items->add(_bme280Configuration);
 		}
 	}
@@ -341,6 +381,7 @@ Services::JsonService::deserializeNtcListConfiguration(JsonObject data)
 			Communication::Models::Configurations::TemperatureSensors::NtcConfiguration* _ntcConfiguration =
 				new Communication::Models::Configurations::TemperatureSensors::NtcConfiguration();
 			uint16_t address = items[i]["Address"];
+			String name = items[i]["Name"];
 			uint8_t digitTarget = items[i]["Target"];
 			TemperatureSensorTarget target = static_cast<TemperatureSensorTarget>(digitTarget);
 			uint32_t resistance = items[i]["Resistance"];
@@ -349,7 +390,7 @@ Services::JsonService::deserializeNtcListConfiguration(JsonObject data)
 			float baseTemperature = items[i]["BaseTemperature"];
 			float supplyVoltage = items[i]["SupplyVoltage"];
 
-			_ntcConfiguration->init(address, target, resistance, resistanceNtc,
+			_ntcConfiguration->init(address, name, target, resistance, resistanceNtc,
 				bCoefficient, baseTemperature, supplyVoltage);
 			_ntcItems->add(_ntcConfiguration);
 		}
@@ -377,6 +418,7 @@ Services::JsonService::deserializeDs18b20ListConfiguration(JsonObject data)
 			Communication::Models::Configurations::TemperatureSensors::Ds18b20Configuration* _ds18b20Configuration =
 				new Communication::Models::Configurations::TemperatureSensors::Ds18b20Configuration();
 			JsonArray addressJson = items[i]["Address"];
+			String name = items[i]["Name"];
 			DeviceAddress address;
 			for (int j = 0; j < addressJson.size(); j++)
 			{
@@ -386,7 +428,7 @@ Services::JsonService::deserializeDs18b20ListConfiguration(JsonObject data)
 			uint8_t digitTarget = items[i]["Target"];
 			TemperatureSensorTarget target = static_cast<TemperatureSensorTarget>(digitTarget);
 
-			_ds18b20Configuration->init(address, target);
+			_ds18b20Configuration->init(address, name, target);
 			_ds18b20Items->add(_ds18b20Configuration);
 		}
 	}
@@ -434,11 +476,21 @@ Communication::Models::Configurations::PwmsConfiguration* Services::JsonService:
 
 #pragma region SoftReset
 
-Communication::Models::SoftResetCommand* Services::JsonService::deserializeSoftReset()
+Commands::SoftResetCommand* Services::JsonService::deserializeSoftResetCommand()
 {
-	return new Communication::Models::SoftResetCommand();
+	return new Commands::SoftResetCommand();
 }
 
 #pragma endregion SoftReset
+
+#pragma region UpdateConfigurationCommand
+
+Commands::UpdateConfigurationCommand* Services::JsonService::deserializeUpdateConfigurationCommand(
+	JsonObject data)
+{
+	return new Commands::UpdateConfigurationCommand(deserializeConfiguration(data));
+}
+
+#pragma endregion UpdateConfigurationCommand
 
 #pragma endregion Deserializers

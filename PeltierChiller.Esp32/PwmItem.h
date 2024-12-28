@@ -1,4 +1,6 @@
 #pragma once
+#ifndef _PwmItem_
+#define _PwmItem_ 
 
 #include <LinkedList.h>
 #include "Arduino.h"
@@ -45,3 +47,4 @@ namespace Models
 		DynamicJsonDocument createPayload() override;
 	};
 }
+#endif

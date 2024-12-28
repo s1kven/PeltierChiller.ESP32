@@ -19,6 +19,8 @@ void Communication::Models::Configurations::ChillerConfiguration::init(uint16_t 
 	_minIntegral = minIntegral;
 	_maxIntegral = maxIntegral;
 	_computePidDelay = computePidDelay;
+	Communication::Abstractions::BaseSerializableObject::setJsonSize(_payloadSize +
+		+ Helpers::JsonHelper::getFloatJsonSizeWorkaround(7));
 }
 
 uint16_t Communication::Models::Configurations::ChillerConfiguration::getPotentiometerAddress()
@@ -74,4 +76,23 @@ float Communication::Models::Configurations::ChillerConfiguration::getMaxIntegra
 uint32_t Communication::Models::Configurations::ChillerConfiguration::getComputePidDelay()
 {
 	return _computePidDelay;
+}
+
+DynamicJsonDocument Communication::Models::Configurations::ChillerConfiguration::createPayload()
+{
+	DynamicJsonDocument document(Communication::Abstractions::BaseSerializableObject::getJsonSize());
+
+	document["PotentiometerAddress"] = _potentiometerAddress;
+	document["MaxPotentiometerValue"] = _maxPotentiometerValue;
+	document["MinPotentiometerValue"] = _minPotentiometerValue;
+	document["Kp"] = serialized(String(_kp, 1));
+	document["Ki"] = serialized(String(_ki, 1));
+	document["Kd"] = serialized(String(_kd, 1));
+	document["Dt"] = serialized(String(_dt, 1));
+	document["PidRatio"] = serialized(String(_pidRatio, 1));
+	document["MinIntegral"] = serialized(String(_minIntegral, 1));
+	document["MaxIntegral"] = serialized(String(_maxIntegral, 1));
+	document["ComputePidDelay"] = _computePidDelay;
+
+	return document;
 }

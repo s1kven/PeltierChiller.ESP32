@@ -15,6 +15,8 @@ namespace Communication
             emptyColdCircuitSensors,
             emptyRoomSensors,
             invalidBmeConfiguration,
+            //files
+            failedWriteFile,
             //errorCommand
             invalidCommand
         };

@@ -1,4 +1,6 @@
 #pragma once
+#ifndef _JsonHelper_
+#define _JsonHelper_ 
 
 #include <LinkedList.h>
 #include "BaseSerializableObject.h"
@@ -15,10 +17,13 @@ namespace Helpers
 	class JsonHelper
 	{
 	public:
+
 		static KeyValuePair<BaseSerializableObject**, uint8_t> convertToBaseSerializableObjectArray(
 			LinkedList<Models::TemperatureSensors::BaseSensor*>* temperatureSensors);
 		static KeyValuePair<BaseSerializableObject**, uint8_t> convertToBaseSerializableObjectArray(
 			LinkedList<Models::PwmItem*>* pwmItems);
+		static uint16_t getFloatJsonSizeWorkaround(uint16_t objectsCount);
 	};
 }
+#endif
 

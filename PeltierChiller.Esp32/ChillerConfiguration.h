@@ -1,10 +1,14 @@
 #pragma once
+#ifndef _ChillerConfiguration_
+#define _ChillerConfiguration_ 
 #if defined(ARDUINO) && ARDUINO >= 100
 #include "arduino.h"
 #else
 #include "WProgram.h"
 #endif
 #include "BaseDeserializableObject.h"
+#include "BaseSerializableObject.h"
+#include "JsonHelper.h"
 
 namespace Communication
 {
@@ -13,9 +17,11 @@ namespace Communication
 		namespace Configurations 
 		{
 			class ChillerConfiguration :
-				public Abstractions::BaseDeserializableObject
+				public Abstractions::BaseDeserializableObject,
+				public Abstractions::BaseSerializableObject
 			{
 			private:
+				const uint16_t _payloadSize = JSON_OBJECT_SIZE(11);
 				uint16_t _potentiometerAddress;
 				uint16_t _maxPotentiometerValue;
 				uint16_t _minPotentiometerValue;
@@ -48,7 +54,10 @@ namespace Communication
 				float getMinIntegral();
 				float getMaxIntegral();
 				uint32_t getComputePidDelay();
+
+				DynamicJsonDocument createPayload() override;
 			};
 		}
 	}
 }
+#endif

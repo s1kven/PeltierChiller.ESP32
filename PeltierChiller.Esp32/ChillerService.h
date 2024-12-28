@@ -1,4 +1,6 @@
 #pragma once
+#ifndef _ChillerService_
+#define _ChillerService_ 
 
 #include <Wire.h>
 #include <LinkedList.h>
@@ -81,3 +83,4 @@ namespace Services
 		uint8_t getChillerLoadPercentage();
 	};
 }
+#endif

@@ -11,6 +11,7 @@ void Communication::Models::Configurations::TimersConfiguration::init(uint32_t b
 	_communicationDelay = communicationDelay;
 	_temperatureSensorsRequestDelay = temperatureSensorsRequestDelay;
 	_updatePwmDelay = updatePwmDelay;
+	Communication::Abstractions::BaseSerializableObject::setJsonSize(_payloadSize);
 }
 
 uint32_t Communication::Models::Configurations::TimersConfiguration::getButtonMinPressTime()
@@ -31,4 +32,16 @@ uint32_t Communication::Models::Configurations::TimersConfiguration::getTemperat
 uint32_t Communication::Models::Configurations::TimersConfiguration::getUpdatePwmDelay()
 {
 	return _updatePwmDelay;
+}
+
+DynamicJsonDocument Communication::Models::Configurations::TimersConfiguration::createPayload()
+{
+	DynamicJsonDocument document(_payloadSize);
+
+	document["ButtonMinPressTime"] = _buttonMinPressTime;
+	document["CommunicationDelay"] = _communicationDelay;
+	document["TemperatureSensorsRequestDelay"] = _temperatureSensorsRequestDelay;
+	document["UpdatePwmDelay"] = _updatePwmDelay;
+
+	return document;
 }

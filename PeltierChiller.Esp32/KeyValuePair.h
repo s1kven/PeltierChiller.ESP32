@@ -1,4 +1,6 @@
 #pragma once
+#ifndef _KeyValuePair_
+#define _KeyValuePair_ 
 
 namespace Models
 {
@@ -13,3 +15,4 @@ namespace Models
 		};
 	}
 }
+#endif

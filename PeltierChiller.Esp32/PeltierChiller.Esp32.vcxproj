@@ -143,9 +143,11 @@
     <ClCompile Include="PwmType.cpp" />
     <ClCompile Include="PwmValue.cpp" />
     <ClCompile Include="PwmValueConfiguration.cpp" />
+    <ClCompile Include="SdError.cpp" />
     <ClCompile Include="SoftResetCommand.cpp" />
     <ClCompile Include="TemperatureSensorsConfiguration.cpp" />
     <ClCompile Include="TimersConfiguration.cpp" />
+    <ClCompile Include="UpdateConfigurationCommand.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\arduino folders read me.txt">
@@ -191,11 +193,13 @@
     <ClInclude Include="PwmValueConfiguration.h" />
     <ClInclude Include="Rele.h" />
     <ClInclude Include="BaseSensor.h" />
+    <ClInclude Include="SdError.h" />
     <ClInclude Include="SerialCommunicationService.h" />
     <ClInclude Include="SoftResetCommand.h" />
     <ClInclude Include="TemperatureSensorsConfiguration.h" />
     <ClInclude Include="TemperatureService.h" />
     <ClInclude Include="TimersConfiguration.h" />
+    <ClInclude Include="UpdateConfigurationCommand.h" />
     <ClInclude Include="__vm\.PeltierChiller.Esp32.vsarduino.h" />
   </ItemGroup>
   <ItemGroup>

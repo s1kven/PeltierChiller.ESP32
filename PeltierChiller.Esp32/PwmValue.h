@@ -1,4 +1,6 @@
 #pragma once
+#ifndef _PwmValue_
+#define _PwmValue_ 
 
 #include "Arduino.h"
 
@@ -20,3 +22,4 @@ namespace Models
 		uint8_t getLoad();
 	};
 }
+#endif

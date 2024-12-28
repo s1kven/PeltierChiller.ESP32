@@ -1,4 +1,6 @@
 #pragma once
+#ifndef _Button_
+#define _Button_ 
 
 #include "Arduino.h"
 #include <stdint.h>
@@ -36,3 +38,4 @@ namespace Models
 		void setFlag(bool flag);
 	};
 }
+#endif

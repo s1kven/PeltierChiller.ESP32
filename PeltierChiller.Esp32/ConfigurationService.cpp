@@ -1,9 +1,8 @@
 #include "ConfigurationService.h"
 
-Services::ConfigurationService::ConfigurationService(FileService* fileService, JsonService* jsonService)
+const char* Services::ConfigurationService::getConfigPath()
 {
-	_fileService = fileService;
-	_jsonService = jsonService;
+	return _configPath;
 }
 
 Communication::Abstractions::BaseError* Services::ConfigurationService::readConfigurationFromSd()
@@ -18,14 +17,25 @@ Communication::Abstractions::BaseError* Services::ConfigurationService::readConf
 	}
 	else
 	{
-		currentConfiguration = static_cast<Communication::Models::Configurations::Configuration*>(deserializedObject);
-		return validateConfiguration(currentConfiguration, content);
+		_currentConfiguration = static_cast<Communication::Models::Configurations::Configuration*>(deserializedObject);
+		return validateConfiguration(_currentConfiguration, content);
 	}
 }
 
 Communication::Models::Configurations::Configuration* Services::ConfigurationService::getConfiguration()
 {
-	return currentConfiguration;
+	return _currentConfiguration;
+}
+
+void Services::ConfigurationService::changeConfiguration(Communication::Models::Configurations::Configuration* newConfiguration)
+{
+	_currentConfiguration->clear();
+	delete _currentConfiguration;
+}
+
+String Services::ConfigurationService::getJsonFromConfiguration(Communication::Models::Configurations::Configuration* configuration)
+{
+	return String();
 }
 
 Communication::Abstractions::BaseError* 

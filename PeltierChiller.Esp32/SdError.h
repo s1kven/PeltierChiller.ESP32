@@ -1,7 +1,6 @@
 #pragma once
-#ifndef _CommandError_
-#define _CommandError_ 
-
+#ifndef _SdError_
+#define _SdError_ 
 #include "BaseError.h"
 
 namespace Communication
@@ -10,17 +9,15 @@ namespace Communication
 	{
 		namespace Errors
 		{
-			class CommandError :
+			class SdError :
 				public Communication::Abstractions::BaseError
 			{
-			private:
-
 			protected:
 				void init() override;
 				virtual DynamicJsonDocument createPayload() override;
 
 			public:
-				CommandError(String invalidCommand);
+				SdError(Communication::Enums::ErrorCode code, const char* errorMessage, String invalidPayload);
 			};
 		}
 	}

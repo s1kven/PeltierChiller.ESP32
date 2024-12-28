@@ -1,4 +1,6 @@
 #pragma once
+#ifndef _Rele_
+#define _Rele_ 
 
 #include "ReleState.cpp"
 #include "Arduino.h"
@@ -29,3 +31,4 @@ namespace Models
 		DynamicJsonDocument createPayload() override;
 	};
 }
+#endif
