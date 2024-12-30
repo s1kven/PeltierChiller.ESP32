@@ -1,14 +1,13 @@
-// 
-// 
-// 
 #pragma once
 
 #include "BME280.h"
 
 Models::TemperatureSensors::BME280::BME280(uint8_t sensorAddress, Models::Enums::TemperatureSensorTarget sensorTarget) :
-	Models::TemperatureSensors::BaseSensor(sensorTarget, Models::Enums::TemperatureSensorType::BME280, _payloadSize)
+	Models::TemperatureSensors::BaseSensor(sensorTarget, Models::Enums::TemperatureSensorType::BME280)
 {
 	_sensorAddress = sensorAddress;
+	Communication::Abstractions::BaseSerializableObject::setJsonSize(
+		Models::TemperatureSensors::BaseSensor::getCommonPayloadSize() + _payloadSize);
 }
 
 void Models::TemperatureSensors::BME280::init()
@@ -45,14 +44,17 @@ void Models::TemperatureSensors::BME280::sensorRequest()
 
 DynamicJsonDocument Models::TemperatureSensors::BME280::createPayload()
 {
-	DynamicJsonDocument document(_payloadSize);
-	JsonObject payload = document.to<JsonObject>();
-	payload["Type"] = static_cast<uint16_t>(getSensorType());
-	payload["Target"] = static_cast<uint16_t>(getSensorTarget());
-	payload["Temperature"] = getTemperature();
-	payload["Pressure"] = getPressure();
-	payload["Humidity"] = getHumidity();
-	return document;
+	DynamicJsonDocument document = Models::TemperatureSensors::BaseSensor::createPayload();
+	DynamicJsonDocument bme280Document(Models::TemperatureSensors::BaseSensor::getJsonSize());
+	JsonObject payload = bme280Document.to<JsonObject>();
+	for (JsonPairConst kvp : document.as<JsonObjectConst>())
+	{
+		bme280Document[kvp.key()] = kvp.value();
+	}
+	payload["Pressure"] = _pressure;
+	payload["Humidity"] = _humidity;
+	document.clear();
+	return bme280Document;
 }
 
 uint8_t Models::TemperatureSensors::BME280::getSensorAddress()

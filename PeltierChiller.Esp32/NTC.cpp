@@ -5,7 +5,7 @@
 Models::TemperatureSensors::NTC::NTC(uint8_t sensorAddress, uint32_t resistance, uint16_t bCoefficient,
 	uint32_t resistanceNTC, Models::Enums::TemperatureSensorTarget sensorTarget, uint8_t baseNTCTemp,
 	float ntcVoltage, uint8_t adcResolution) :
-	Models::TemperatureSensors::BaseSensor(sensorTarget, Models::Enums::TemperatureSensorType::NTC, _payloadSize)
+	Models::TemperatureSensors::BaseSensor(sensorTarget, Models::Enums::TemperatureSensorType::NTC)
 {
 	_sensorAddress = sensorAddress;
 	_resistance = resistance;
@@ -14,6 +14,8 @@ Models::TemperatureSensors::NTC::NTC(uint8_t sensorAddress, uint32_t resistance,
 	_baseNTCTemp = baseNTCTemp;
 	_ntcVoltage = ntcVoltage;
 	_adcMaxValue = pow(2.0, adcResolution);
+	Communication::Abstractions::BaseSerializableObject::setJsonSize(
+		Models::TemperatureSensors::BaseSensor::getCommonPayloadSize());
 }
 
 float Models::TemperatureSensors::NTC::getTemperature()

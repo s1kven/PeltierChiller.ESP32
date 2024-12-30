@@ -9,6 +9,10 @@
 
 #include "CommunicationService.h"
 
+namespace Services {
+	class JsonService;
+}
+
 namespace Communication
 {
 	namespace Services
@@ -25,6 +29,7 @@ namespace Communication
 			void init() override;
 
 			void sendData(String data) override;
+			void sendResponse(Communication::Models::Responses::Response* response) override;
 
 			String readData() override;
 		};

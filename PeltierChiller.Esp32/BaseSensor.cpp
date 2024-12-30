@@ -2,14 +2,16 @@
 
 #include "BaseSensor.h"
 
-
-Models::TemperatureSensors::BaseSensor::BaseSensor(Models::Enums::TemperatureSensorTarget sensorTarget, 
-	Models::Enums::TemperatureSensorType sensorType, uint16_t payloadSize)
+Models::TemperatureSensors::BaseSensor::BaseSensor(Models::Enums::TemperatureSensorTarget sensorTarget,
+	Models::Enums::TemperatureSensorType sensorType)
 {
-	_payloadSize = payloadSize;
 	_sensorTarget = sensorTarget;
 	_sensorType = sensorType;
-	Communication::Abstractions::BaseSerializableObject::setJsonSize(_payloadSize);
+}
+
+const uint16_t Models::TemperatureSensors::BaseSensor::getCommonPayloadSize()
+{
+	return _commonPayloadSize + JSON_STRING_SIZE(_name.length());
 }
 
 void Models::TemperatureSensors::BaseSensor::init()
@@ -29,11 +31,12 @@ void Models::TemperatureSensors::BaseSensor::sensorRequest()
 
 DynamicJsonDocument Models::TemperatureSensors::BaseSensor::createPayload()
 {
-	DynamicJsonDocument document(_payloadSize);
+	DynamicJsonDocument document(Communication::Abstractions::BaseSerializableObject::getJsonSize());
 	JsonObject payload = document.to<JsonObject>();
-	payload["Type"] = static_cast<uint16_t>(getSensorType());
-	payload["Target"] = static_cast<uint16_t>(getSensorTarget());
-	payload["Temperature"] = getTemperature();
+	payload["Type"] = static_cast<uint16_t>(_sensorType);
+	payload["Target"] = static_cast<uint16_t>(_sensorTarget);
+	payload["Temperature"] = _temperature;
+	payload["Name"] = _name;
 	return document;
 }
 
@@ -45,4 +48,9 @@ Models::Enums::TemperatureSensorTarget Models::TemperatureSensors::BaseSensor::g
 Models::Enums::TemperatureSensorType Models::TemperatureSensors::BaseSensor::getSensorType()
 {
 	return _sensorType;
+}
+
+String Models::TemperatureSensors::BaseSensor::getName()
+{
+	return _name;
 }

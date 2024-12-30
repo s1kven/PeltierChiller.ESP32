@@ -24,20 +24,6 @@ namespace Services
 	class JsonService
 	{
 	private:
-		const uint16_t _baseResponseSize = 64; // DynamicJsonDocument(48) + responsePayload(8) + data(responsePayload)
-
-		uint16_t calculateJsonDocumentSize(
-			Models::Abstractions::KeyValuePair<Communication::Abstractions::BaseSerializableObject**, uint8_t> _models);
-
-		void buildResponseBasedOnType(JsonObject& _data,
-			Models::Abstractions::KeyValuePair<Communication::Abstractions::BaseSerializableObject**, uint8_t> _models,
-			Communication::Enums::ResponseType _responseType);
-
-		void buildTemperatureSensorsResponse(JsonObject& _data,
-			Models::Abstractions::KeyValuePair<Communication::Abstractions::BaseSerializableObject**, uint8_t> _models);
-		void buildPwmsResponse(JsonObject& _data,
-			Models::Abstractions::KeyValuePair<Communication::Abstractions::BaseSerializableObject**, uint8_t> _models);
-
 		uint32_t getDeserializedJsonSize(String& content);
 
 		Communication::Models::Errors::DeserializationError* buildError(DeserializationError error, String content);
@@ -67,9 +53,6 @@ namespace Services
 
 		String serializeObject(Communication::Enums::ResponseType _responseType, bool _success);
 		String serializeObject(Communication::Abstractions::BaseSerializableObject* response);
-		String serializeObject(
-			Models::Abstractions::KeyValuePair<Communication::Abstractions::BaseSerializableObject**, uint8_t> _models, 
-			Communication::Enums::ResponseType _responseType);
 		String serializeRequest(Communication::Abstractions::BaseSerializableObject* request, Communication::Enums::RequestType requestType);
 		Communication::Abstractions::BaseDeserializableObject* deserializeRequest(String& content);
 		Models::Abstractions::BaseCommand* deserializeCommand(String& content);

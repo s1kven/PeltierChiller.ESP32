@@ -15,8 +15,6 @@ namespace Models
 			public Models::TemperatureSensors::BaseSensor
 		{
 		private:
-			const uint16_t _payloadSize = JSON_OBJECT_SIZE(3);
-
 			DallasTemperature* _sensor;
 			uint8_t* _sensorAddress;
 

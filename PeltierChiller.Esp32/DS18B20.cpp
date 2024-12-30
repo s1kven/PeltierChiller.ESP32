@@ -3,9 +3,11 @@
 #include "DS18B20.h"
 
 Models::TemperatureSensors::DS18B20::DS18B20(uint8_t* sensorAddress, Models::Enums::TemperatureSensorTarget sensorTarget) :
-	Models::TemperatureSensors::BaseSensor(sensorTarget, Models::Enums::TemperatureSensorType::DS18B20, _payloadSize)
+	Models::TemperatureSensors::BaseSensor(sensorTarget, Models::Enums::TemperatureSensorType::DS18B20)
 {
 	_sensorAddress = sensorAddress;
+	Communication::Abstractions::BaseSerializableObject::setJsonSize(
+		Models::TemperatureSensors::BaseSensor::getCommonPayloadSize());
 }
 
 void Models::TemperatureSensors::DS18B20::init(DallasTemperature* sensor, uint8_t _temperaturePrecision)

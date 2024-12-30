@@ -20,22 +20,21 @@ void Commands::UpdateConfigurationCommand::invoke()
 	String configurationJson = _jsonService->serializeRequest(_configuration, Communication::Enums::RequestType::configuration);
 
 	uint32_t bytesWrite = _fileService->writeFile(configPath, configurationJson);
+
+	Communication::Models::Responses::Response* updateConfigResponse;
 	if (configurationJson.length() + 2 == bytesWrite) // Success config updated (2 is perhaps /n)
 	{
-		_communicationService->sendData(
-			_jsonService->serializeObject(Communication::Enums::ResponseType::updateConfiguration, true));
+		updateConfigResponse = new Communication::Models::Responses::Response(
+			Communication::Enums::ResponseType::updateConfiguration, true, nullptr, "");
 	}
-	else 
+	else
 	{
-		Communication::Models::Errors::SdError* sdError =
-			new Communication::Models::Errors::SdError(Communication::Enums::ErrorCode::failedWriteFile,
-				_failedWriteConfigMessage, configurationJson);
-		String errorJson = _jsonService->serializeObject(sdError);
-		_communicationService->sendData(errorJson);
-
-		errorJson.clear();
-		delete sdError;
+		updateConfigResponse = new Communication::Models::Responses::Response(
+			Communication::Enums::ResponseType::updateConfiguration, false,
+			nullptr, _failedWriteConfigMessage + configurationJson);
 	}
+
+	_communicationService->sendResponse(updateConfigResponse);
 }
 
 void Commands::UpdateConfigurationCommand::clear()

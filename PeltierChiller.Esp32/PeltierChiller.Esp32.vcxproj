@@ -112,6 +112,9 @@
   <ItemGroup>
     <ClCompile Include="BaseCommand.cpp" />
     <ClCompile Include="BaseError.cpp" />
+    <ClCompile Include="GetPwmItemsData.cpp" />
+    <ClCompile Include="GetTemperatureSensorsData.cpp" />
+    <ClCompile Include="Response.cpp" />
     <ClCompile Include="BaseSerializableObject.cpp" />
     <ClCompile Include="Bme280Configuration.cpp" />
     <ClCompile Include="Bme280ListConfiguration.cpp" />
@@ -157,6 +160,10 @@
     <ClInclude Include="BaseCommand.h" />
     <ClInclude Include="BaseDeserializableObject.h" />
     <ClInclude Include="BaseError.h" />
+    <ClInclude Include="BaseResponseData.h" />
+    <ClInclude Include="GetPwmItemsData.h" />
+    <ClInclude Include="GetTemperatureSensorsData.h" />
+    <ClInclude Include="Response.h" />
     <ClInclude Include="BaseSerializableObject.h" />
     <ClInclude Include="BME280.h">
       <SubType>
