@@ -40,6 +40,8 @@
 #include "CommandService.h"
 #include "CommandError.h"
 #include "UpdateConfigurationCommand.h"
+#include "GetTemperatureSensorsData.h"
+#include "GetPwmItemsData.h"
 
 const String SOFTWARE_VERSION = "0.1.0";
 
@@ -92,9 +94,10 @@ void setup()
 
 	if (*configurationError)
 	{
-		String errorConfigurationRead = (*_jsonService).serializeObject(configurationError);
-
-		_communicationService->sendData(errorConfigurationRead);
+		Communication::Models::Responses::Response* configReadResponse =
+			new Communication::Models::Responses::Response(Communication::Enums::ResponseType::errorConfiguration, false,
+				nullptr, configurationError->getErrorMessage());
+		_communicationService->sendResponse(configReadResponse);
 		return;
 	}
 
@@ -170,15 +173,18 @@ void sendCommunicationDataTask(void* argument)
 	{
 		vTaskDelay(_communicationDelay / portTICK_PERIOD_MS);
 		xSemaphoreTake(mutex, portMAX_DELAY);
-		String temperatureResponse = (*_jsonService).serializeObject(
-			Helpers::JsonHelper::convertToBaseSerializableObjectArray(_chillerService->getTemperatureService()->getTemperatureSensors()),
-			Communication::Enums::ResponseType::temperatureSensors);
-		_communicationService->sendData(temperatureResponse);
+		Communication::Models::Responses::Response* temperatureSensorsResponse = 
+			new Communication::Models::Responses::Response(Communication::Enums::ResponseType::temperatureSensors,
+				new Communication::Models::Responses::ResponsesData::GetTemperatureSensorsData(
+					_chillerService->getTemperatureService()->getTemperatureSensors()));
+		_communicationService->sendResponse(temperatureSensorsResponse);
 
-		String pwmsResponse = (*_jsonService).serializeObject(
-			Helpers::JsonHelper::convertToBaseSerializableObjectArray(_pwmService->getPwmItems()),
-			Communication::Enums::ResponseType::pwms);
-		_communicationService->sendData(pwmsResponse);
+		Communication::Models::Responses::Response* pwmItemsResponse =
+			new Communication::Models::Responses::Response(Communication::Enums::ResponseType::pwms,
+				new Communication::Models::Responses::ResponsesData::GetPwmItemsData(
+					_pwmService->getPwmItems()));
+		_communicationService->sendResponse(pwmItemsResponse);
+
 		xSemaphoreGive(mutex);
 	}
 }
@@ -199,14 +205,14 @@ void readCommunicationDataTask(void* argument)
 			}
 			else
 			{
-				Communication::Models::Errors::CommandError* commandError =
-					new Communication::Models::Errors::CommandError(request);
-				String errorCommandJson = _jsonService->serializeObject(commandError);
-				_communicationService->sendData(errorCommandJson);
-
-				errorCommandJson.clear();
-				delete commandError;
+				Communication::Models::Responses::Response* commandResponse =
+					new Communication::Models::Responses::Response(Communication::Enums::ResponseType::errorCommand, false,
+						nullptr, "Failed to parse command." + request);
+				_communicationService->sendResponse(commandResponse);
 			}
+
+			Serial.println(esp_get_free_heap_size());
+			Serial.println(uxTaskGetStackHighWaterMark(NULL));
 		}
 
 		request.clear();

@@ -26,37 +26,12 @@ String Services::JsonService::serializeObject(Communication::Abstractions::BaseS
 	return serializedObject;
 }
 
-String Services::JsonService::serializeObject(
-	Models::Abstractions::KeyValuePair<Communication::Abstractions::BaseSerializableObject**, uint8_t> _models,
-	Communication::Enums::ResponseType _responseType)
-{
-	uint16_t responseDocumentSize = calculateJsonDocumentSize(_models);
-
-	DynamicJsonDocument response(responseDocumentSize);
-	JsonObject responsePayload = response.to<JsonObject>();
-
-	responsePayload["ResponseType"] = static_cast<uint16_t>(_responseType);
-
-	JsonObject data = responsePayload.createNestedObject("Data");
-
-	buildResponseBasedOnType(data, _models, _responseType);
-
-	delete _models.key;
-
-	String serializedObject = response.as<String>();
-
-	response.clear();
-
-	return serializedObject;
-}
-
 String Services::JsonService::serializeRequest(Communication::Abstractions::BaseSerializableObject* request,
 	Communication::Enums::RequestType requestType)
 {
 	DynamicJsonDocument requestJson(request->getJsonSize() + JSON_OBJECT_SIZE(2));
 
 	requestJson["RequestType"] = static_cast<uint16_t>(requestType);
-	
 	JsonObject dataJson = requestJson.createNestedObject("Data");
 	dataJson.set(request->createPayload().as<JsonObjectConst>());
 
@@ -110,20 +85,6 @@ Models::Abstractions::BaseCommand* Services::JsonService::deserializeCommand(Str
 	return command;
 }
 
-uint16_t Services::JsonService::calculateJsonDocumentSize(
-	Models::Abstractions::KeyValuePair<Communication::Abstractions::BaseSerializableObject**, uint8_t> _models)
-{
-	uint16_t documentSize = 0;
-	for (int i = 0; i < _models.value; i++)
-	{
-		documentSize += (*_models.key[i]).getJsonSize();
-	}
-	documentSize += _baseResponseSize + 8; // 8 - size of JsonArray
-
-	return documentSize;
-}
-
-
 uint32_t Services::JsonService::getDeserializedJsonSize(String& content)
 {
 	DynamicJsonDocument cacheDocument(65536); //64 KB
@@ -160,35 +121,12 @@ Communication::Enums::ErrorCode Services::JsonService::errorCodeConverter(Deseri
 	}
 }
 
-void Services::JsonService::buildResponseBasedOnType(JsonObject& _data,
-	Models::Abstractions::KeyValuePair<Communication::Abstractions::BaseSerializableObject**, uint8_t> _models,
-	Communication::Enums::ResponseType _responseType)
-{
-	switch (_responseType)
-	{
-	case Communication::Enums::ResponseType::unknown:
-		break;
-	case Communication::Enums::ResponseType::temperatureSensors:
-		buildTemperatureSensorsResponse(_data, _models);
-		break;
-	case Communication::Enums::ResponseType::pwms:
-		buildPwmsResponse(_data, _models);
-		break;
-
-	default:
-		break;
-	}
-}
-
 Communication::Abstractions::BaseDeserializableObject* Services::JsonService::deserializeRequestByType(
 	Communication::Enums::RequestType _requestType, JsonObject data, String request)
 {
 	Communication::Abstractions::BaseDeserializableObject* content;
 	switch (_requestType)
 	{
-	case Communication::Enums::RequestType::unknown :
-		content = new Communication::Models::Errors::DeserializationError(Communication::Enums::ErrorCode::invalidInput, "", request);
-		break;
 	case Communication::Enums::RequestType::configuration:
 		content = deserializeConfiguration(data);
 		break;
@@ -198,36 +136,14 @@ Communication::Abstractions::BaseDeserializableObject* Services::JsonService::de
 	case Communication::Enums::RequestType::updateConfiguration:
 		content = deserializeUpdateConfigurationCommand(data);
 		break;
+	case Communication::Enums::RequestType::unknown:
 	default:
+		content = new Communication::Models::Errors::DeserializationError(Communication::Enums::ErrorCode::invalidInput, "", request);
 		break;
 	}
 
 	return content;
 }
-
-#pragma region buildResponse
-
-void Services::JsonService::buildTemperatureSensorsResponse(JsonObject& _data,
-	Models::Abstractions::KeyValuePair<Communication::Abstractions::BaseSerializableObject**, uint8_t> _models)
-{
-	JsonArray temperatureSensors = _data.createNestedArray("TemperatureSensors");
-	for (int i = 0; i < _models.value; i++)
-	{
-		temperatureSensors.add((*_models.key[i]).createPayload());
-	}
-}
-
-void Services::JsonService::buildPwmsResponse(JsonObject& _data,
-	Models::Abstractions::KeyValuePair<Communication::Abstractions::BaseSerializableObject**, uint8_t> _models)
-{
-	JsonArray temperatureSensors = _data.createNestedArray("Pwms");
-	for (int i = 0; i < _models.value; i++)
-	{
-		temperatureSensors.add((*_models.key[i]).createPayload());
-	}
-}
-
-#pragma endregion buildResponse
 
 #pragma region Deserializers
 

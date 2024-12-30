@@ -1,4 +1,3 @@
-// BME280.h
 #pragma once
 #ifndef _BME280_
 #define _BME280_ 
@@ -14,7 +13,7 @@ namespace Models
 			public Models::TemperatureSensors::BaseSensor
 		{
 		private:
-			const uint16_t _payloadSize = JSON_OBJECT_SIZE(5);
+			const uint16_t _payloadSize = JSON_OBJECT_SIZE(2);
 
 			GyverBME280 bme;
 			uint8_t _sensorAddress;

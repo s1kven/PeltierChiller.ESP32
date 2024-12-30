@@ -58,6 +58,12 @@
     <Filter Include="Source Files\Commands">
       <UniqueIdentifier>{eb586c41-d67d-4c77-87a5-f812dd1862e9}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Source Files\Communication\Models\Responses">
+      <UniqueIdentifier>{f2c89b5a-3e59-4f52-930d-4146b2392374}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Communication\Models\Responses\ResponsesData">
+      <UniqueIdentifier>{34064f27-8647-4174-893e-36d38d4364b9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="src\arduino folders read me.txt">
@@ -196,6 +202,18 @@
     </ClInclude>
     <ClInclude Include="SdError.h">
       <Filter>Source Files\Communication\Models\Errors</Filter>
+    </ClInclude>
+    <ClInclude Include="BaseResponseData.h">
+      <Filter>Source Files\Communication\Models\Responses\ResponsesData</Filter>
+    </ClInclude>
+    <ClInclude Include="GetPwmItemsData.h">
+      <Filter>Source Files\Communication\Models\Responses\ResponsesData</Filter>
+    </ClInclude>
+    <ClInclude Include="GetTemperatureSensorsData.h">
+      <Filter>Source Files\Communication\Models\Responses\ResponsesData</Filter>
+    </ClInclude>
+    <ClInclude Include="Response.h">
+      <Filter>Source Files\Communication\Models\Responses</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
@@ -349,6 +367,15 @@
     </ClCompile>
     <ClCompile Include="SdError.cpp">
       <Filter>Source Files\Communication\Models\Errors</Filter>
+    </ClCompile>
+    <ClCompile Include="Response.cpp">
+      <Filter>Source Files\Communication\Models\Responses</Filter>
+    </ClCompile>
+    <ClCompile Include="GetTemperatureSensorsData.cpp">
+      <Filter>Source Files\Communication\Models\Responses\ResponsesData</Filter>
+    </ClCompile>
+    <ClCompile Include="GetPwmItemsData.cpp">
+      <Filter>Source Files\Communication\Models\Responses\ResponsesData</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

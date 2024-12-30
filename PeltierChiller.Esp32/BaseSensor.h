@@ -14,26 +14,28 @@ namespace Models
 			public Communication::Abstractions::BaseSerializableObject
 		{
 		private:
-			uint16_t _payloadSize;
+			const uint16_t _commonPayloadSize = JSON_OBJECT_SIZE(4);
 
 			Models::Enums::TemperatureSensorTarget _sensorTarget;
 			Models::Enums::TemperatureSensorType _sensorType;
+			String _name;
 
 		protected:
-
 			float _temperature = 0.0;
 			uint32_t _sensorRequestTimer = 0;
 
+			const uint16_t getCommonPayloadSize();
+
 		public:
 
-			BaseSensor(Models::Enums::TemperatureSensorTarget _sensorTarget, Models::Enums::TemperatureSensorType _sensorType,
-				uint16_t payloadSize);
+			BaseSensor(Models::Enums::TemperatureSensorTarget _sensorTarget, Models::Enums::TemperatureSensorType _sensorType);
 			void init();
 			float getTemperature();
 			virtual void sensorRequest() = 0;
 			virtual DynamicJsonDocument createPayload() override;
 			Models::Enums::TemperatureSensorTarget getSensorTarget();
 			Models::Enums::TemperatureSensorType getSensorType();
+			String getName();
 		};
 	}
 }
