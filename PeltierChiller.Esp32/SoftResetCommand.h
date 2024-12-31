@@ -3,21 +3,29 @@
 #define _SoftResetCommand_ 
 
 #include "Esp.h"
-#include "BaseDeserializableObject.h"
-#include "BaseCommand.h"
+#include "BaseRequest.h"
 
-namespace Commands
+namespace Communication
 {
-	class SoftResetCommand :
-		public ::Models::Abstractions::BaseCommand
+	namespace Models
 	{
-	protected:
-		void init() override;
+		namespace Requests
+		{
+			namespace Commands
+			{
+				class SoftResetCommand :
+					public Communication::Models::Requests::BaseRequest
+				{
+				protected:
+					void init() override;
 
-	public:
-		SoftResetCommand();
-		void invoke() override;
-		void clear() override;
-	};
+				public:
+					SoftResetCommand();
+					void invoke() override;
+					void clear() override;
+				};
+			}
+		}
+	}
 }
 #endif

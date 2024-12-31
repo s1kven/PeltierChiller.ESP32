@@ -5,21 +5,23 @@ const char* Services::ConfigurationService::getConfigPath()
 	return _configPath;
 }
 
-Communication::Abstractions::BaseError* Services::ConfigurationService::readConfigurationFromSd()
+Communication::Models::Responses::Response* Services::ConfigurationService::readConfigurationFromSd()
 {
 	String content = _fileService->readFile(_configPath);
 
-	Communication::Abstractions::BaseDeserializableObject* deserializedObject = _jsonService->deserializeRequest(content);
-	Communication::Models::Errors::DeserializationError* error = dynamic_cast<Communication::Models::Errors::DeserializationError*>(deserializedObject);
-	if (error)
+	Communication::Models::Requests::BaseRequest* request = _jsonService->deserializeRequest(content);
+	Communication::Models::Requests::ErrorRequest* errorRequest = dynamic_cast<Communication::Models::Requests::ErrorRequest*>(request);
+	Communication::Models::Requests::ConfigurationRequest* configurationRequest = dynamic_cast<Communication::Models::Requests::ConfigurationRequest*>(request);
+	if (errorRequest != nullptr)
 	{
-		return error;
+		return new Communication::Models::Responses::Response(Communication::Enums::ResponseType::errorConfiguration, errorRequest->getMessage());
 	}
-	else
+	else if(configurationRequest != nullptr)
 	{
-		_currentConfiguration = static_cast<Communication::Models::Configurations::Configuration*>(deserializedObject);
+		_currentConfiguration = static_cast<Communication::Models::Configurations::Configuration*>(configurationRequest->getConfiguration());
 		return validateConfiguration(_currentConfiguration, content);
 	}
+	return new Communication::Models::Responses::Response(Communication::Enums::ResponseType::errorConfiguration, "");
 }
 
 Communication::Models::Configurations::Configuration* Services::ConfigurationService::getConfiguration()
@@ -38,34 +40,34 @@ String Services::ConfigurationService::getJsonFromConfiguration(Communication::M
 	return String();
 }
 
-Communication::Abstractions::BaseError* 
+Communication::Models::Responses::Response*
 	Services::ConfigurationService::validateConfiguration(Communication::Models::Configurations::Configuration* configuration, String content)
 {
 	if (configuration->getTemperatureSensorsConfiguration()->getBmeListConfiguration()->getItems()->size() == 0
 		&& configuration->getTemperatureSensorsConfiguration()->getDs18b20ListConfiguration()->getItems()->size() == 0
 		&& configuration->getTemperatureSensorsConfiguration()->getNtcListConfiguration()->getItems()->size() == 0)
 	{
-		return new Communication::Models::Errors::ConfigurationError(Communication::Enums::ErrorCode::emptySensors, nullptr, content);
+		return new Communication::Models::Responses::Response(Communication::Enums::ResponseType::errorConfiguration, _emptySensorsListError);
 	}
 	if (!isSensorsAvailable(configuration, Models::Enums::TemperatureSensorTarget::coldCircuit))
 	{
-		return new Communication::Models::Errors::ConfigurationError(Communication::Enums::ErrorCode::emptyColdCircuitSensors, nullptr, content);
+		return new Communication::Models::Responses::Response(Communication::Enums::ResponseType::errorConfiguration, _noColdCircuitSensorsError);
 	}
 	if (configuration->getChillerType() == Models::Enums::ChillerType::deltaTemperature)
 	{
 		if (!isSensorsAvailable(configuration, Models::Enums::TemperatureSensorTarget::room))
 		{
-			return new Communication::Models::Errors::ConfigurationError(Communication::Enums::ErrorCode::emptyRoomSensors, nullptr, content);
+			return new Communication::Models::Responses::Response(Communication::Enums::ResponseType::errorConfiguration, _noRoomSensorsError);
 		}
 	}
 	if (configuration->getChillerType() == Models::Enums::ChillerType::dewPointTemperature 
 		&& (configuration->getTemperatureSensorsConfiguration()->getBmeListConfiguration()->getItems()->size() == 0 
 		   || !anyBmeTargetToRoom(configuration->getTemperatureSensorsConfiguration()->getBmeListConfiguration())))
 	{
-		return new Communication::Models::Errors::ConfigurationError(Communication::Enums::ErrorCode::invalidBmeConfiguration, nullptr, content);
+		return new Communication::Models::Responses::Response(Communication::Enums::ResponseType::errorConfiguration, _noBmeSensorsError);
 	}
 
-	return new Communication::Models::Errors::DeserializationError(Communication::Enums::ErrorCode::ok, nullptr, content);
+	return new Communication::Models::Responses::Response(Communication::Enums::ResponseType::errorConfiguration, true, nullptr, "");
 }
 
 bool Services::ConfigurationService::isSensorsAvailable(Communication::Models::Configurations::Configuration* configuration,

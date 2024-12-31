@@ -27,6 +27,16 @@ void Communication::Services::SerialCommunicationService::sendResponse(
 	delete response;
 }
 
+Communication::Models::Requests::BaseRequest* Communication::Services::SerialCommunicationService::readRequest()
+{
+	return Communication::Services::CommunicationService::readRequest(readData());
+}
+
+uint32_t Communication::Services::SerialCommunicationService::availableToRead()
+{
+	return Serial.available();
+}
+
 String Communication::Services::SerialCommunicationService::readData()
 {
 	if (Serial.available())

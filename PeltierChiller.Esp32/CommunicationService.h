@@ -7,6 +7,7 @@
 #include "WProgram.h"
 #endif
 #include "Response.h"
+#include "BaseRequest.h"
 
 namespace Services {
 	class JsonService;
@@ -20,13 +21,18 @@ namespace Communication
 	{
 		class CommunicationService
 		{
+		protected:
+			virtual Communication::Models::Requests::BaseRequest* readRequest(String payload);
+
 		public:
 
+			virtual String readData() = 0;
 			virtual void init() = 0;
 
 			virtual void sendData(String data) = 0;
 			virtual void sendResponse(Communication::Models::Responses::Response* response) = 0;
-			virtual String readData() = 0;
+			virtual Communication::Models::Requests::BaseRequest* readRequest() = 0;
+			virtual uint32_t availableToRead() = 0;
 		};
 	}
 }

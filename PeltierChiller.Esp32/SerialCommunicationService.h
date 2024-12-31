@@ -23,15 +23,19 @@ namespace Communication
 		private:
 			uint32_t _baudRate;
 
+		protected:
+
 		public:
 			SerialCommunicationService(uint32_t baudRate);
 
+			String readData() override;
 			void init() override;
 
 			void sendData(String data) override;
 			void sendResponse(Communication::Models::Responses::Response* response) override;
 
-			String readData() override;
+			Communication::Models::Requests::BaseRequest* readRequest() override;
+			uint32_t availableToRead() override;
 		};
 	}
 }

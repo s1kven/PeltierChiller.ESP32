@@ -5,14 +5,13 @@
 #include "Configuration.h"
 #include "FileService.h"
 #include "JsonService.h"
-#include "BaseError.h"
-#include "DeserializationError.h"
-#include "ConfigurationError.h"
 #include "ChillerType.cpp"
 #include "TemperatureSensorTarget.cpp"
 #include "Bme280Configuration.h"
 #include "Ds18b20Configuration.h"
 #include "NtcConfiguration.h"
+#include "Response.h"
+#include "ResponseType.cpp"
 
 namespace Services
 {
@@ -29,16 +28,21 @@ namespace Services
 	private:
 		const char* _configPath = "/Configuration.json";
 
+		String _emptySensorsListError = "Failed to configure chiller. Empty temperature sensors list! Add at least one sensor to cold circuit.";
+		String _noColdCircuitSensorsError = "Failed to configure chiller. No temperature sensor was found for the cold circuit.";
+		String _noRoomSensorsError = "Failed to configure chiller. No temperature sensor was found for the room. To use delta temperature chiller type (ChillerType: 2), you need to connect at least one room sensor.";
+		String _noBmeSensorsError = "Failed to configure chiller. No BME280 temperature sensor was found for the room. To use dew point chiller type (ChillerType: 3), you need to connect at least one room BME280 sensor.";
+
 		Communication::Models::Configurations::Configuration* _currentConfiguration;
 
-		Communication::Abstractions::BaseError* validateConfiguration(Communication::Models::Configurations::Configuration* configuration, String content);
+		Communication::Models::Responses::Response* validateConfiguration(Communication::Models::Configurations::Configuration* configuration, String content);
 		bool isSensorsAvailable(Communication::Models::Configurations::Configuration* configuration, Models::Enums::TemperatureSensorTarget target);
 		bool anyBmeTargetToRoom(Communication::Models::Configurations::TemperatureSensors::Bme280ListConfiguration* bme280ListConfiguration);
 	public:
 
 		const char* getConfigPath();
 
-		Communication::Abstractions::BaseError* readConfigurationFromSd();
+		Communication::Models::Responses::Response* readConfigurationFromSd();
 
 		Communication::Models::Configurations::Configuration* getConfiguration();
 

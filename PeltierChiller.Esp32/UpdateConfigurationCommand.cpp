@@ -2,18 +2,19 @@
 #include "ConfigurationService.h"
 #include "UpdateConfigurationCommand.h"
 
-Commands::UpdateConfigurationCommand::UpdateConfigurationCommand(Communication::Models::Configurations::Configuration* configuration)
-	: Models::Abstractions::BaseCommand(Communication::Enums::RequestType::updateConfiguration)
+Communication::Models::Requests::Commands::UpdateConfigurationCommand::UpdateConfigurationCommand(
+	Communication::Models::Configurations::Configuration* configuration)
+	: Communication::Models::Requests::BaseRequest(Communication::Enums::RequestType::updateConfiguration)
 {
 	_configuration = new Communication::Models::Configurations::Configuration(*configuration);
 	delete configuration;
 }
 
-void Commands::UpdateConfigurationCommand::init()
+void Communication::Models::Requests::Commands::UpdateConfigurationCommand::init()
 {
 }
 
-void Commands::UpdateConfigurationCommand::invoke()
+void Communication::Models::Requests::Commands::UpdateConfigurationCommand::invoke()
 {
 	const char* configPath = _configurationService->getConfigPath();
 
@@ -37,7 +38,7 @@ void Commands::UpdateConfigurationCommand::invoke()
 	_communicationService->sendResponse(updateConfigResponse);
 }
 
-void Commands::UpdateConfigurationCommand::clear()
+void Communication::Models::Requests::Commands::UpdateConfigurationCommand::clear()
 {
 	_configuration->clear();
 	delete _configuration;

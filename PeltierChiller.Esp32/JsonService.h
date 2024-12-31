@@ -13,9 +13,10 @@
 #include "Configuration.h"
 #include "BaseSerializableObject.h"
 #include "KeyValuePair.h"
-#include "DeserializationError.h"
 #include "PwmValueConfiguration.h"
 #include "ChillerType.cpp"
+#include "ErrorRequest.h"
+#include "ConfigurationRequest.h"
 #include "SoftResetCommand.h"
 #include "UpdateConfigurationCommand.h"
 
@@ -24,14 +25,10 @@ namespace Services
 	class JsonService
 	{
 	private:
-		uint32_t getDeserializedJsonSize(String& content);
-
-		Communication::Models::Errors::DeserializationError* buildError(DeserializationError error, String content);
-		Communication::Enums::ErrorCode errorCodeConverter(DeserializationError error);
-
-		Communication::Abstractions::BaseDeserializableObject* deserializeRequestByType(
+		Communication::Models::Requests::BaseRequest* deserializeRequestByType(
 			Communication::Enums::RequestType _requestType, JsonObject data, String request);
 
+		Communication::Models::Requests::ConfigurationRequest* deserializeConfigurationRequest(JsonObject data);
 		Communication::Models::Configurations::Configuration* deserializeConfiguration(JsonObject data);
 		Communication::Models::Configurations::PinsConfiguration* deserializePinsConfiguration(JsonObject data);
 		Communication::Models::Configurations::TimersConfiguration* deserializeTimersConfiguration(JsonObject data);
@@ -46,16 +43,14 @@ namespace Services
 			deserializeDs18b20ListConfiguration(JsonObject data);
 		Communication::Models::Configurations::PwmsConfiguration* deserializePwmsConfiguration(JsonArray items);
 
-		Commands::SoftResetCommand* deserializeSoftResetCommand();
-		Commands::UpdateConfigurationCommand* deserializeUpdateConfigurationCommand(JsonObject data);
+		Communication::Models::Requests::Commands::SoftResetCommand* deserializeSoftResetCommand();
+		Communication::Models::Requests::Commands::UpdateConfigurationCommand* deserializeUpdateConfigurationCommand(JsonObject data);
 
 	public:
 
-		String serializeObject(Communication::Enums::ResponseType _responseType, bool _success);
 		String serializeObject(Communication::Abstractions::BaseSerializableObject* response);
 		String serializeRequest(Communication::Abstractions::BaseSerializableObject* request, Communication::Enums::RequestType requestType);
-		Communication::Abstractions::BaseDeserializableObject* deserializeRequest(String& content);
-		Models::Abstractions::BaseCommand* deserializeCommand(String& content);
+		Communication::Models::Requests::BaseRequest* deserializeRequest(String content);
 	};
 }
 #endif

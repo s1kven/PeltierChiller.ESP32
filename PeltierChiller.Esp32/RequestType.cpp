@@ -8,7 +8,9 @@ namespace Communication
             configuration = 1,
             //commands
             softReset = 50,
-            updateConfiguration = 51
+            updateConfiguration = 51,
+            //errors
+            errorDeserialization = 101
         };
     }
 }

@@ -110,8 +110,9 @@
     <DebuggerFlavor>VisualMicroDebugger</DebuggerFlavor>
   </PropertyGroup>
   <ItemGroup>
-    <ClCompile Include="BaseCommand.cpp" />
-    <ClCompile Include="BaseError.cpp" />
+    <ClCompile Include="BaseRequest.cpp" />
+    <ClCompile Include="ConfigurationRequest.cpp" />
+    <ClCompile Include="ErrorRequest.cpp" />
     <ClCompile Include="GetPwmItemsData.cpp" />
     <ClCompile Include="GetTemperatureSensorsData.cpp" />
     <ClCompile Include="Response.cpp" />
@@ -120,16 +121,12 @@
     <ClCompile Include="Bme280ListConfiguration.cpp" />
     <ClCompile Include="ChillerConfiguration.cpp" />
     <ClCompile Include="ChillerType.cpp" />
-    <ClCompile Include="CommandError.cpp" />
-    <ClCompile Include="CommandService.cpp" />
+    <ClCompile Include="RequestService.cpp" />
     <ClCompile Include="Configuration.cpp" />
     <ClCompile Include="CommunicationService.cpp" />
-    <ClCompile Include="ConfigurationError.cpp" />
     <ClCompile Include="ConfigurationService.cpp" />
-    <ClCompile Include="DeserializationError.cpp" />
     <ClCompile Include="Ds18b20Configuration.cpp" />
     <ClCompile Include="Ds18b20ListConfiguration.cpp" />
-    <ClCompile Include="ErrorCode.cpp" />
     <ClCompile Include="FileService.cpp" />
     <ClCompile Include="JsonHelper.cpp" />
     <ClCompile Include="JsonService.cpp" />
@@ -146,7 +143,6 @@
     <ClCompile Include="PwmType.cpp" />
     <ClCompile Include="PwmValue.cpp" />
     <ClCompile Include="PwmValueConfiguration.cpp" />
-    <ClCompile Include="SdError.cpp" />
     <ClCompile Include="SoftResetCommand.cpp" />
     <ClCompile Include="TemperatureSensorsConfiguration.cpp" />
     <ClCompile Include="TimersConfiguration.cpp" />
@@ -157,10 +153,11 @@
     </None>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BaseCommand.h" />
+    <ClInclude Include="BaseRequest.h" />
     <ClInclude Include="BaseDeserializableObject.h" />
-    <ClInclude Include="BaseError.h" />
     <ClInclude Include="BaseResponseData.h" />
+    <ClInclude Include="ConfigurationRequest.h" />
+    <ClInclude Include="ErrorRequest.h" />
     <ClInclude Include="GetPwmItemsData.h" />
     <ClInclude Include="GetTemperatureSensorsData.h" />
     <ClInclude Include="Response.h" />
@@ -173,13 +170,10 @@
     <ClInclude Include="Bme280ListConfiguration.h" />
     <ClInclude Include="Button.h" />
     <ClInclude Include="ChillerConfiguration.h" />
-    <ClInclude Include="CommandError.h" />
-    <ClInclude Include="CommandService.h" />
+    <ClInclude Include="RequestService.h" />
     <ClInclude Include="Configuration.h" />
     <ClInclude Include="CommunicationService.h" />
-    <ClInclude Include="ConfigurationError.h" />
     <ClInclude Include="ConfigurationService.h" />
-    <ClInclude Include="DeserializationError.h" />
     <ClInclude Include="Ds18b20Configuration.h" />
     <ClInclude Include="Ds18b20ListConfiguration.h" />
     <ClInclude Include="FileService.h" />
@@ -200,7 +194,6 @@
     <ClInclude Include="PwmValueConfiguration.h" />
     <ClInclude Include="Rele.h" />
     <ClInclude Include="BaseSensor.h" />
-    <ClInclude Include="SdError.h" />
     <ClInclude Include="SerialCommunicationService.h" />
     <ClInclude Include="SoftResetCommand.h" />
     <ClInclude Include="TemperatureSensorsConfiguration.h" />
