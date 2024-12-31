@@ -12,7 +12,7 @@ namespace Communication
             updateConfiguration = 51,
             //errors
             errorConfiguration = 100,
-            errorCommand = 101,
+            errorRequest = 101,
             errorDeserialization = 102,
             errorSd = 103
         };

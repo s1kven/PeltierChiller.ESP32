@@ -58,3 +58,8 @@ void Communication::Models::Responses::Response::clear()
 		delete _data;
 	}
 }
+
+bool Communication::Models::Responses::Response::getSuccess()
+{
+	return _success;
+}

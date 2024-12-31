@@ -40,6 +40,7 @@ namespace Communication
 				DynamicJsonDocument createPayload() override;
 
 				void clear();
+				bool getSuccess();
 			};
 		}
 	}

@@ -9,13 +9,10 @@
 #include "WProgram.h"
 #endif
 #include "BaseDeserializableObject.h"
-#include "BaseCommand.h"
+#include "BaseRequest.h"
 #include "Configuration.h"
-#include "DeserializationError.h"
-//#include "ConfigurationService.h"
 #include "CommunicationService.h"
 #include "FileService.h"
-#include "SdError.h"
 
 namespace Services {
 	class JsonService;
@@ -28,23 +25,31 @@ extern Services::JsonService* _jsonService;
 extern Communication::Services::CommunicationService* _communicationService;
 extern Services::FileService* _fileService;
 
-namespace Commands
+namespace Communication
 {
-
-	class UpdateConfigurationCommand :
-		public ::Models::Abstractions::BaseCommand
+	namespace Models
 	{
-	private:
-		const char* _failedWriteConfigMessage = "Failed write configuration to SD.";
-		Communication::Models::Configurations::Configuration* _configuration;
+		namespace Requests
+		{
+			namespace Commands
+			{
+				class UpdateConfigurationCommand :
+					public Communication::Models::Requests::BaseRequest
+				{
+				private:
+					const char* _failedWriteConfigMessage = "Failed write configuration to SD.";
+					Communication::Models::Configurations::Configuration* _configuration;
 
-	protected:
-		void init() override;
+				protected:
+					void init() override;
 
-	public:
-		void invoke() override;
-		void clear() override;
-		UpdateConfigurationCommand(Communication::Models::Configurations::Configuration* configuration);
-	};
+				public:
+					void invoke() override;
+					void clear() override;
+					UpdateConfigurationCommand(Communication::Models::Configurations::Configuration* configuration);
+				};
+			}
+		}
+	}
 }
 #endif

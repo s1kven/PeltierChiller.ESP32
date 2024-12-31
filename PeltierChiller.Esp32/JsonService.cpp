@@ -2,23 +2,6 @@
 
 #include "JsonService.h"
 
-String Services::JsonService::serializeObject(Communication::Enums::ResponseType _responseType, bool _success)
-{
-	StaticJsonDocument<JSON_OBJECT_SIZE(3)> response;
-	JsonObject responsePayload = response.to<JsonObject>();
-
-	responsePayload["ResponseType"] = static_cast<uint16_t>(_responseType);
-
-	JsonObject data = responsePayload.createNestedObject("Data");
-	data["Success"] = _success;
-
-	String serializedObject = response.as<String>();
-
-	response.clear();
-
-	return serializedObject;
-}
-
 String Services::JsonService::serializeObject(Communication::Abstractions::BaseSerializableObject* response)
 {
 	String serializedObject = response->createPayload().as<String>();
@@ -42,112 +25,54 @@ String Services::JsonService::serializeRequest(Communication::Abstractions::Base
 	return serializedRequest;
 }
 
-Communication::Abstractions::BaseDeserializableObject* Services::JsonService::deserializeRequest(String& content)
+Communication::Models::Requests::BaseRequest* Services::JsonService::deserializeRequest(String content)
 {
-	uint32_t documentSize = getDeserializedJsonSize(content);
-	DynamicJsonDocument document(documentSize);
+	Communication::Models::Requests::BaseRequest* request = nullptr;
+	DynamicJsonDocument document(65536);
 	DeserializationError error = deserializeJson(document, content);
-
-	Communication::Abstractions::BaseDeserializableObject* deserializedObject;
 	if (error)
 	{
-		deserializedObject = buildError(error, content);
-		document.clear();
-		return deserializedObject;
+		request = new Communication::Models::Requests::ErrorRequest(Communication::Enums::RequestType::errorDeserialization, 
+			content.c_str(), error.c_str());
 	}
 	else 
 	{
 		uint8_t type = document["RequestType"];
 		JsonObject data = document["Data"];
-
-		deserializedObject = deserializeRequestByType(static_cast<Communication::Enums::RequestType>(type), data, content);
-		document.clear();
-		return deserializedObject;
+		
+		request = deserializeRequestByType(static_cast<Communication::Enums::RequestType>(type), data, content);
 	}
+	document.clear();
+	return request;
 }
 
-Models::Abstractions::BaseCommand* Services::JsonService::deserializeCommand(String& content)
-{
-	Communication::Abstractions::BaseDeserializableObject* deserializableCommand =
-		Services::JsonService::deserializeRequest(content);
-	Communication::Models::Errors::DeserializationError* deserializedError = 
-		dynamic_cast<Communication::Models::Errors::DeserializationError*>(deserializableCommand);
-	Models::Abstractions::BaseCommand* command = dynamic_cast<Models::Abstractions::BaseCommand*>(
-		deserializableCommand);
-	if (deserializedError)
-	{
-		delete deserializedError;
-	}
-	else
-	{
-		delete deserializableCommand;
-	}
-	return command;
-}
-
-uint32_t Services::JsonService::getDeserializedJsonSize(String& content)
-{
-	DynamicJsonDocument cacheDocument(65536); //64 KB
-	DeserializationError error = deserializeJson(cacheDocument, content);
-
-	uint32_t documentSize = cacheDocument.memoryUsage();
-
-	cacheDocument.clear();
-
-	return documentSize;
-}
-
-Communication::Models::Errors::DeserializationError* Services::JsonService::buildError(DeserializationError error, String content)
-{
-	return new Communication::Models::Errors::DeserializationError(errorCodeConverter(error), error.c_str(), content);
-}
-
-Communication::Enums::ErrorCode Services::JsonService::errorCodeConverter(DeserializationError error)
-{
-	switch (error.code())
-	{
-	case error.Ok:
-		return Communication::Enums::ErrorCode::ok;
-	case error.EmptyInput:
-		return Communication::Enums::ErrorCode::emptyInput;
-	case error.IncompleteInput:
-		return Communication::Enums::ErrorCode::incompleteInput;
-	case error.InvalidInput:
-		return Communication::Enums::ErrorCode::invalidInput;
-	case error.NoMemory:
-		return Communication::Enums::ErrorCode::noMemory;
-	case error.TooDeep:
-		return Communication::Enums::ErrorCode::tooDeep;
-	}
-}
-
-Communication::Abstractions::BaseDeserializableObject* Services::JsonService::deserializeRequestByType(
+Communication::Models::Requests::BaseRequest* Services::JsonService::deserializeRequestByType(
 	Communication::Enums::RequestType _requestType, JsonObject data, String request)
 {
-	Communication::Abstractions::BaseDeserializableObject* content;
 	switch (_requestType)
 	{
 	case Communication::Enums::RequestType::configuration:
-		content = deserializeConfiguration(data);
-		break;
+		return deserializeConfigurationRequest(data);
 	case Communication::Enums::RequestType::softReset:
-		content = deserializeSoftResetCommand();
-		break;
+		return deserializeSoftResetCommand();
 	case Communication::Enums::RequestType::updateConfiguration:
-		content = deserializeUpdateConfigurationCommand(data);
-		break;
+		return deserializeUpdateConfigurationCommand(data);
 	case Communication::Enums::RequestType::unknown:
 	default:
-		content = new Communication::Models::Errors::DeserializationError(Communication::Enums::ErrorCode::invalidInput, "", request);
-		break;
+		String emptyString = String();
+		return new Communication::Models::Requests::ErrorRequest(_requestType,
+			request.c_str(), emptyString.c_str());
 	}
-
-	return content;
 }
 
 #pragma region Deserializers
 
 #pragma region Configurations
+
+Communication::Models::Requests::ConfigurationRequest* Services::JsonService::deserializeConfigurationRequest(JsonObject data)
+{
+	return new Communication::Models::Requests::ConfigurationRequest(deserializeConfiguration(data));
+}
 
 Communication::Models::Configurations::Configuration* Services::JsonService::deserializeConfiguration(JsonObject data)
 {
@@ -392,19 +317,19 @@ Communication::Models::Configurations::PwmsConfiguration* Services::JsonService:
 
 #pragma region SoftReset
 
-Commands::SoftResetCommand* Services::JsonService::deserializeSoftResetCommand()
+Communication::Models::Requests::Commands::SoftResetCommand* Services::JsonService::deserializeSoftResetCommand()
 {
-	return new Commands::SoftResetCommand();
+	return new Communication::Models::Requests::Commands::SoftResetCommand();
 }
 
 #pragma endregion SoftReset
 
 #pragma region UpdateConfigurationCommand
 
-Commands::UpdateConfigurationCommand* Services::JsonService::deserializeUpdateConfigurationCommand(
+Communication::Models::Requests::Commands::UpdateConfigurationCommand* Services::JsonService::deserializeUpdateConfigurationCommand(
 	JsonObject data)
 {
-	return new Commands::UpdateConfigurationCommand(deserializeConfiguration(data));
+	return new Communication::Models::Requests::Commands::UpdateConfigurationCommand(deserializeConfiguration(data));
 }
 
 #pragma endregion UpdateConfigurationCommand

@@ -37,8 +37,7 @@
 #include "FileService.h"
 #include "ConfigurationService.h"
 #include "PwmService.h"
-#include "CommandService.h"
-#include "CommandError.h"
+#include "RequestService.h"
 #include "UpdateConfigurationCommand.h"
 #include "GetTemperatureSensorsData.h"
 #include "GetPwmItemsData.h"
@@ -46,8 +45,6 @@
 const String SOFTWARE_VERSION = "0.1.0";
 
 const uint8_t SD_CS = 5;
-
-Communication::Abstractions::BaseError* configurationError;
 
 uint16_t _communicationDelay;
 
@@ -63,7 +60,7 @@ Services::ConfigurationService* _configurationService;
 
 Services::PwmService* _pwmService;
 
-Services::CommandService* _commandService;
+Services::RequestService* _requestService;
 
 void setup()  
 {
@@ -72,7 +69,7 @@ void setup()
 	_communicationService = new Communication::Services::SerialCommunicationService(460800);
 	_communicationService->init();
 
-	_commandService = new Services::CommandService();
+	_requestService = new Services::RequestService();
 
 	_fileService = new Services::FileService();
 	_fileService->init(SD_CS);
@@ -80,7 +77,7 @@ void setup()
 	_jsonService = new Services::JsonService();
 
 	_configurationService = new Services::ConfigurationService();
-	configurationError = _configurationService->readConfigurationFromSd();
+	Communication::Models::Responses::Response* configurationResponse = _configurationService->readConfigurationFromSd();
 
 	SemaphoreHandle_t communicationMutex = xSemaphoreCreateMutex();
 	xTaskCreate(
@@ -92,12 +89,9 @@ void setup()
 		NULL
 	);
 
-	if (*configurationError)
+	if (!configurationResponse->getSuccess())
 	{
-		Communication::Models::Responses::Response* configReadResponse =
-			new Communication::Models::Responses::Response(Communication::Enums::ResponseType::errorConfiguration, false,
-				nullptr, configurationError->getErrorMessage());
-		_communicationService->sendResponse(configReadResponse);
+		_communicationService->sendResponse(configurationResponse);
 		return;
 	}
 
@@ -195,27 +189,11 @@ void readCommunicationDataTask(void* argument)
 	while (true)
 	{
 		xSemaphoreTake(mutex, portMAX_DELAY);
-		String request = _communicationService->readData();
-		if (request.length() > 0)
+		if (_communicationService->availableToRead())
 		{
-			Models::Abstractions::BaseCommand* command = _jsonService->deserializeCommand(request);
-			if (command != nullptr)
-			{
-				_commandService->handleCommand(command);
-			}
-			else
-			{
-				Communication::Models::Responses::Response* commandResponse =
-					new Communication::Models::Responses::Response(Communication::Enums::ResponseType::errorCommand, false,
-						nullptr, "Failed to parse command." + request);
-				_communicationService->sendResponse(commandResponse);
-			}
-
-			Serial.println(esp_get_free_heap_size());
-			Serial.println(uxTaskGetStackHighWaterMark(NULL));
+			Communication::Models::Requests::BaseRequest* request = _communicationService->readRequest();
+			_requestService->handleRequest(request);
 		}
-
-		request.clear();
 		xSemaphoreGive(mutex);
 	}
 }

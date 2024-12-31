@@ -1,19 +1,19 @@
 #include "SoftResetCommand.h"
 
-void Commands::SoftResetCommand::init()
+void Communication::Models::Requests::Commands::SoftResetCommand::init()
 {
 }
 
-Commands::SoftResetCommand::SoftResetCommand() 
-	: Models::Abstractions::BaseCommand(Communication::Enums::RequestType::softReset)
+Communication::Models::Requests::Commands::SoftResetCommand::SoftResetCommand()
+	: Communication::Models::Requests::BaseRequest(Communication::Enums::RequestType::softReset)
 {
 }
 
-void Commands::SoftResetCommand::invoke()
+void Communication::Models::Requests::Commands::SoftResetCommand::invoke()
 {
 	ESP.restart();
 }
 
-void Commands::SoftResetCommand::clear()
+void Communication::Models::Requests::Commands::SoftResetCommand::clear()
 {
 }
