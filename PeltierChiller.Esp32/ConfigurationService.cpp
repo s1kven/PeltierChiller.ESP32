@@ -1,5 +1,10 @@
 #include "ConfigurationService.h"
 
+Services::ConfigurationService::ConfigurationService()
+{
+	_currentTempConfiguration = nullptr;
+}
+
 const char* Services::ConfigurationService::getConfigPath()
 {
 	return _configPath;
@@ -31,13 +36,25 @@ Communication::Models::Configurations::Configuration* Services::ConfigurationSer
 
 void Services::ConfigurationService::changeConfiguration(Communication::Models::Configurations::Configuration* newConfiguration)
 {
-	_currentConfiguration->clear();
-	delete _currentConfiguration;
+	_isChangeConfiguration = true;
+	if (_currentTempConfiguration != nullptr)
+	{
+		_currentTempConfiguration->clear();
+		delete _currentTempConfiguration;
+	}
+
+	_currentTempConfiguration = newConfiguration;
+	initConfiguration(_currentTempConfiguration);
 }
 
-String Services::ConfigurationService::getJsonFromConfiguration(Communication::Models::Configurations::Configuration* configuration)
+void Services::ConfigurationService::initConfiguration()
 {
-	return String();
+	initConfiguration(_currentConfiguration);
+}
+
+bool Services::ConfigurationService::isChangeConfiguration()
+{
+	return _isChangeConfiguration;
 }
 
 Communication::Models::Responses::Response*
@@ -121,4 +138,39 @@ bool Services::ConfigurationService::anyBmeTargetToRoom(Communication::Models::C
 	}
 
 	return false;
+}
+
+void Services::ConfigurationService::initConfiguration(Communication::Models::Configurations::Configuration* configuration)
+{
+	Services::TemperatureService* oldTemperatureService = _temperatureService;
+	Services::PwmService* oldPwmService = _pwmService;
+	Services::ChillerService* oldChillerService = _chillerService;
+
+	_communicationDelay = configuration->getTimersConfiguration()->getCommunicationDelay();
+
+	_temperatureService = new Services::TemperatureService(configuration->getTemperatureSensorsConfiguration());
+
+	_pwmService = new Services::PwmService(
+		configuration->getTimersConfiguration()->getUpdatePwmDelay(),
+		configuration->getPwmsConfiguration());
+
+	_chillerService = new Services::ChillerService(configuration);
+
+	if (oldTemperatureService != nullptr)
+	{
+		oldTemperatureService->clear();
+		delete oldTemperatureService;
+	}
+	if (oldPwmService != nullptr)
+	{
+		oldPwmService->clear();
+		delete oldPwmService;
+	}
+	if (oldChillerService != nullptr)
+	{
+		oldChillerService->clear();
+		delete oldChillerService;
+	}
+
+	_isChangeConfiguration = false;
 }

@@ -308,6 +308,7 @@ namespace Models
 				uint8_t adcResolution = 12);
 			float getTemperature();
 			void sensorRequest() override;
+			void clear() override;
 			DynamicJsonDocument createPayload() override;
 			uint8_t getSensorAddress();
 		};

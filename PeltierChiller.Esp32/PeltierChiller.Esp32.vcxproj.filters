@@ -209,6 +209,9 @@
     <ClInclude Include="ConfigurationRequest.h">
       <Filter>Source Files\Communication\Models\Requests</Filter>
     </ClInclude>
+    <ClInclude Include="UpdateTempConfigurationCommand.h">
+      <Filter>Source Files\Communication\Models\Requests\Commands</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ReleState.cpp">
@@ -358,6 +361,9 @@
     </ClCompile>
     <ClCompile Include="ConfigurationRequest.cpp">
       <Filter>Source Files\Communication\Models\Requests</Filter>
+    </ClCompile>
+    <ClCompile Include="UpdateTempConfigurationCommand.cpp">
+      <Filter>Source Files\Communication\Models\Requests\Commands</Filter>
     </ClCompile>
   </ItemGroup>
 </Project>

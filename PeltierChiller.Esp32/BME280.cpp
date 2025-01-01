@@ -42,6 +42,10 @@ void Models::TemperatureSensors::BME280::sensorRequest()
 	}
 }
 
+void Models::TemperatureSensors::BME280::clear()
+{
+}
+
 DynamicJsonDocument Models::TemperatureSensors::BME280::createPayload()
 {
 	DynamicJsonDocument document = Models::TemperatureSensors::BaseSensor::createPayload();

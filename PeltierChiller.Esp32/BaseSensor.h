@@ -32,6 +32,7 @@ namespace Models
 			void init();
 			float getTemperature();
 			virtual void sensorRequest() = 0;
+			virtual void clear() = 0;
 			virtual DynamicJsonDocument createPayload() override;
 			Models::Enums::TemperatureSensorTarget getSensorTarget();
 			Models::Enums::TemperatureSensorType getSensorType();

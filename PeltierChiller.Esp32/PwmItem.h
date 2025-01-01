@@ -45,6 +45,8 @@ namespace Models
 		Models::Enums::PwmType getControlType();
 		uint16_t getRpm();
 		DynamicJsonDocument createPayload() override;
+
+		void clear();
 	};
 }
 #endif

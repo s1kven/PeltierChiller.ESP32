@@ -48,7 +48,9 @@ const uint8_t SD_CS = 5;
 
 uint16_t _communicationDelay;
 
-Services::ChillerService * _chillerService;
+Services::TemperatureService* _temperatureService;
+
+Services::ChillerService* _chillerService;
  
 Services::JsonService* _jsonService;
 
@@ -64,6 +66,10 @@ Services::RequestService* _requestService;
 
 void setup()  
 {
+	_temperatureService = nullptr;
+	_chillerService = nullptr;
+	_pwmService = nullptr;
+
 	Wire.begin();
 
 	_communicationService = new Communication::Services::SerialCommunicationService(460800);
@@ -95,14 +101,7 @@ void setup()
 		return;
 	}
 
-	initGlobalConfiguration();
-
-	_chillerService = new Services::ChillerService(_configurationService->getConfiguration());
-
-	_pwmService = new Services::PwmService(
-		_configurationService->getConfiguration()->getTimersConfiguration()->getUpdatePwmDelay(), 
-		_configurationService->getConfiguration()->getPwmsConfiguration(),
-		_chillerService->getTemperatureService());
+	_configurationService->initConfiguration();
 
 	SemaphoreHandle_t mutex = xSemaphoreCreateMutex();
 
@@ -142,9 +141,12 @@ void manageChillerTask(void* argument)
 	while (true)
 	{
 		vTaskDelay(10 / portTICK_PERIOD_MS);
-		xSemaphoreTake(mutex, portMAX_DELAY);
-		(*_chillerService).manageChiller();
-		xSemaphoreGive(mutex);
+		if (!_configurationService->isChangeConfiguration())
+		{
+			xSemaphoreTake(mutex, portMAX_DELAY);
+			_chillerService->manageChiller();
+			xSemaphoreGive(mutex);
+		}
 	}
 }
 
@@ -154,9 +156,12 @@ void handlePwmsTask(void* argument)
 	while (true)
 	{
 		vTaskDelay(_pwmService->getUpdatePwmDelay() / portTICK_PERIOD_MS);
-		xSemaphoreTake(mutex, portMAX_DELAY);
-		_pwmService->handlePwms((*_chillerService).getChillerLoadPercentage());
-		xSemaphoreGive(mutex);
+		if (!_configurationService->isChangeConfiguration())
+		{
+			xSemaphoreTake(mutex, portMAX_DELAY);
+			_pwmService->handlePwms(_chillerService->getChillerLoadPercentage());
+			xSemaphoreGive(mutex);
+		}
 	}
 }
 
@@ -166,20 +171,23 @@ void sendCommunicationDataTask(void* argument)
 	while (true)
 	{
 		vTaskDelay(_communicationDelay / portTICK_PERIOD_MS);
-		xSemaphoreTake(mutex, portMAX_DELAY);
-		Communication::Models::Responses::Response* temperatureSensorsResponse = 
-			new Communication::Models::Responses::Response(Communication::Enums::ResponseType::temperatureSensors,
-				new Communication::Models::Responses::ResponsesData::GetTemperatureSensorsData(
-					_chillerService->getTemperatureService()->getTemperatureSensors()));
-		_communicationService->sendResponse(temperatureSensorsResponse);
+		if (!_configurationService->isChangeConfiguration())
+		{
+			xSemaphoreTake(mutex, portMAX_DELAY);
+			Communication::Models::Responses::Response* temperatureSensorsResponse =
+				new Communication::Models::Responses::Response(Communication::Enums::ResponseType::temperatureSensors,
+					new Communication::Models::Responses::ResponsesData::GetTemperatureSensorsData(
+						_temperatureService->getTemperatureSensors()));
+			_communicationService->sendResponse(temperatureSensorsResponse);
 
-		Communication::Models::Responses::Response* pwmItemsResponse =
-			new Communication::Models::Responses::Response(Communication::Enums::ResponseType::pwms,
-				new Communication::Models::Responses::ResponsesData::GetPwmItemsData(
-					_pwmService->getPwmItems()));
-		_communicationService->sendResponse(pwmItemsResponse);
+			Communication::Models::Responses::Response* pwmItemsResponse =
+				new Communication::Models::Responses::Response(Communication::Enums::ResponseType::pwms,
+					new Communication::Models::Responses::ResponsesData::GetPwmItemsData(
+						_pwmService->getPwmItems()));
+			_communicationService->sendResponse(pwmItemsResponse);
 
-		xSemaphoreGive(mutex);
+			xSemaphoreGive(mutex);
+		}
 	}
 }
 
@@ -196,11 +204,6 @@ void readCommunicationDataTask(void* argument)
 		}
 		xSemaphoreGive(mutex);
 	}
-}
-
-void initGlobalConfiguration()
-{
-	_communicationDelay = _configurationService->getConfiguration()->getTimersConfiguration()->getCommunicationDelay();
 }
 
 #endif

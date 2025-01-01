@@ -11,6 +11,8 @@ Models::PwmItem::PwmItem(uint8_t tachoPin, uint8_t pwmPin, String name, int8_t s
 	_controlType = controlType;
 	_updatePwmDelay = updatePwmDelay;
 	init();
+	Communication::Abstractions::BaseSerializableObject::setJsonSize(
+		_payloadSize + JSON_STRING_SIZE(_name.length()));
 }
 
 uint8_t Models::PwmItem::getTachoPin()
@@ -55,12 +57,22 @@ uint16_t Models::PwmItem::getRpm()
 
 DynamicJsonDocument Models::PwmItem::createPayload()
 {
-	DynamicJsonDocument document(_payloadSize + getName().length());
+	DynamicJsonDocument document(Communication::Abstractions::BaseSerializableObject::getJsonSize());
 	JsonObject payload = document.to<JsonObject>();
 	payload["ControlType"] = static_cast<uint16_t>(getControlType());
 	payload["Name"] = getName();
 	payload["RPM"] = getRpm();
 	return document;
+}
+
+void Models::PwmItem::clear()
+{
+	for (int i = 0; i < _values->size(); i++)
+	{
+		delete _values->get(i);
+	}
+	_values->clear();
+	delete _values;
 }
 
 void Models::PwmItem::init()

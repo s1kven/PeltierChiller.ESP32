@@ -10,6 +10,7 @@ namespace Communication
             //commands
             softReset = 50,
             updateConfiguration = 51,
+            updateTempConfiguration = 52,
             //errors
             errorConfiguration = 100,
             errorRequest = 101,

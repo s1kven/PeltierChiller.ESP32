@@ -42,6 +42,8 @@ namespace Services
 		void requestSensors(uint16_t _sensorsRequestDelay);
 		TemperatureService(Communication::Models::Configurations::TemperatureSensors::TemperatureSensorsConfiguration* configuration);
 		LinkedList<Models::TemperatureSensors::BaseSensor*>* getTemperatureSensors();
+
+		void clear();
 	};
 }
 #endif
