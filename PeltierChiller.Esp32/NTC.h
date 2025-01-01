@@ -304,7 +304,7 @@ namespace Models
 		public:
 
 			NTC(uint8_t sensorAddress, uint32_t resistance, uint16_t bCoefficient, uint32_t resistanceNTC,
-				Models::Enums::TemperatureSensorTarget sensorTarget, uint8_t baseNTCTemp = 25, float ntcVoltage = 3.3,
+				Models::Enums::TemperatureSensorTarget sensorTarget, String name, uint8_t baseNTCTemp = 25, float ntcVoltage = 3.3,
 				uint8_t adcResolution = 12);
 			float getTemperature();
 			void sensorRequest() override;

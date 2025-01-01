@@ -23,7 +23,7 @@ namespace Models
 
 		public:
 
-			DS18B20(uint8_t* sensorAddress, Models::Enums::TemperatureSensorTarget _sensorTarget);
+			DS18B20(uint8_t* sensorAddress, Models::Enums::TemperatureSensorTarget _sensorTarget, String name);
 			void init(DallasTemperature* sensor, uint8_t _temperaturePrecision);
 			float getTemperature();
 			void sensorRequest() override;

@@ -3,10 +3,11 @@
 #include "BaseSensor.h"
 
 Models::TemperatureSensors::BaseSensor::BaseSensor(Models::Enums::TemperatureSensorTarget sensorTarget,
-	Models::Enums::TemperatureSensorType sensorType)
+	Models::Enums::TemperatureSensorType sensorType, String name)
 {
 	_sensorTarget = sensorTarget;
 	_sensorType = sensorType;
+	_name = name;
 }
 
 const uint16_t Models::TemperatureSensors::BaseSensor::getCommonPayloadSize()
