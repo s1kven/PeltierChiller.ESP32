@@ -80,7 +80,7 @@ void Services::TemperatureService::initConfiguration()
 	{
 		Communication::Models::Configurations::TemperatureSensors::Ds18b20Configuration* currentConfiguration = ds18b20Items->get(i);
 		Models::TemperatureSensors::DS18B20* ds18b20 = new Models::TemperatureSensors::DS18B20(currentConfiguration->getAddress(),
-			currentConfiguration->getTarget());
+			currentConfiguration->getTarget(), currentConfiguration->getName());
 		ds18b20->init(_dallasSensors, _temperaturePrecision);
 		_temperatureSensors->add(ds18b20);
 	}
@@ -93,7 +93,7 @@ void Services::TemperatureService::initConfiguration()
 		Communication::Models::Configurations::TemperatureSensors::NtcConfiguration* currentConfiguration = ntcItems->get(i);
 		Models::TemperatureSensors::NTC* ntc = new Models::TemperatureSensors::NTC(currentConfiguration->getAddress(),
 			currentConfiguration->getResistance(), currentConfiguration->getBCoefficient(), currentConfiguration->getResistanceNtc(),
-			currentConfiguration->getTarget(), currentConfiguration->getBaseTemperature(), currentConfiguration->getSupplyVoltage(),
+			currentConfiguration->getTarget(), currentConfiguration->getName(), currentConfiguration->getBaseTemperature(), currentConfiguration->getSupplyVoltage(),
 			_configuration->getNtcListConfiguration()->getAdcResolution());
 		_temperatureSensors->add(ntc);
 	}
@@ -105,7 +105,7 @@ void Services::TemperatureService::initConfiguration()
 	{
 		Communication::Models::Configurations::TemperatureSensors::Bme280Configuration* currentConfiguration = bme280Items->get(i);
 		Models::TemperatureSensors::BME280* bme280 = new Models::TemperatureSensors::BME280(currentConfiguration->getAddress(),
-			currentConfiguration->getTarget());
+			currentConfiguration->getTarget(), currentConfiguration->getName());
 		bme280->init();
 		_temperatureSensors->add(bme280);
 	}

@@ -28,7 +28,8 @@ namespace Models
 
 		public:
 
-			BaseSensor(Models::Enums::TemperatureSensorTarget _sensorTarget, Models::Enums::TemperatureSensorType _sensorType);
+			BaseSensor(Models::Enums::TemperatureSensorTarget _sensorTarget, 
+				Models::Enums::TemperatureSensorType _sensorType, String name);
 			void init();
 			float getTemperature();
 			virtual void sensorRequest() = 0;

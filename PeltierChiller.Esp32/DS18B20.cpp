@@ -2,8 +2,8 @@
 
 #include "DS18B20.h"
 
-Models::TemperatureSensors::DS18B20::DS18B20(uint8_t* sensorAddress, Models::Enums::TemperatureSensorTarget sensorTarget) :
-	Models::TemperatureSensors::BaseSensor(sensorTarget, Models::Enums::TemperatureSensorType::DS18B20)
+Models::TemperatureSensors::DS18B20::DS18B20(uint8_t* sensorAddress, Models::Enums::TemperatureSensorTarget sensorTarget, String name) :
+	Models::TemperatureSensors::BaseSensor(sensorTarget, Models::Enums::TemperatureSensorType::DS18B20, name)
 {
 	_sensorAddress = sensorAddress;
 	Communication::Abstractions::BaseSerializableObject::setJsonSize(

@@ -3,9 +3,9 @@
 #include "NTC.h"
 
 Models::TemperatureSensors::NTC::NTC(uint8_t sensorAddress, uint32_t resistance, uint16_t bCoefficient,
-	uint32_t resistanceNTC, Models::Enums::TemperatureSensorTarget sensorTarget, uint8_t baseNTCTemp,
+	uint32_t resistanceNTC, Models::Enums::TemperatureSensorTarget sensorTarget, String name, uint8_t baseNTCTemp,
 	float ntcVoltage, uint8_t adcResolution) :
-	Models::TemperatureSensors::BaseSensor(sensorTarget, Models::Enums::TemperatureSensorType::NTC)
+	Models::TemperatureSensors::BaseSensor(sensorTarget, Models::Enums::TemperatureSensorType::NTC, name)
 {
 	_sensorAddress = sensorAddress;
 	_resistance = resistance;

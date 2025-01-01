@@ -2,8 +2,8 @@
 
 #include "BME280.h"
 
-Models::TemperatureSensors::BME280::BME280(uint8_t sensorAddress, Models::Enums::TemperatureSensorTarget sensorTarget) :
-	Models::TemperatureSensors::BaseSensor(sensorTarget, Models::Enums::TemperatureSensorType::BME280)
+Models::TemperatureSensors::BME280::BME280(uint8_t sensorAddress, Models::Enums::TemperatureSensorTarget sensorTarget, String name) :
+	Models::TemperatureSensors::BaseSensor(sensorTarget, Models::Enums::TemperatureSensorType::BME280, name)
 {
 	_sensorAddress = sensorAddress;
 	Communication::Abstractions::BaseSerializableObject::setJsonSize(

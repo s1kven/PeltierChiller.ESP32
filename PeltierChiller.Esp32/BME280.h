@@ -25,7 +25,7 @@ namespace Models
 
 		public:
 
-			BME280(uint8_t sensorAddress, Models::Enums::TemperatureSensorTarget _sensorTarget);
+			BME280(uint8_t sensorAddress, Models::Enums::TemperatureSensorTarget _sensorTarget, String name);
 			void init();
 			float getTemperature();
 			float getHumidity();
