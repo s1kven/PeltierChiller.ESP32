@@ -57,6 +57,8 @@ Communication::Models::Requests::BaseRequest* Services::JsonService::deserialize
 		return deserializeSoftResetCommand();
 	case Communication::Enums::RequestType::updateConfiguration:
 		return deserializeUpdateConfigurationCommand(data);
+	case Communication::Enums::RequestType::updateTempConfiguration:
+		return deserializeUpdateTempConfigurationCommand(data);
 	case Communication::Enums::RequestType::unknown:
 	default:
 		String emptyString = String();
@@ -333,5 +335,14 @@ Communication::Models::Requests::Commands::UpdateConfigurationCommand* Services:
 }
 
 #pragma endregion UpdateConfigurationCommand
+
+#pragma region UpdateTempConfigurationCommand
+
+Communication::Models::Requests::Commands::UpdateTempConfigurationCommand* Services::JsonService::deserializeUpdateTempConfigurationCommand(JsonObject data)
+{
+	return new Communication::Models::Requests::Commands::UpdateTempConfigurationCommand(deserializeConfiguration(data));
+}
+
+#pragma endregion UpdateTempConfigurationCommand
 
 #pragma endregion Deserializers

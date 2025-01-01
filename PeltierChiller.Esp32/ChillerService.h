@@ -14,6 +14,8 @@
 #include "ChillerType.cpp"
 #include <ESP32AnalogRead.h>
 
+extern Services::TemperatureService* _temperatureService;
+
 namespace Services
 {
 	class ChillerService
@@ -51,7 +53,6 @@ namespace Services
 		uint8_t _powerSignalPin;
 
 		Communication::Models::Configurations::Configuration* _configuration;
-		Services::TemperatureService* _temperatureService;
 		Models::Enums::ChillerState _state;
 		Models::Button* _powerButton;
 
@@ -79,8 +80,8 @@ namespace Services
 		ChillerService(Communication::Models::Configurations::Configuration* configuration);
 
 		void manageChiller();
-		Services::TemperatureService* getTemperatureService();
 		uint8_t getChillerLoadPercentage();
+		void clear();
 	};
 }
 #endif

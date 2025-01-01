@@ -34,6 +34,11 @@ void Models::TemperatureSensors::DS18B20::sensorRequest()
 	}
 }
 
+void Models::TemperatureSensors::DS18B20::clear()
+{
+
+}
+
 DynamicJsonDocument Models::TemperatureSensors::DS18B20::createPayload()
 {
 	return BaseSensor::createPayload();

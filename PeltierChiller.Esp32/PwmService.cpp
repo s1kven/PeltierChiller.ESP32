@@ -1,11 +1,9 @@
 #include "PwmService.h"
 
-Services::PwmService::PwmService(uint32_t updatePwmDelay, Communication::Models::Configurations::PwmsConfiguration* configuration,
-	Services::TemperatureService* temperatureService)
+Services::PwmService::PwmService(uint32_t updatePwmDelay, Communication::Models::Configurations::PwmsConfiguration* configuration)
 {
 	_updatePwmDelay = updatePwmDelay;
 	_configuration = configuration;
-	_temperatureService = temperatureService;
 	_pwmItems = new LinkedList<Models::PwmItem*>();
 	initConfiguration();
 }
@@ -35,6 +33,17 @@ LinkedList<Models::PwmItem*>* Services::PwmService::getPwmItems()
 uint32_t Services::PwmService::getUpdatePwmDelay()
 {
 	return _updatePwmDelay;
+}
+
+void Services::PwmService::clear()
+{
+	for (int i = 0; i < _pwmItems->size(); i++)
+	{
+		_pwmItems->get(i)->clear();
+		delete _pwmItems->get(i);
+	}
+	_pwmItems->clear();
+	delete _pwmItems;
 }
 
 void Services::PwmService::initConfiguration()

@@ -147,6 +147,7 @@
     <ClCompile Include="TemperatureSensorsConfiguration.cpp" />
     <ClCompile Include="TimersConfiguration.cpp" />
     <ClCompile Include="UpdateConfigurationCommand.cpp" />
+    <ClCompile Include="UpdateTempConfigurationCommand.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="src\arduino folders read me.txt">
@@ -200,6 +201,7 @@
     <ClInclude Include="TemperatureService.h" />
     <ClInclude Include="TimersConfiguration.h" />
     <ClInclude Include="UpdateConfigurationCommand.h" />
+    <ClInclude Include="UpdateTempConfigurationCommand.h" />
     <ClInclude Include="__vm\.PeltierChiller.Esp32.vsarduino.h" />
   </ItemGroup>
   <ItemGroup>

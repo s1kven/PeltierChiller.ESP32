@@ -16,8 +16,6 @@ Services::ChillerService::ChillerService(Communication::Models::Configurations::
 	pinMode(_chillerSignalPin, OUTPUT);
 	pinMode(_powerSignalPin, OUTPUT);
 
-	_temperatureService = new Services::TemperatureService(_configuration->getTemperatureSensorsConfiguration());
-
 	_powerButton = new Models::Button(_powerButtonPin, "POWER");
 	_powerButton->setLastPressTime(0);
 }
@@ -27,18 +25,18 @@ void Services::ChillerService::manageChiller()
 	handlePcVoltage();
 	handlePowerButton();
 	manageChillerLoad();
-	(*_temperatureService).requestSensors(_sensorsRequestDelay);
+	_temperatureService->requestSensors(_sensorsRequestDelay);
 	handleChillerState(_vin);
-}
-
-Services::TemperatureService* Services::ChillerService::getTemperatureService()
-{
-	return _temperatureService;
 }
 
 uint8_t Services::ChillerService::getChillerLoadPercentage()
 {
 	return _chillerLoadPercentage;
+}
+
+void Services::ChillerService::clear()
+{
+	delete _powerButton;
 }
 
 void Services::ChillerService::initConfiguration()

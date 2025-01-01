@@ -7,6 +7,8 @@
 #include "PwmItem.h"
 #include "TemperatureService.h"
 
+extern Services::TemperatureService* _temperatureService;
+
 namespace Services
 {
 	class PwmService
@@ -17,7 +19,6 @@ namespace Services
 		LinkedList<Models::PwmItem*>* _pwmItems;
 
 		Communication::Models::Configurations::PwmsConfiguration* _configuration;
-		Services::TemperatureService* _temperatureService;
 
 		void initConfiguration();
 		float getCurrentHotToRoomDeltaT();
@@ -25,11 +26,11 @@ namespace Services
 		uint8_t convertPercentageToPwm(uint8_t percentageLoad);
 
 	public:
-		PwmService(uint32_t updatePwmDelay, Communication::Models::Configurations::PwmsConfiguration* configuration,
-			Services::TemperatureService* temperatureService);
+		PwmService(uint32_t updatePwmDelay, Communication::Models::Configurations::PwmsConfiguration* configuration);
 		void handlePwms(uint8_t currentChillerLoad);
 		LinkedList<Models::PwmItem*>* getPwmItems();
 		uint32_t getUpdatePwmDelay();
+		void clear();
 	};
 }
 #endif

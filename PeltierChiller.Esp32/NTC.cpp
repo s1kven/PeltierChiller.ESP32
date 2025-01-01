@@ -34,6 +34,10 @@ void Models::TemperatureSensors::NTC::sensorRequest()
 	_temperature = (1 / (1 / (_baseNTCTemp + _zeroCbyK) + log(Rt / _resistanceNTC) / _bCoefficient))-_zeroCbyK;
 }
 
+void Models::TemperatureSensors::NTC::clear()
+{
+}
+
 DynamicJsonDocument Models::TemperatureSensors::NTC::createPayload()
 {
 	return BaseSensor::createPayload();

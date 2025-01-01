@@ -31,6 +31,7 @@ namespace Models
 			float getHumidity();
 			float getPressure();
 			void sensorRequest() override;
+			void clear() override;
 			DynamicJsonDocument createPayload() override;
 			uint8_t getSensorAddress();
 		};

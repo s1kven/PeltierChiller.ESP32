@@ -27,6 +27,7 @@ namespace Models
 			void init(DallasTemperature* sensor, uint8_t _temperaturePrecision);
 			float getTemperature();
 			void sensorRequest() override;
+			void clear() override;
 			DynamicJsonDocument createPayload() override;
 			uint8_t* getSensorAddress();
 		};
