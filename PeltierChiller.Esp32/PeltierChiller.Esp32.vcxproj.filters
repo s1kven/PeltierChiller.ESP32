@@ -212,6 +212,9 @@
     <ClInclude Include="UpdateTempConfigurationCommand.h">
       <Filter>Source Files\Communication\Models\Requests\Commands</Filter>
     </ClInclude>
+    <ClInclude Include="ResetTempConfigurationCommand.h">
+      <Filter>Source Files\Communication\Models\Requests\Commands</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="ReleState.cpp">
@@ -363,6 +366,9 @@
       <Filter>Source Files\Communication\Models\Requests</Filter>
     </ClCompile>
     <ClCompile Include="UpdateTempConfigurationCommand.cpp">
+      <Filter>Source Files\Communication\Models\Requests\Commands</Filter>
+    </ClCompile>
+    <ClCompile Include="ResetTempConfigurationCommand.cpp">
       <Filter>Source Files\Communication\Models\Requests\Commands</Filter>
     </ClCompile>
   </ItemGroup>

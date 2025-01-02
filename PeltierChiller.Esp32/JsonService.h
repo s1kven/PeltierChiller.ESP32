@@ -20,6 +20,7 @@
 #include "SoftResetCommand.h"
 #include "UpdateConfigurationCommand.h"
 #include "UpdateTempConfigurationCommand.h"
+#include "ResetTempConfigurationCommand.h"
 
 namespace Services
 {
@@ -47,6 +48,7 @@ namespace Services
 		Communication::Models::Requests::Commands::SoftResetCommand* deserializeSoftResetCommand();
 		Communication::Models::Requests::Commands::UpdateConfigurationCommand* deserializeUpdateConfigurationCommand(JsonObject data);
 		Communication::Models::Requests::Commands::UpdateTempConfigurationCommand* deserializeUpdateTempConfigurationCommand(JsonObject data);
+		Communication::Models::Requests::Commands::ResetTempConfigurationCommand* deserializeResetTempConfigurationCommand();
 
 	public:
 

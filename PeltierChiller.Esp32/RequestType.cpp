@@ -9,7 +9,8 @@ namespace Communication
             //commands
             softReset = 50,
             updateConfiguration = 51,
-            updateTempConfiguration = 52,
+            updateTempConfiguration = 53,
+            resetTempConfiguration = 54,
             //errors
             errorDeserialization = 101
         };

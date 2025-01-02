@@ -47,6 +47,11 @@ void Services::ConfigurationService::changeConfiguration(Communication::Models::
 	initConfiguration(_currentTempConfiguration);
 }
 
+void Services::ConfigurationService::resetTempConfiguration()
+{
+	initConfiguration();
+}
+
 void Services::ConfigurationService::initConfiguration()
 {
 	initConfiguration(_currentConfiguration);

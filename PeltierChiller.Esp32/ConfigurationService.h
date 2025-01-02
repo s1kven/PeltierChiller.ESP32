@@ -59,6 +59,7 @@ namespace Services
 		Communication::Models::Configurations::Configuration* getConfiguration();
 
 		void changeConfiguration(Communication::Models::Configurations::Configuration* newConfiguration);
+		void resetTempConfiguration();
 
 		void initConfiguration();
 

@@ -1,7 +1,7 @@
 #pragma once
 
-#ifndef _UpdateTempConfigurationCommand_
-#define _UpdateTempConfigurationCommand_ 
+#ifndef _ResetTempConfigurationCommand_
+#define _ResetTempConfigurationCommand_ 
 
 #if defined(ARDUINO) && ARDUINO >= 100
 #include "arduino.h"
@@ -28,19 +28,16 @@ namespace Communication
 		{
 			namespace Commands
 			{
-				class UpdateTempConfigurationCommand :
+				class ResetTempConfigurationCommand :
 					public Communication::Models::Requests::BaseRequest
 				{
-				private:
-					Communication::Models::Configurations::Configuration* _configuration;
-
 				protected:
 					void init() override;
 
 				public:
 					void invoke() override;
 					void clear() override;
-					UpdateTempConfigurationCommand(Communication::Models::Configurations::Configuration* configuration);
+					ResetTempConfigurationCommand();
 				};
 			}
 		}
