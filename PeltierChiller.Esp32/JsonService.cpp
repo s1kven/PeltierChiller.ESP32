@@ -56,7 +56,9 @@ Communication::Models::Requests::BaseRequest* Services::JsonService::deserialize
 	case Communication::Enums::RequestType::softReset:
 		return deserializeSoftResetCommand();
 	case Communication::Enums::RequestType::updateConfiguration:
-		return deserializeUpdateConfigurationCommand(data);
+		return deserializeUpdateConfigurationCommand(data, Communication::Enums::RequestType::updateConfiguration);
+	case Communication::Enums::RequestType::updateAndApplyConfiguration:
+		return deserializeUpdateConfigurationCommand(data, Communication::Enums::RequestType::updateAndApplyConfiguration);
 	case Communication::Enums::RequestType::updateTempConfiguration:
 		return deserializeUpdateTempConfigurationCommand(data);
 	case Communication::Enums::RequestType::resetTempConfiguration:
@@ -331,9 +333,9 @@ Communication::Models::Requests::Commands::SoftResetCommand* Services::JsonServi
 #pragma region UpdateConfigurationCommand
 
 Communication::Models::Requests::Commands::UpdateConfigurationCommand* Services::JsonService::deserializeUpdateConfigurationCommand(
-	JsonObject data)
+	JsonObject data, Communication::Enums::RequestType requestType)
 {
-	return new Communication::Models::Requests::Commands::UpdateConfigurationCommand(deserializeConfiguration(data));
+	return new Communication::Models::Requests::Commands::UpdateConfigurationCommand(deserializeConfiguration(data), requestType);
 }
 
 #pragma endregion UpdateConfigurationCommand

@@ -2,6 +2,7 @@
 
 Services::ConfigurationService::ConfigurationService()
 {
+	_currentConfiguration = nullptr;
 	_currentTempConfiguration = nullptr;
 }
 
@@ -19,11 +20,17 @@ Communication::Models::Responses::Response* Services::ConfigurationService::read
 	Communication::Models::Requests::ConfigurationRequest* configurationRequest = dynamic_cast<Communication::Models::Requests::ConfigurationRequest*>(request);
 	if (errorRequest != nullptr)
 	{
-		return new Communication::Models::Responses::Response(Communication::Enums::ResponseType::errorConfiguration, errorRequest->getMessage());
+		String errorMessage = errorRequest->getMessage();
+		errorRequest->clear();
+		delete errorRequest;
+		return new Communication::Models::Responses::Response(Communication::Enums::ResponseType::errorConfiguration, errorMessage);
 	}
-	else if(configurationRequest != nullptr)
+	else if (configurationRequest != nullptr)
 	{
+		clearConfiguration(_currentConfiguration);
 		_currentConfiguration = static_cast<Communication::Models::Configurations::Configuration*>(configurationRequest->getConfiguration());
+		configurationRequest->clear();
+		delete configurationRequest;
 		return validateConfiguration(_currentConfiguration, content);
 	}
 	return new Communication::Models::Responses::Response(Communication::Enums::ResponseType::errorConfiguration, "");
@@ -37,11 +44,7 @@ Communication::Models::Configurations::Configuration* Services::ConfigurationSer
 void Services::ConfigurationService::changeConfiguration(Communication::Models::Configurations::Configuration* newConfiguration)
 {
 	_isChangeConfiguration = true;
-	if (_currentTempConfiguration != nullptr)
-	{
-		_currentTempConfiguration->clear();
-		delete _currentTempConfiguration;
-	}
+	clearConfiguration(_currentTempConfiguration);
 
 	_currentTempConfiguration = newConfiguration;
 	initConfiguration(_currentTempConfiguration);
@@ -49,6 +52,7 @@ void Services::ConfigurationService::changeConfiguration(Communication::Models::
 
 void Services::ConfigurationService::resetTempConfiguration()
 {
+	_isChangeConfiguration = true;
 	initConfiguration();
 }
 
@@ -178,4 +182,13 @@ void Services::ConfigurationService::initConfiguration(Communication::Models::Co
 	}
 
 	_isChangeConfiguration = false;
+}
+
+void Services::ConfigurationService::clearConfiguration(Communication::Models::Configurations::Configuration* configuration)
+{
+	if (configuration != nullptr)
+	{
+		configuration->clear();
+		delete configuration;
+	}
 }

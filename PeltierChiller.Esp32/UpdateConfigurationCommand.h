@@ -38,6 +38,7 @@ namespace Communication
 				{
 				private:
 					const char* _failedWriteConfigMessage = "Failed write configuration to SD.";
+					const char* _failedResetConfigFromSdMessage = "Failed reset configuration from SD while update.";
 					Communication::Models::Configurations::Configuration* _configuration;
 
 				protected:
@@ -46,7 +47,8 @@ namespace Communication
 				public:
 					void invoke() override;
 					void clear() override;
-					UpdateConfigurationCommand(Communication::Models::Configurations::Configuration* configuration);
+					UpdateConfigurationCommand(Communication::Models::Configurations::Configuration* configuration,
+						Communication::Enums::RequestType request);
 				};
 			}
 		}

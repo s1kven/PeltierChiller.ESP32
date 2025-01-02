@@ -49,6 +49,7 @@ namespace Services
 		bool isSensorsAvailable(Communication::Models::Configurations::Configuration* configuration, Models::Enums::TemperatureSensorTarget target);
 		bool anyBmeTargetToRoom(Communication::Models::Configurations::TemperatureSensors::Bme280ListConfiguration* bme280ListConfiguration);
 		void initConfiguration(Communication::Models::Configurations::Configuration* configuration);
+		void clearConfiguration(Communication::Models::Configurations::Configuration* configuration);
 	public:
 		ConfigurationService();
 
