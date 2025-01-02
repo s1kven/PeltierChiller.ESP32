@@ -115,6 +115,7 @@
     <ClCompile Include="ErrorRequest.cpp" />
     <ClCompile Include="GetPwmItemsData.cpp" />
     <ClCompile Include="GetTemperatureSensorsData.cpp" />
+    <ClCompile Include="ResetTempConfigurationCommand.cpp" />
     <ClCompile Include="Response.cpp" />
     <ClCompile Include="BaseSerializableObject.cpp" />
     <ClCompile Include="Bme280Configuration.cpp" />
@@ -161,6 +162,7 @@
     <ClInclude Include="ErrorRequest.h" />
     <ClInclude Include="GetPwmItemsData.h" />
     <ClInclude Include="GetTemperatureSensorsData.h" />
+    <ClInclude Include="ResetTempConfigurationCommand.h" />
     <ClInclude Include="Response.h" />
     <ClInclude Include="BaseSerializableObject.h" />
     <ClInclude Include="BME280.h">
