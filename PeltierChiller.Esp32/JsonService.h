@@ -46,7 +46,7 @@ namespace Services
 		Communication::Models::Configurations::PwmsConfiguration* deserializePwmsConfiguration(JsonArray items);
 
 		Communication::Models::Requests::Commands::SoftResetCommand* deserializeSoftResetCommand();
-		Communication::Models::Requests::Commands::UpdateConfigurationCommand* deserializeUpdateConfigurationCommand(JsonObject data);
+		Communication::Models::Requests::Commands::UpdateConfigurationCommand* deserializeUpdateConfigurationCommand(JsonObject data, Communication::Enums::RequestType requestType);
 		Communication::Models::Requests::Commands::UpdateTempConfigurationCommand* deserializeUpdateTempConfigurationCommand(JsonObject data);
 		Communication::Models::Requests::Commands::ResetTempConfigurationCommand* deserializeResetTempConfigurationCommand();
 
