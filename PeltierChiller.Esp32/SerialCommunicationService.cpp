@@ -10,7 +10,8 @@ Communication::Services::SerialCommunicationService::SerialCommunicationService(
 void Communication::Services::SerialCommunicationService::init()
 {
 	Serial.setTimeout(0);
-	Serial.setRxBufferSize(1024);
+	Serial.setRxBufferSize(4096);
+	Serial.setTxBufferSize(4096);
 	Serial.begin(_baudRate);
 }
 
