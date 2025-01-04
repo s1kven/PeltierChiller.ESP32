@@ -1,4 +1,2 @@
 .pio
-
-PeltierChiller.Esp32/.vscode/*
-!PeltierChiller.Esp32/.vscode/Requests/
+.vscode
