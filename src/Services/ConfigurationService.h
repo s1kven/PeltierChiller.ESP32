@@ -15,6 +15,8 @@
 #include "ChillerService.h"
 #include "PwmService.h"
 #include "TemperatureService.h"
+#include "WifiService.h"
+#include "TimeService.h"
 
 namespace Services
 {
@@ -27,6 +29,8 @@ extern uint16_t _communicationDelay;
 extern Services::TemperatureService* _temperatureService;
 extern Services::ChillerService* _chillerService;
 extern Services::PwmService* _pwmService;
+extern Services::WifiService* _wifiService;
+extern Services::TimeService* _timeService;
 
 namespace Services
 {

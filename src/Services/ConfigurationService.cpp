@@ -154,6 +154,8 @@ void Services::ConfigurationService::initConfiguration(Communication::Models::Co
 	Services::TemperatureService* oldTemperatureService = _temperatureService;
 	Services::PwmService* oldPwmService = _pwmService;
 	Services::ChillerService* oldChillerService = _chillerService;
+	Services::WifiService* oldWifiService = _wifiService;
+	Services::TimeService* oldTimeService = _timeService;
 
 	_communicationDelay = configuration->getTimersConfiguration()->getCommunicationDelay();
 
@@ -164,6 +166,10 @@ void Services::ConfigurationService::initConfiguration(Communication::Models::Co
 		configuration->getPwmsConfiguration());
 
 	_chillerService = new Services::ChillerService(configuration);
+
+	_wifiService = new Services::WifiService(configuration->getWifiConfiguration());
+
+	_timeService = new Services::TimeService(configuration->getWifiConfiguration()->getNtpServer());
 
 	if (oldTemperatureService != nullptr)
 	{
@@ -179,6 +185,14 @@ void Services::ConfigurationService::initConfiguration(Communication::Models::Co
 	{
 		oldChillerService->clear();
 		delete oldChillerService;
+	}
+	if (oldWifiService != nullptr)
+	{
+		delete oldWifiService;
+	}
+	if (oldTimeService != nullptr)
+	{
+		delete oldTimeService;
 	}
 
 	_isChangeConfiguration = false;
