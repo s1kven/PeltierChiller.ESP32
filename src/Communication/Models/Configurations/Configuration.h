@@ -13,6 +13,7 @@
 #include "ChillerConfiguration.h"
 #include "TemperatureSensors/TemperatureSensorsConfiguration.h"
 #include "PwmsConfiguration.h"
+#include "WifiConfiguration.h"
 #include "Models/Enums/ChillerType.cpp"
 #include "Helpers/JsonHelper.h"
 
@@ -27,7 +28,7 @@ namespace Communication
 				public Abstractions::BaseSerializableObject
 			{
 			private:
-				const uint16_t _payloadSize = JSON_OBJECT_SIZE(10) + JSON_ARRAY_SIZE(1);
+				const uint16_t _payloadSize = JSON_OBJECT_SIZE(11) + JSON_ARRAY_SIZE(1);
 
 				ChillerType _chillerType;
 				float _targetCircuitTemperature;
@@ -41,6 +42,7 @@ namespace Communication
 				Communication::Models::Configurations::ChillerConfiguration* _chillerConfiguration;
 				Communication::Models::Configurations::TemperatureSensors::TemperatureSensorsConfiguration* _temperatureSensorsConfiguration;
 				Communication::Models::Configurations::PwmsConfiguration* _pwmsConfiguration;
+				Communication::Models::Configurations::WifiConfiguration* _wifiConfiguration;
 
 			protected:
 				void init() override;
@@ -52,7 +54,8 @@ namespace Communication
 					Communication::Models::Configurations::TimersConfiguration* timersConfiguration,
 					Communication::Models::Configurations::ChillerConfiguration* chillerConfiguration,
 					Communication::Models::Configurations::TemperatureSensors::TemperatureSensorsConfiguration* temperatureSensorsConfiguration,
-					Communication::Models::Configurations::PwmsConfiguration* pwmsConfiguration);
+					Communication::Models::Configurations::PwmsConfiguration* pwmsConfiguration,
+					Communication::Models::Configurations::WifiConfiguration* wifiConfiguration);
 				void clear();
 
 				ChillerType getChillerType();
@@ -66,6 +69,7 @@ namespace Communication
 				Communication::Models::Configurations::ChillerConfiguration* getChillerConfiguration();
 				Communication::Models::Configurations::TemperatureSensors::TemperatureSensorsConfiguration* getTemperatureSensorsConfiguration();
 				Communication::Models::Configurations::PwmsConfiguration* getPwmsConfiguration();
+				Communication::Models::Configurations::WifiConfiguration* getWifiConfiguration();
 
 				DynamicJsonDocument createPayload() override;
 			};

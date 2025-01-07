@@ -24,6 +24,8 @@
 #include "Services/ConfigurationService.h"
 #include "Services/PwmService.h"
 #include "Services/RequestService.h"
+#include "Services/WifiService.h"
+#include "Services/TimeService.h"
 #include "Communication/Models/Responses/ResponsesData/GetTemperatureSensorsData.h"
 #include "Communication/Models/Responses/ResponsesData/GetPwmItemsData.h"
 
@@ -49,21 +51,29 @@ Services::PwmService* _pwmService;
 
 Services::RequestService* _requestService;
 
+Services::WifiService* _wifiService;
+
+Services::TimeService* _timeService;
+
 struct {
 	SemaphoreHandle_t _communicationMutex;
 	SemaphoreHandle_t _chillerMutex;
+	SemaphoreHandle_t _wifiMutex;
 } Mutexes;
 
 void manageChillerTask(void* argument);
 void handlePwmsTask(void* argument);
 void sendCommunicationDataTask(void* argument);
 void readCommunicationDataTask(void* argument);
+void wifiConnectionTask(void* argument);
 
 void setup()  
 {
 	_temperatureService = nullptr;
 	_chillerService = nullptr;
 	_pwmService = nullptr;
+	_wifiService = nullptr;
+	_timeService = nullptr;
 
 	Wire.begin();
 
@@ -82,6 +92,7 @@ void setup()
 
 	Mutexes._communicationMutex = xSemaphoreCreateMutex();
 	Mutexes._chillerMutex = xSemaphoreCreateMutex();
+	Mutexes._wifiMutex = xSemaphoreCreateMutex();
 
 	xTaskCreate(
 		readCommunicationDataTask,
@@ -121,6 +132,15 @@ void setup()
 	xTaskCreate(
 		sendCommunicationDataTask,
 		"sendCommunicationDataTask",
+		4096,
+		NULL,
+		3,
+		NULL
+	);
+
+	xTaskCreate(
+		wifiConnectionTask,
+		"wifiConnectionTask",
 		4096,
 		NULL,
 		3,
@@ -189,13 +209,29 @@ void readCommunicationDataTask(void* argument)
 	{
 		xSemaphoreTake(Mutexes._communicationMutex, portMAX_DELAY);
 		xSemaphoreTake(Mutexes._chillerMutex, portMAX_DELAY);
+		xSemaphoreTake(Mutexes._wifiMutex, portMAX_DELAY);
 		if (_communicationService->availableToRead())
 		{
 			Communication::Models::Requests::BaseRequest* request = _communicationService->readRequest();
 			_requestService->handleRequest(request);
+			
+            Serial.println(esp_get_free_heap_size());
+            Serial.println(uxTaskGetStackHighWaterMark(NULL));
 		}
+		xSemaphoreGive(Mutexes._wifiMutex);
 		xSemaphoreGive(Mutexes._chillerMutex);
 		xSemaphoreGive(Mutexes._communicationMutex);
+	}
+}
+
+void wifiConnectionTask(void* argument)
+{
+	while (true)
+	{
+		xSemaphoreTake(Mutexes._wifiMutex, portMAX_DELAY);
+		_wifiService->tryConnect();
+		xSemaphoreGive(Mutexes._wifiMutex);
+		vTaskDelay(_wifiService->getReconnectionTimeout() / portTICK_PERIOD_MS);
 	}
 }
 

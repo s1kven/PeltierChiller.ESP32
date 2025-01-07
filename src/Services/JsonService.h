@@ -10,6 +10,7 @@
 #include "Communication/Models/Configurations/ChillerConfiguration.h"
 #include "Communication/Models/Configurations/TemperatureSensors/TemperatureSensorsConfiguration.h"
 #include "Communication/Models/Configurations/PwmsConfiguration.h"
+#include "Communication/Models/Configurations/WifiConfiguration.h"
 #include "Communication/Models/Configurations/Configuration.h"
 #include "Communication/Abstractions/BaseSerializableObject.h"
 #include "Communication/Models/Configurations/PwmValueConfiguration.h"
@@ -43,6 +44,7 @@ namespace Services
 		Communication::Models::Configurations::TemperatureSensors::Ds18b20ListConfiguration*
 			deserializeDs18b20ListConfiguration(JsonObject data);
 		Communication::Models::Configurations::PwmsConfiguration* deserializePwmsConfiguration(JsonArray items);
+		Communication::Models::Configurations::WifiConfiguration* deserializeWifiConfiguration(JsonObject data);
 
 		Communication::Models::Requests::Commands::SoftResetCommand* deserializeSoftResetCommand();
 		Communication::Models::Requests::Commands::UpdateConfigurationCommand* deserializeUpdateConfigurationCommand(JsonObject data, Communication::Enums::RequestType requestType);

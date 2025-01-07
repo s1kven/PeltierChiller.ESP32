@@ -6,7 +6,7 @@
             "PowerSignal": 27,
             "ChillerPsSignal": 32,
             "ChillerSignal": 33,
-            "PcVoltage": 25
+            "PcVoltage": 35
         },
         "ChillerType": 2,
         "TargetTemperature": -4.0,
@@ -107,6 +107,12 @@
                 ],
                 "ControlType": 1
             }
-        ]
+        ], 
+        "Wifi": { 
+            "SSID": "YourNetworkName", 
+            "Password": "YourPassword", 
+            "ReconnectionTimeout": 30000, 
+            "NtpServer": "pool.ntp.org" 
+        }
     }
 }

@@ -28,7 +28,7 @@ String Services::JsonService::serializeRequest(Communication::Abstractions::Base
 Communication::Models::Requests::BaseRequest* Services::JsonService::deserializeRequest(String content)
 {
 	Communication::Models::Requests::BaseRequest* request = nullptr;
-	DynamicJsonDocument document(65536);
+	DynamicJsonDocument document(32768);
 	DeserializationError error = deserializeJson(document, content);
 	if (error)
 	{
@@ -109,9 +109,12 @@ Communication::Models::Configurations::Configuration* Services::JsonService::des
 	Communication::Models::Configurations::PwmsConfiguration* pwmsConfiguration =
 		deserializePwmsConfiguration(pwmsJson);
 
+	JsonObject wifiConfigurationJson = data["Wifi"];
+	Communication::Models::Configurations::WifiConfiguration* wifiConfiguration = deserializeWifiConfiguration(wifiConfigurationJson);
+
 	configuration->init(chillerType, targetTemperature, voltmeterThreshold, voltmeterR1, voltmeterR2,
 		isDelayEnablingPc, pinsConfiguration, timersConfiguration, chillerConfiguration, 
-		temperatureSensorsConfiguration, pwmsConfiguration);
+		temperatureSensorsConfiguration, pwmsConfiguration, wifiConfiguration);
 
 	return configuration;
 }
@@ -317,6 +320,19 @@ Communication::Models::Configurations::PwmsConfiguration* Services::JsonService:
 	}
 
 	return pwmsConfiguration;
+}
+
+Communication::Models::Configurations::WifiConfiguration* Services::JsonService::deserializeWifiConfiguration(JsonObject data)
+{
+	Communication::Models::Configurations::WifiConfiguration* wifiConfiguration = new Communication::Models::Configurations::WifiConfiguration();
+
+	String ssid = data["SSID"];
+	String password = data["Password"];
+	uint32_t reconnectionTimeout = data["ReconnectionTimeout"];
+	String ntpServer = data["NtpServer"];
+	wifiConfiguration->init(ssid, password, reconnectionTimeout, ntpServer);
+
+	return wifiConfiguration;
 }
 
 #pragma endregion Configurations
