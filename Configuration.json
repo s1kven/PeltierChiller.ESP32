@@ -113,6 +113,12 @@
             "Password": "YourPassword", 
             "ReconnectionTimeout": 30000, 
             "NtpServer": "pool.ntp.org" 
+        },
+        "Log": {
+            "IsEnabled": true,
+            "Delay": 2000,
+            "CreateNewLogTime": "00:00:00",
+            "LogExpiration": 30
         }
     }
 }

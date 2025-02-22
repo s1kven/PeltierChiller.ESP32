@@ -17,6 +17,7 @@
 #include "TemperatureService.h"
 #include "WifiService.h"
 #include "TimeService.h"
+#include "LogService.h"
 
 namespace Services
 {
@@ -31,6 +32,8 @@ extern Services::ChillerService* _chillerService;
 extern Services::PwmService* _pwmService;
 extern Services::WifiService* _wifiService;
 extern Services::TimeService* _timeService;
+extern Services::LogService* _logService;
+extern uint64_t _initMillis;
 
 namespace Services
 {

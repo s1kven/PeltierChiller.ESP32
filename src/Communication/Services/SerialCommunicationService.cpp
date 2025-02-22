@@ -1,5 +1,6 @@
 #pragma once
 #include "Services/JsonService.h"
+#include "Services/LogService.h"
 #include "SerialCommunicationService.h"
 
 Communication::Services::SerialCommunicationService::SerialCommunicationService(uint32_t baudRate) : Services::CommunicationService()
@@ -17,6 +18,7 @@ void Communication::Services::SerialCommunicationService::init()
 
 void Communication::Services::SerialCommunicationService::sendData(String data)
 {
+	CommunicationService::sendData(data);
 	Serial.println(data);
 }
 
@@ -42,7 +44,12 @@ String Communication::Services::SerialCommunicationService::readData()
 {
 	if (Serial.available())
 	{
-		return Serial.readString();
+		String content = Serial.readString();
+		if(_logService != nullptr)
+		{
+			_logService->addToLogQueue(content);
+		}
+		return content;
 	}
 	return "";
 }

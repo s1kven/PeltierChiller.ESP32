@@ -7,6 +7,7 @@
 #include "WProgram.h"
 #endif
 
+#include <esp_task_wdt.h>
 #include <WiFi.h>
 #include "Communication/Models/Configurations/WifiConfiguration.h"
 #include "TimeService.h"
@@ -18,6 +19,7 @@ namespace Services
     class WifiService
     {
     private:
+        bool _isFirstConnection = true;
         String _ssid;
         String _password;
         uint32_t _reconnectionTimeout;
@@ -26,6 +28,7 @@ namespace Services
 
     public:
         WifiService(Communication::Models::Configurations::WifiConfiguration* wifiConfig);
+        ~WifiService();
 
         void tryConnect();
         bool isConnected();

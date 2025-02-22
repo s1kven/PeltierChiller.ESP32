@@ -112,9 +112,12 @@ Communication::Models::Configurations::Configuration* Services::JsonService::des
 	JsonObject wifiConfigurationJson = data["Wifi"];
 	Communication::Models::Configurations::WifiConfiguration* wifiConfiguration = deserializeWifiConfiguration(wifiConfigurationJson);
 
+	JsonObject logConfigurationJson = data["Log"];
+	Communication::Models::Configurations::LogConfiguration* logConfiguration = deserializeLogConfiguration(logConfigurationJson);
+
 	configuration->init(chillerType, targetTemperature, voltmeterThreshold, voltmeterR1, voltmeterR2,
 		isDelayEnablingPc, pinsConfiguration, timersConfiguration, chillerConfiguration, 
-		temperatureSensorsConfiguration, pwmsConfiguration, wifiConfiguration);
+		temperatureSensorsConfiguration, pwmsConfiguration, wifiConfiguration, logConfiguration);
 
 	return configuration;
 }
@@ -333,6 +336,20 @@ Communication::Models::Configurations::WifiConfiguration* Services::JsonService:
 	wifiConfiguration->init(ssid, password, reconnectionTimeout, ntpServer);
 
 	return wifiConfiguration;
+}
+
+Communication::Models::Configurations::LogConfiguration* Services::JsonService::deserializeLogConfiguration(JsonObject data)
+{
+	Communication::Models::Configurations::LogConfiguration* logConfiguration = new Communication::Models::Configurations::LogConfiguration();
+
+	bool isEnabled = data["IsEnabled"];
+	uint32_t logDelay = data["Delay"];
+	String createNewLogTime = data["CreateNewLogTime"];
+	uint16_t logExpiration = data["LogExpiration"];
+
+	logConfiguration->init(isEnabled, logDelay, logExpiration, createNewLogTime);
+
+	return logConfiguration;
 }
 
 #pragma endregion Configurations

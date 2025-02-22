@@ -11,7 +11,10 @@
 
 namespace Services {
 	class JsonService;
+	class LogService;
 }
+
+extern Services::LogService* _logService;
 
 namespace Communication
 {

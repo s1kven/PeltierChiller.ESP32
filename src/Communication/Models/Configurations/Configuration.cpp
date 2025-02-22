@@ -62,6 +62,11 @@ Communication::Models::Configurations::WifiConfiguration *Communication::Models:
     return _wifiConfiguration;
 }
 
+Communication::Models::Configurations::LogConfiguration *Communication::Models::Configurations::Configuration::getLogConfiguration()
+{
+    return _logConfiguration;
+}
+
 DynamicJsonDocument Communication::Models::Configurations::Configuration::createPayload()
 {
 	DynamicJsonDocument document(Communication::Abstractions::BaseSerializableObject::getJsonSize());
@@ -92,6 +97,9 @@ DynamicJsonDocument Communication::Models::Configurations::Configuration::create
 	JsonObject wifiConfiguration = payload.createNestedObject("Wifi");
 	wifiConfiguration.set(_wifiConfiguration->createPayload().as<JsonObjectConst>());
 
+	JsonObject logConfiguration = payload.createNestedObject("Log");
+	logConfiguration.set(_logConfiguration->createPayload().as<JsonObjectConst>());
+
 	return document;
 }
 
@@ -106,7 +114,8 @@ void Communication::Models::Configurations::Configuration::init(ChillerType chil
 	Communication::Models::Configurations::ChillerConfiguration* chillerConfiguration,
 	Communication::Models::Configurations::TemperatureSensors::TemperatureSensorsConfiguration* temperatureSensorsConfiguration,
 	Communication::Models::Configurations::PwmsConfiguration* pwmsConfiguration,
-	Communication::Models::Configurations::WifiConfiguration* wifiConfiguration)
+	Communication::Models::Configurations::WifiConfiguration* wifiConfiguration,
+	Communication::Models::Configurations::LogConfiguration* logConfiguration)
 {
 	_chillerType = chillerType;
 	_targetCircuitTemperature = targetCircuitTemperature;
@@ -121,6 +130,7 @@ void Communication::Models::Configurations::Configuration::init(ChillerType chil
 		= new Communication::Models::Configurations::TemperatureSensors::TemperatureSensorsConfiguration(*temperatureSensorsConfiguration);
 	_pwmsConfiguration = new Communication::Models::Configurations::PwmsConfiguration(*pwmsConfiguration);
 	_wifiConfiguration = new Communication::Models::Configurations::WifiConfiguration(*wifiConfiguration);
+	_logConfiguration = new Communication::Models::Configurations::LogConfiguration(*logConfiguration);
 
 	uint16_t resultedPayloadSize = _payloadSize
 		+ _pinsConfiguration->getJsonSize()
@@ -129,6 +139,7 @@ void Communication::Models::Configurations::Configuration::init(ChillerType chil
 		+ _temperatureSensorsConfiguration->getJsonSize()
 		+ _pwmsConfiguration->getJsonSize()
 		+ _wifiConfiguration->getJsonSize()
+		+ _logConfiguration->getJsonSize()
 		+ Helpers::JsonHelper::getFloatJsonSizeWorkaround(2);
 	Communication::Abstractions::BaseSerializableObject::setJsonSize(resultedPayloadSize);
 
@@ -138,6 +149,7 @@ void Communication::Models::Configurations::Configuration::init(ChillerType chil
 	delete temperatureSensorsConfiguration;
 	delete pwmsConfiguration;
 	delete wifiConfiguration;
+	delete logConfiguration;
 }
 
 void Communication::Models::Configurations::Configuration::clear()
@@ -150,4 +162,5 @@ void Communication::Models::Configurations::Configuration::clear()
 	_pwmsConfiguration->clear();
 	delete _pwmsConfiguration;
 	delete _wifiConfiguration;
+	delete _logConfiguration;
 }

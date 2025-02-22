@@ -7,6 +7,11 @@ Services::WifiService::WifiService(Communication::Models::Configurations::WifiCo
     _reconnectionTimeout = wifiConfig->getReconnectionTimeout();
 }
 
+Services::WifiService::~WifiService()
+{
+    WiFi.disconnect();
+}
+
 void Services::WifiService::tryConnect()
 {
     if(!isSuccessfullyConfigured())
@@ -19,8 +24,18 @@ void Services::WifiService::tryConnect()
         _timeService->configTime();
         return;
     }
-    WiFi.mode(WIFI_STA);
-    WiFi.begin(_ssid, _password);
+    if(_isFirstConnection)
+    {
+        WiFi.mode(WIFI_STA);
+        WiFi.begin(_ssid, _password);
+        _isFirstConnection = false;
+    }
+    if(WiFi.waitForConnectResult() != WL_CONNECTED)
+    {
+        WiFi.mode(WIFI_STA);
+        WiFi.begin(_ssid, _password);
+    }
+    esp_task_wdt_reset();
 }
 
 uint32_t Services::WifiService::getReconnectionTimeout()
