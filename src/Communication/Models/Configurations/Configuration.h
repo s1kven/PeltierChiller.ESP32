@@ -14,6 +14,7 @@
 #include "TemperatureSensors/TemperatureSensorsConfiguration.h"
 #include "PwmsConfiguration.h"
 #include "WifiConfiguration.h"
+#include "LogConfiguration.h"
 #include "Models/Enums/ChillerType.cpp"
 #include "Helpers/JsonHelper.h"
 
@@ -43,6 +44,7 @@ namespace Communication
 				Communication::Models::Configurations::TemperatureSensors::TemperatureSensorsConfiguration* _temperatureSensorsConfiguration;
 				Communication::Models::Configurations::PwmsConfiguration* _pwmsConfiguration;
 				Communication::Models::Configurations::WifiConfiguration* _wifiConfiguration;
+				Communication::Models::Configurations::LogConfiguration* _logConfiguration;
 
 			protected:
 				void init() override;
@@ -55,7 +57,8 @@ namespace Communication
 					Communication::Models::Configurations::ChillerConfiguration* chillerConfiguration,
 					Communication::Models::Configurations::TemperatureSensors::TemperatureSensorsConfiguration* temperatureSensorsConfiguration,
 					Communication::Models::Configurations::PwmsConfiguration* pwmsConfiguration,
-					Communication::Models::Configurations::WifiConfiguration* wifiConfiguration);
+					Communication::Models::Configurations::WifiConfiguration* wifiConfiguration,
+					Communication::Models::Configurations::LogConfiguration* logConfiguration);
 				void clear();
 
 				ChillerType getChillerType();
@@ -70,6 +73,7 @@ namespace Communication
 				Communication::Models::Configurations::TemperatureSensors::TemperatureSensorsConfiguration* getTemperatureSensorsConfiguration();
 				Communication::Models::Configurations::PwmsConfiguration* getPwmsConfiguration();
 				Communication::Models::Configurations::WifiConfiguration* getWifiConfiguration();
+				Communication::Models::Configurations::LogConfiguration* getLogConfiguration();
 
 				DynamicJsonDocument createPayload() override;
 			};

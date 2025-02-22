@@ -9,7 +9,6 @@
 #include <ArduinoJson.h>
 #include <ArduinoJson.hpp>
 #include <GyverBME280.h>
-#include <SPI.h>
 #include <Wire.h>
 #include <LinkedList.h>
 #include <OneWire.h>
@@ -26,6 +25,7 @@
 #include "Services/RequestService.h"
 #include "Services/WifiService.h"
 #include "Services/TimeService.h"
+#include "Services/LogService.h"
 #include "Communication/Models/Responses/ResponsesData/GetTemperatureSensorsData.h"
 #include "Communication/Models/Responses/ResponsesData/GetPwmItemsData.h"
 
@@ -55,10 +55,15 @@ Services::WifiService* _wifiService;
 
 Services::TimeService* _timeService;
 
+Services::LogService* _logService;
+
+uint64_t _initMillis = 0;
+
 struct {
 	SemaphoreHandle_t _communicationMutex;
 	SemaphoreHandle_t _chillerMutex;
 	SemaphoreHandle_t _wifiMutex;
+	SemaphoreHandle_t _logMutex;
 } Mutexes;
 
 void manageChillerTask(void* argument);
@@ -66,6 +71,7 @@ void handlePwmsTask(void* argument);
 void sendCommunicationDataTask(void* argument);
 void readCommunicationDataTask(void* argument);
 void wifiConnectionTask(void* argument);
+void logTask(void* argument);
 
 void setup()  
 {
@@ -74,6 +80,7 @@ void setup()
 	_pwmService = nullptr;
 	_wifiService = nullptr;
 	_timeService = nullptr;
+	_logService = nullptr;
 
 	Wire.begin();
 
@@ -84,7 +91,6 @@ void setup()
 
 	_fileService = new Services::FileService();
 	_fileService->init(SD_CS);
-
 	_jsonService = new Services::JsonService();
 
 	_configurationService = new Services::ConfigurationService();
@@ -93,6 +99,7 @@ void setup()
 	Mutexes._communicationMutex = xSemaphoreCreateMutex();
 	Mutexes._chillerMutex = xSemaphoreCreateMutex();
 	Mutexes._wifiMutex = xSemaphoreCreateMutex();
+	Mutexes._logMutex = xSemaphoreCreateMutex();
 
 	xTaskCreate(
 		readCommunicationDataTask,
@@ -146,6 +153,18 @@ void setup()
 		3,
 		NULL
 	);
+
+	if(_logService->getIsEnabled())
+	{
+		xTaskCreate(
+			logTask,
+			"logTask",
+			4096,
+			NULL,
+			3,
+			NULL
+		);
+	}
 }
 
 void loop() { }
@@ -210,14 +229,13 @@ void readCommunicationDataTask(void* argument)
 		xSemaphoreTake(Mutexes._communicationMutex, portMAX_DELAY);
 		xSemaphoreTake(Mutexes._chillerMutex, portMAX_DELAY);
 		xSemaphoreTake(Mutexes._wifiMutex, portMAX_DELAY);
+		xSemaphoreTake(Mutexes._logMutex, portMAX_DELAY);
 		if (_communicationService->availableToRead())
 		{
 			Communication::Models::Requests::BaseRequest* request = _communicationService->readRequest();
 			_requestService->handleRequest(request);
-			
-            Serial.println(esp_get_free_heap_size());
-            Serial.println(uxTaskGetStackHighWaterMark(NULL));
 		}
+		xSemaphoreGive(Mutexes._logMutex);
 		xSemaphoreGive(Mutexes._wifiMutex);
 		xSemaphoreGive(Mutexes._chillerMutex);
 		xSemaphoreGive(Mutexes._communicationMutex);
@@ -231,7 +249,25 @@ void wifiConnectionTask(void* argument)
 		xSemaphoreTake(Mutexes._wifiMutex, portMAX_DELAY);
 		_wifiService->tryConnect();
 		xSemaphoreGive(Mutexes._wifiMutex);
-		vTaskDelay(_wifiService->getReconnectionTimeout() / portTICK_PERIOD_MS);
+		if(millis() > _wifiService->getReconnectionTimeout() + _initMillis)
+		{
+			vTaskDelay(_wifiService->getReconnectionTimeout() / portTICK_PERIOD_MS);
+		}
+		else
+		{
+			vTaskDelay(50 / portTICK_PERIOD_MS);
+		}
+	}
+}
+
+void logTask(void* argument)
+{
+	while (true)
+	{
+		xSemaphoreTake(Mutexes._logMutex, portMAX_DELAY);
+		_logService->pushContentToLog();
+		xSemaphoreGive(Mutexes._logMutex);
+		vTaskDelay(_logService->getLogDelay() / portTICK_PERIOD_MS);
 	}
 }
 

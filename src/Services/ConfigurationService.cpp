@@ -151,11 +151,17 @@ bool Services::ConfigurationService::anyBmeTargetToRoom(Communication::Models::C
 
 void Services::ConfigurationService::initConfiguration(Communication::Models::Configurations::Configuration* configuration)
 {
+	if(_logService != nullptr)
+	{
+		_logService->pushContentToLog();
+	}
+
 	Services::TemperatureService* oldTemperatureService = _temperatureService;
 	Services::PwmService* oldPwmService = _pwmService;
 	Services::ChillerService* oldChillerService = _chillerService;
 	Services::WifiService* oldWifiService = _wifiService;
 	Services::TimeService* oldTimeService = _timeService;
+	Services::LogService* oldLogService = _logService;
 
 	_communicationDelay = configuration->getTimersConfiguration()->getCommunicationDelay();
 
@@ -170,6 +176,8 @@ void Services::ConfigurationService::initConfiguration(Communication::Models::Co
 	_wifiService = new Services::WifiService(configuration->getWifiConfiguration());
 
 	_timeService = new Services::TimeService(configuration->getWifiConfiguration()->getNtpServer());
+
+	_logService = new Services::LogService(configuration->getLogConfiguration(), configuration->getWifiConfiguration()->getReconnectionTimeout());
 
 	if (oldTemperatureService != nullptr)
 	{
@@ -194,8 +202,13 @@ void Services::ConfigurationService::initConfiguration(Communication::Models::Co
 	{
 		delete oldTimeService;
 	}
+	if (oldLogService != nullptr)
+	{
+		delete oldLogService;
+	}
 
 	_isChangeConfiguration = false;
+	_initMillis = millis();
 }
 
 void Services::ConfigurationService::clearConfiguration(Communication::Models::Configurations::Configuration* configuration)
