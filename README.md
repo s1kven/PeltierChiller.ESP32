@@ -4,6 +4,18 @@ PeltierChiller.ESP32 is a project to provide you possibility to create flexible 
 
 Each PC overclockers finally comes to limitation of cooling system. And most of them stops on achieved result, but some of them go farther and install chiller systems based on Peltier modules or freon. Of course this systems impossible to use as common cooling system because of uncontrolled cold production. This may cause your computer to break down because of condensation. Also you don't need all time maximum of your cooling system. This project is a solution.
 
+## Features
+
+* Control of the power supply of the peltier modules to maintain the temperature in the selected mode:
+    * Fixed temperature mode
+    * ΔT between room and cold circuit temperature
+    * ΔT between dew point and cold circuit temperature
+* Emulation of the PC power button. This allows you to start the computer after reaching the set temperature.
+* Supporting different temperature sensors (BME280, DS18B20, NTC).
+* PWM devices flexible control.
+* [Logging system](#logging-system).
+* [Commands](#commands) support. You can control your chiller by them.
+
 ## Hardware
 
 **Minimal hardware requirements:**
@@ -73,7 +85,7 @@ So, let's get acquainted with the settings:
   * `"ChillerType": 3` - in this mode system tries to maintain `"TargetTemperature"` as ΔT between dew point and cold circuit temperature.
 
 3. `"TargetTemperature"` target cold circuit temperature or ΔT for `"ChillerType": 2` and `"ChillerType": 3`.
-4. `"VoltmeterThreshold" a voltage above this threshold value will cause the chiller to turn on, below this value it will turn off.
+4. `"VoltmeterThreshold"` a voltage above this threshold value will cause the chiller to turn on, below this value it will turn off.
 5. `"VoltmeterR1"` R1 of your voltage resistive divider.
 6. `"VoltmeterR2"` R2 of your voltage resistive divider.
 7. `"StartupPcAfterFeatTargetTemperature"` `false` value enable your PC right after pushing power button. `true` value enable it only after achieving `"TargetTemperature"`.
@@ -223,6 +235,72 @@ So, let's get acquainted with the settings:
     Also there are differences between "Fan" and "Cold/ Hot circuit pump" control types if `"Load"` for first value set higher than 0. For pwm load lower this value for pumps pwm value stays on it, but for fan dropes to 0.
 
     Example on charts how it looks like: [PWM chart for fan](https://github.com/user-attachments/assets/119de880-bc11-488a-bdc7-769167e19c9d) and [PWM chart for pump](https://github.com/user-attachments/assets/955089fa-383e-4491-87b8-95179f4a326b).
+
+12. `"Wifi"` - configuration for Wifi.
+        
+    ```
+        { 
+            "SSID": "YourNetworkName", 
+            "Password": "YourPassword", 
+            "ReconnectionTimeout": 30000, 
+            "NtpServer": "pool.ntp.org" 
+        }
+    ```
+    `"SSID"` name of your WiFi network.
+    
+    `"Password"` password of your WiFi network.
+
+    `"ReconnectionTimeout"` the time in milliseconds between attempts to restore the wifi connection. Recommended value from 10000 to 30000.
+
+    `"NtpServer"` available NTP server to update MCU clock.
+
+13. `"Log"` - configuration for logging service.
+        
+    ```
+        { 
+            "IsEnabled": true,
+            "Delay": 2000,
+            "CreateNewLogTime": "00:00:00",
+            "LogExpiration": 30 
+        }
+    ```
+    `"IsEnabled"` set true/ false if you want to enable/ disable logging.
+    
+    `"Delay"` time in milliseconds when logging service will collect data to cache and send it to SD card after delay expiration.
+
+    `"CreateNewLogTime"` time of day when will be created new log file. It only works if the MCU clock was previously installed from the NTP server. Enter it in UTC format.
+
+    `"LogExpiration"` count of days. Log files older this value will be deleted.
+
+### Logging system
+
+The logging system records all requests ("Commands") and responses to the SD card. All log files stored in "/Logs" folder. During the first cycle of trying to connect to the WiFi and NTP server, delay time from `"ReconnectionTimeout"` configuration property, all logs saved to cache and after it finished created new log file. Depending on whether it was possible to connect to NTP server system have two ways how to work with logs:
+1) If the connection to NTP is successful.
+After first cycle of `"ReconnectionTimeout"` from `"Wifi"` will be created new file with this name pattern `YYYYmmdd_HHMMSS.txt`. Date and time from file name correspond to time when MCU was started in UTC. Also will start new timer for creation new log file in time specified in `"CreateNewLogTime"` from `"Wifi"` configuration property.
+An expired file check is performed, and all of them will be deleted. Configured by `"LogExpiration"` from `"Log"` configuration.
+Each log information string have this structure: `YYYY-mm-ddTHH:MM:SS | "milliseconds after startup" -> "Log info"`.
+
+2) If the connection to NTP failed.
+After first loop of `"ReconnectionTimeout"` from `"Wifi"` will be created new file with name `Latest.txt`. If `Latest.txt` file was available before, it will be overwritten.
+Each log information string have this structure: `"milliseconds after startup" -> "Log info"`.
+
+Log example:
+`2025-02-23T05:38:57 | 5766 -> {"ResponseType":1,"Success":true,"Data":{"TemperatureSensors":[{"Type":1,"Target":3,"Temperature":26.5,"Name":""},{"Type":1,"Target":1,"Temperature":28.125,"Name":""},{"Type":1,"Target":2,"Temperature":25.5625,"Name":""},{"Type":1,"Target":4,"Temperature":26.0625,"Name":""},{"Type":3,"Target":1,"Temperature":29.29299927,"Name":""},{"Type":2,"Target":1,"Temperature":27.71999931,"Name":"","Pressure":101041.4219,"Humidity":29.37695313}]},"ErrorMessage":null}
+2025-02-23T05:38:57 | 5768 -> {"ResponseType":2,"Success":true,"Data":{"Pwms":[{"ControlType":1,"Name":"Radiators fans","RPM":0}]},"ErrorMessage":null}`
+
+### Commands
+
+Commands used to control your chiller and improve user expirience. If you want to send command to Esp32 - send JSON to the serial port of it. You can find all examples in repository "/Requests/Commands" folder.
+
+Invalid command response example:
+`{"ResponseType":101,"Success":false,"Data":null,"ErrorMessage":"InvalidInput{wrong command}"}`
+
+Commands list:
+1) "SoftReset" - reboot Esp32.
+2) "UpdateConfiguration" - update "Configuration.json" file.
+3) "UpdateAndApplyConfiguration" - update "Configuration.json" file and restarts main services to apply configuration.
+4) "UpdateTempConfiguration" - restarts main services to apply configuration provided by command. It's applies only for current session.
+5) "ResetTempConfiguration" - restarts main services and load configuration from "Configuration.json".
 
 ### Data monitor
 
