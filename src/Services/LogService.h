@@ -10,12 +10,16 @@
 #include <queue>
 #include "FileService.h"
 #include "TimeService.h"
+#include "WifiService.h"
 #include "Communication/Models/Configurations/LogConfiguration.h"
 #include "Abstractions/BaseTimerCallback.h"
+#include "Helpers/TimerHandler.h"
 
 extern Services::FileService* _fileService;
 extern Services::TimeService* _timeService;
+extern Services::WifiService* _wifiService;
 extern uint64_t _initMillis;
+extern Helpers::TimerHandler* _timerHandler;
 
 namespace Services
 {

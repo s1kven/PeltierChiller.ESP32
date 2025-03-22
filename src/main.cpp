@@ -28,8 +28,9 @@
 #include "Services/LogService.h"
 #include "Communication/Models/Responses/ResponsesData/GetTemperatureSensorsData.h"
 #include "Communication/Models/Responses/ResponsesData/GetPwmItemsData.h"
+#include "Helpers/TimerHandler.h"
 
-const String SOFTWARE_VERSION = "0.1.0";
+#define SOFTWARE_VERSION = "1.1.0";
 
 const uint8_t SD_CS = 5;
 
@@ -59,6 +60,8 @@ Services::LogService* _logService;
 
 uint64_t _initMillis = 0;
 
+Helpers::TimerHandler* _timerHandler;
+
 struct {
 	SemaphoreHandle_t _communicationMutex;
 	SemaphoreHandle_t _chillerMutex;
@@ -81,6 +84,8 @@ void setup()
 	_wifiService = nullptr;
 	_timeService = nullptr;
 	_logService = nullptr;
+
+	_timerHandler = nullptr;
 
 	Wire.begin();
 
@@ -154,20 +159,25 @@ void setup()
 		NULL
 	);
 
-	if(_logService->getIsEnabled())
-	{
-		xTaskCreate(
-			logTask,
-			"logTask",
-			4096,
-			NULL,
-			3,
-			NULL
-		);
-	}
+	xTaskCreate(
+		logTask,
+		"logTask",
+		4096,
+		NULL,
+		3,
+		NULL
+	);
 }
 
-void loop() { }
+void loop() 
+{
+	if(_timerHandler != nullptr && _timeService != nullptr)
+	{
+		_timeService->startTimer(_timerHandler->getOnTimerInstance(), _timerHandler->getInterruptTime(), _timerHandler->getTimerInfo());
+		delete _timerHandler;
+		_timerHandler = nullptr;
+	}
+}
 
 void manageChillerTask(void* argument)
 {
@@ -180,6 +190,7 @@ void manageChillerTask(void* argument)
 			_chillerService->manageChiller();
 			xSemaphoreGive(Mutexes._chillerMutex);
 		}
+		taskYIELD();
 	}
 }
 
@@ -194,6 +205,7 @@ void handlePwmsTask(void* argument)
 			_pwmService->handlePwms(_chillerService->getChillerLoadPercentage());
 			xSemaphoreGive(Mutexes._chillerMutex);
 		}
+		taskYIELD();
 	}
 }
 
@@ -216,9 +228,9 @@ void sendCommunicationDataTask(void* argument)
 					new Communication::Models::Responses::ResponsesData::GetPwmItemsData(
 						_pwmService->getPwmItems()));
 			_communicationService->sendResponse(pwmItemsResponse);
-
 			xSemaphoreGive(Mutexes._communicationMutex);
 		}
+		taskYIELD();
 	}
 }
 
@@ -239,6 +251,7 @@ void readCommunicationDataTask(void* argument)
 		xSemaphoreGive(Mutexes._wifiMutex);
 		xSemaphoreGive(Mutexes._chillerMutex);
 		xSemaphoreGive(Mutexes._communicationMutex);
+		taskYIELD();
 	}
 }
 
@@ -257,6 +270,7 @@ void wifiConnectionTask(void* argument)
 		{
 			vTaskDelay(50 / portTICK_PERIOD_MS);
 		}
+		taskYIELD();
 	}
 }
 
@@ -265,9 +279,13 @@ void logTask(void* argument)
 	while (true)
 	{
 		xSemaphoreTake(Mutexes._logMutex, portMAX_DELAY);
-		_logService->pushContentToLog();
+		if(_logService->getIsEnabled())
+		{
+			_logService->pushContentToLog();
+		}
 		xSemaphoreGive(Mutexes._logMutex);
 		vTaskDelay(_logService->getLogDelay() / portTICK_PERIOD_MS);
+		taskYIELD();
 	}
 }
 

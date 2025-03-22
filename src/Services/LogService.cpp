@@ -47,6 +47,7 @@ Services::LogService::LogService(Communication::Models::Configurations::LogConfi
     _logExpiration = logConfig->getLogExpiration();
     strptime(logConfig->getCreateNewLogTime().c_str(), "%H:%M:%S", &_createNewLogTime);
     _logFileInitDelay = logFileInitDelay;
+    setTimerInfo(TIMER_GROUP_1, TIMER_1);
 }
 
 Services::LogService::~LogService()
@@ -92,14 +93,20 @@ void Services::LogService::pushContentToLog()
             setNewFileToLog();
             if(_timeService->isValidTime(_timeService->getCurrentTime()))
             {
-                _timeService->startTimer(this, _createNewLogTime);
+                _timerHandler = new Helpers::TimerHandler(this, _createNewLogTime, getTimerInfo());
             }
             _isLogFileInit = true;
         }
     }
     else
     {
-        _fileService->appendFile(_logsFolder.c_str(), _currentFileToLog.c_str(), _logQueue);
+        if(_fileService->appendFile(_logsFolder.c_str(), _currentFileToLog.c_str(), _logQueue) <= 0)
+        {
+            while(!_logQueue.empty())
+			{
+				_logQueue.pop();
+			}
+        }
     }
 }
 

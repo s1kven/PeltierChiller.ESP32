@@ -81,7 +81,6 @@ void IRAM_ATTR Services::TimeService::onTimer(void* arg)
 {
     Abstractions::BaseTimerCallback* instance = static_cast<Abstractions::BaseTimerCallback*>(arg);
     instance->onTimer();
-    esp_timer_handle_t timer = instance->getCurrentTimer();
     instance->releaseCurrentTimer();
 }
 
@@ -100,14 +99,8 @@ struct tm Services::TimeService::subtractMilliseconds(const tm &timeStruct, uint
     return *newTimeStruct;
 }
 
-void Services::TimeService::startTimer(Abstractions::BaseTimerCallback* instance, struct tm &time)
+void Services::TimeService::startTimer(Abstractions::BaseTimerCallback* instance, const struct tm &time, const Helpers::TimerInfo &timerInfo)
 {
-    esp_timer_create_args_t timer_args = 
-    {
-        .callback = &onTimer,
-        .arg = instance
-    };
-
     time_t dailyTime = timeToSeconds(24, 0, 0);
     time_t interruptTime = timeToSeconds(time.tm_hour, time.tm_min, time.tm_sec);
     struct tm currentTimeInfo = getCurrentTime();
@@ -122,8 +115,20 @@ void Services::TimeService::startTimer(Abstractions::BaseTimerCallback* instance
         waitTime = (interruptTime + dailyTime) - currentTime;
     }
 
-    esp_timer_handle_t timer;
-    esp_timer_create(&timer_args, &timer);
-    esp_timer_start_once(timer, waitTime * 1000000);
-    instance->setCurrentTimer(timer);
+    const timer_config_t config = {
+        .alarm_en = TIMER_ALARM_EN,
+        .counter_en = TIMER_PAUSE,
+        .intr_type = TIMER_INTR_LEVEL,
+        .counter_dir = TIMER_COUNT_UP,
+        .auto_reload = TIMER_AUTORELOAD_DIS,
+        .divider = 80
+    };
+
+    uint64_t waitMicros = (uint64_t)waitTime * (uint64_t)1000000;
+    timer_init(timerInfo.timerGroup, timerInfo.timerIdx, &config);
+    timer_set_counter_value(timerInfo.timerGroup, timerInfo.timerIdx, 0x00000000ULL);
+    timer_set_alarm_value(timerInfo.timerGroup, timerInfo.timerIdx, waitMicros);
+    timer_enable_intr(timerInfo.timerGroup, timerInfo.timerIdx);
+    timer_isr_register(timerInfo.timerGroup, timerInfo.timerIdx, onTimer, instance, ESP_INTR_FLAG_IRAM, NULL);
+    timer_start(timerInfo.timerGroup, timerInfo.timerIdx);
 }

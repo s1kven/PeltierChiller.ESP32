@@ -1,20 +1,19 @@
 #include "BaseTimerCallback.h"
 
-void Abstractions::BaseTimerCallback::setCurrentTimer(esp_timer_handle_t timer)
+void Abstractions::BaseTimerCallback::setTimerInfo(timer_group_t timerGroup, timer_idx_t timerIdx)
 {
-    _currentTimer = timer;
+    _timerInfo.timerGroup = timerGroup;
+    _timerInfo.timerIdx = timerIdx;
 }
 
-esp_timer_handle_t Abstractions::BaseTimerCallback::getCurrentTimer()
+Helpers::TimerInfo& Abstractions::BaseTimerCallback::getTimerInfo()
 {
-    return _currentTimer;
+    return _timerInfo;
 }
 
 void Abstractions::BaseTimerCallback::releaseCurrentTimer()
 {
-    if(_currentTimer != nullptr)
-    {
-        esp_timer_stop(_currentTimer);
-        esp_timer_delete(_currentTimer);
-    }
+    timer_disable_intr(_timerInfo.timerGroup, _timerInfo.timerIdx);
+    timer_pause(_timerInfo.timerGroup, _timerInfo.timerIdx);
+    timer_group_clr_intr_status_in_isr(_timerInfo.timerGroup, _timerInfo.timerIdx);
 }

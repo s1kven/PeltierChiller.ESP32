@@ -6,10 +6,12 @@
 #else
 #include "WProgram.h"
 #endif
+#include "esp_task_wdt.h"
 
 #include "time.h"
-#include "esp_timer.h"
+#include "driver/timer.h"
 #include "Abstractions/BaseTimerCallback.h"
+#include "Helpers/TimerInfo.h"
 
 extern uint64_t _initMillis;
 
@@ -35,7 +37,7 @@ namespace Services
         bool isValidTime(tm time);
         void convertToTmStruct(uint16_t date, uint16_t time, struct tm &tm);
         struct tm subtractMilliseconds(const tm &timeStruct, uint64_t milliseconds);
-        void startTimer(Abstractions::BaseTimerCallback* instance, struct tm &time);
+        void startTimer(Abstractions::BaseTimerCallback* instance, const struct tm &time, const Helpers::TimerInfo &timerInfo);
     };
 }
 #endif

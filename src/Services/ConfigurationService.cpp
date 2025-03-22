@@ -179,6 +179,11 @@ void Services::ConfigurationService::initConfiguration(Communication::Models::Co
 
 	_logService = new Services::LogService(configuration->getLogConfiguration(), configuration->getWifiConfiguration()->getReconnectionTimeout());
 
+	if(_logService->getIsEnabled())
+	{
+		_logService->addToLogQueue(_jsonService->serializeObject(configuration));
+	}
+
 	if (oldTemperatureService != nullptr)
 	{
 		oldTemperatureService->clear();
