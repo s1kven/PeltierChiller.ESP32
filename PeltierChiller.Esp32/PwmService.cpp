@@ -1,23 +1,26 @@
 #include "PwmService.h"
 
-Services::PwmService::PwmService(uint32_t updatePwmDelay, Communication::Models::Configurations::PwmsConfiguration* configuration,
-	Services::TemperatureService* temperatureService)
+Services::PwmService::PwmService(uint32_t updatePwmDelay, Communication::Models::Configurations::PwmsConfiguration* configuration)
 {
 	_updatePwmDelay = updatePwmDelay;
 	_configuration = configuration;
-	_temperatureService = temperatureService;
 	_pwmItems = new LinkedList<Models::PwmItem*>();
 	initConfiguration();
 }
 
 void Services::PwmService::handlePwms(uint8_t currentChillerLoad)
 {
-	if (millis() - _updatePwmTimer >= _updatePwmDelay)
+	float hotToRoomDeltaT = getCurrentHotToRoomDeltaT();
+	for (uint8_t i = 0; i < _pwmItems->size(); i++)
 	{
-		_updatePwmTimer = millis();
-		float hotToRoomDeltaT = getCurrentHotToRoomDeltaT();
-		for (uint8_t i = 0; i < _pwmItems->size(); i++)
+		Models::PwmItem* currentItem = _pwmItems->get(i);
+		if (currentItem->getSetToMaxWhenChillerLoad() != -1 && currentChillerLoad > currentItem->getSetToMaxWhenChillerLoad())
 		{
+			analogWrite(currentItem->getPwmPin(), 255);
+		}
+		else
+		{
+<<<<<<<< HEAD:PeltierChiller.Esp32/PwmService.cpp
 			Models::PwmItem* currentItem = _pwmItems->get(i);
 			if (currentItem->getSetToMaxWhenChillerLoad() != -1 && currentChillerLoad > currentItem->getSetToMaxWhenChillerLoad())
 			{
@@ -27,6 +30,9 @@ void Services::PwmService::handlePwms(uint8_t currentChillerLoad)
 			{
 				analogWrite(currentItem->getPwmPin(), getCurrentPwmValue(currentItem, hotToRoomDeltaT));
 			}
+========
+			analogWrite(currentItem->getPwmPin(), getCurrentPwmValue(currentItem, hotToRoomDeltaT));
+>>>>>>>> develop:src/Services/PwmService.cpp
 		}
 	}
 }
@@ -34,6 +40,22 @@ void Services::PwmService::handlePwms(uint8_t currentChillerLoad)
 LinkedList<Models::PwmItem*>* Services::PwmService::getPwmItems()
 {
 	return _pwmItems;
+}
+
+uint32_t Services::PwmService::getUpdatePwmDelay()
+{
+	return _updatePwmDelay;
+}
+
+void Services::PwmService::clear()
+{
+	for (int i = 0; i < _pwmItems->size(); i++)
+	{
+		_pwmItems->get(i)->clear();
+		delete _pwmItems->get(i);
+	}
+	_pwmItems->clear();
+	delete _pwmItems;
 }
 
 void Services::PwmService::initConfiguration()

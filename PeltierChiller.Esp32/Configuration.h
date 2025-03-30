@@ -1,16 +1,22 @@
 #pragma once
+#ifndef _Configuration_
+#define _Configuration_ 
 #if defined(ARDUINO) && ARDUINO >= 100
 #include "arduino.h"
 #else
 #include "WProgram.h"
 #endif
-#include "BaseDeserializableObject.h"
+#include "Communication/Abstractions/BaseDeserializableObject.h"
+#include "Communication/Abstractions/BaseSerializableObject.h"
 #include "PinsConfiguration.h"
 #include "TimersConfiguration.h"
 #include "ChillerConfiguration.h"
-#include "TemperatureSensorsConfiguration.h"
+#include "TemperatureSensors/TemperatureSensorsConfiguration.h"
 #include "PwmsConfiguration.h"
-#include "ChillerType.cpp"
+#include "WifiConfiguration.h"
+#include "LogConfiguration.h"
+#include "Models/Enums/ChillerType.cpp"
+#include "Helpers/JsonHelper.h"
 
 namespace Communication
 {
@@ -19,9 +25,12 @@ namespace Communication
 		namespace Configurations
 		{
 			class Configuration :
-				public Abstractions::BaseDeserializableObject
+				public Abstractions::BaseDeserializableObject,
+				public Abstractions::BaseSerializableObject
 			{
 			private:
+				const uint16_t _payloadSize = JSON_OBJECT_SIZE(11) + JSON_ARRAY_SIZE(1);
+
 				ChillerType _chillerType;
 				float _targetCircuitTemperature;
 				float _voltmeterThreshold;
@@ -34,19 +43,27 @@ namespace Communication
 				Communication::Models::Configurations::ChillerConfiguration* _chillerConfiguration;
 				Communication::Models::Configurations::TemperatureSensors::TemperatureSensorsConfiguration* _temperatureSensorsConfiguration;
 				Communication::Models::Configurations::PwmsConfiguration* _pwmsConfiguration;
+				Communication::Models::Configurations::WifiConfiguration* _wifiConfiguration;
+				Communication::Models::Configurations::LogConfiguration* _logConfiguration;
 
 			protected:
 				void init() override;
 
 			public:
+<<<<<<<< HEAD:PeltierChiller.Esp32/Configuration.h
 				~Configuration();
+========
+>>>>>>>> develop:src/Communication/Models/Configurations/Configuration.h
 				void init(ChillerType chillerType, float targetCircuitTemperature, float voltmeterThreshold,
 					uint32_t voltmeterR1, uint32_t voltmeterR2, bool isDelayEnablingPc,
 					Communication::Models::Configurations::PinsConfiguration* pinsConfiguration,
 					Communication::Models::Configurations::TimersConfiguration* timersConfiguration,
 					Communication::Models::Configurations::ChillerConfiguration* chillerConfiguration,
 					Communication::Models::Configurations::TemperatureSensors::TemperatureSensorsConfiguration* temperatureSensorsConfiguration,
-					Communication::Models::Configurations::PwmsConfiguration* pwmsConfiguration);
+					Communication::Models::Configurations::PwmsConfiguration* pwmsConfiguration,
+					Communication::Models::Configurations::WifiConfiguration* wifiConfiguration,
+					Communication::Models::Configurations::LogConfiguration* logConfiguration);
+				void clear();
 
 				ChillerType getChillerType();
 				float getTargetCircuitTemperature();
@@ -59,7 +76,12 @@ namespace Communication
 				Communication::Models::Configurations::ChillerConfiguration* getChillerConfiguration();
 				Communication::Models::Configurations::TemperatureSensors::TemperatureSensorsConfiguration* getTemperatureSensorsConfiguration();
 				Communication::Models::Configurations::PwmsConfiguration* getPwmsConfiguration();
+				Communication::Models::Configurations::WifiConfiguration* getWifiConfiguration();
+				Communication::Models::Configurations::LogConfiguration* getLogConfiguration();
+
+				DynamicJsonDocument createPayload() override;
 			};
 		}
 	}
 }
+#endif

@@ -9,177 +9,76 @@ String Services::JsonService::serializeObject(Communication::Abstractions::BaseS
 	return serializedObject;
 }
 
-String Services::JsonService::serializeObject(
-	Models::Abstractions::KeyValuePair<Communication::Abstractions::BaseSerializableObject**, uint8_t> _models,
-	Communication::Enums::ResponseType _responseType)
+String Services::JsonService::serializeRequest(Communication::Abstractions::BaseSerializableObject* request,
+	Communication::Enums::RequestType requestType)
 {
-	uint16_t responseDocumentSize = calculateJsonDocumentSize(_models);
+	DynamicJsonDocument requestJson(request->getJsonSize() + JSON_OBJECT_SIZE(2));
 
-	DynamicJsonDocument response(responseDocumentSize);
-	JsonObject responsePayload = response.to<JsonObject>();
+	requestJson["RequestType"] = static_cast<uint16_t>(requestType);
+	JsonObject dataJson = requestJson.createNestedObject("Data");
+	dataJson.set(request->createPayload().as<JsonObjectConst>());
 
-	responsePayload["ResponseType"] = static_cast<uint16_t>(_responseType);
+	String serializedRequest;
+	serializeJson(requestJson, serializedRequest);
 
-	JsonObject data = responsePayload.createNestedObject("Data");
-
-	buildResponseBasedOnType(data, _models, _responseType);
-
-	delete _models.key;
-
-	String serializedObject = response.as<String>();
-
-	response.clear();
-
-	return serializedObject;
+	requestJson.clear();
+	return serializedRequest;
 }
 
-Communication::Abstractions::BaseDeserializableObject* Services::JsonService::deserializeRequest(String& content)
+Communication::Models::Requests::BaseRequest* Services::JsonService::deserializeRequest(String content)
 {
-	uint32_t documentSize = getDeserializedJsonSize(content);
-	DynamicJsonDocument document(documentSize);
-	JsonObject payload = document.to<JsonObject>();
+	Communication::Models::Requests::BaseRequest* request = nullptr;
+	DynamicJsonDocument document(32768);
 	DeserializationError error = deserializeJson(document, content);
-
 	if (error)
 	{
-		Communication::Abstractions::BaseDeserializableObject* errorObject = buildError(error);
-		return errorObject;
+		request = new Communication::Models::Requests::ErrorRequest(Communication::Enums::RequestType::errorDeserialization, 
+			content.c_str(), error.c_str());
 	}
 	else 
 	{
 		uint8_t type = document["RequestType"];
 		JsonObject data = document["Data"];
-
-		Communication::Abstractions::BaseDeserializableObject* deserializedObject = deserializeRequestByType(
-			static_cast<Communication::Enums::RequestType>(type), data);
-		return deserializedObject;
+		
+		request = deserializeRequestByType(static_cast<Communication::Enums::RequestType>(type), data, content);
 	}
+	document.clear();
+	return request;
 }
 
-uint16_t Services::JsonService::calculateJsonDocumentSize(
-	Models::Abstractions::KeyValuePair<Communication::Abstractions::BaseSerializableObject**, uint8_t> _models)
+Communication::Models::Requests::BaseRequest* Services::JsonService::deserializeRequestByType(
+	Communication::Enums::RequestType _requestType, JsonObject data, String request)
 {
-	uint16_t documentSize = 0;
-	for (int i = 0; i < _models.value; i++)
-	{
-		documentSize += (*_models.key[i]).GetJsonSize();
-	}
-	documentSize += _baseResponseSize + 8; // 8 - size of JsonArray
-
-	return documentSize;
-}
-
-
-uint32_t Services::JsonService::getDeserializedJsonSize(String& content)
-{
-	uint16_t objectsCount = 0;
-	uint16_t arraysCount = 0;
-
-	for (int i = 0; i < content.length(); i++)
-	{
-		if (content[i] == '{')
-		{
-			objectsCount++;
-		}
-		else if (content[i] == '[')
-		{
-			arraysCount++;
-		}
-	}
-
-	uint32_t documentSize = objectsCount * sizeof(JsonObject) + arraysCount * sizeof(JsonArray) + content.length();
-
-	return documentSize;
-}
-
-Communication::Models::DeserializationError* Services::JsonService::buildError(DeserializationError error)
-{
-	return new Communication::Models::DeserializationError(errorCodeConverter(error), error.c_str());
-}
-
-Communication::Enums::ErrorCode Services::JsonService::errorCodeConverter(DeserializationError error)
-{
-	switch (error.code())
-	{
-	case error.Ok:
-		return Communication::Enums::ErrorCode::ok;
-	case error.EmptyInput:
-		return Communication::Enums::ErrorCode::emptyInput;
-	case error.IncompleteInput:
-		return Communication::Enums::ErrorCode::incompleteInput;
-	case error.InvalidInput:
-		return Communication::Enums::ErrorCode::invalidInput;
-	case error.NoMemory:
-		return Communication::Enums::ErrorCode::noMemory;
-	case error.TooDeep:
-		return Communication::Enums::ErrorCode::tooDeep;
-	}
-}
-
-void Services::JsonService::buildResponseBasedOnType(JsonObject& _data,
-	Models::Abstractions::KeyValuePair<Communication::Abstractions::BaseSerializableObject**, uint8_t> _models,
-	Communication::Enums::ResponseType _responseType)
-{
-	switch (_responseType)
-	{
-	case Communication::Enums::ResponseType::unknown:
-		break;
-	case Communication::Enums::ResponseType::temperatureSensors:
-		buildTemperatureSensorsResponse(_data, _models);
-		break;
-	case Communication::Enums::ResponseType::pwms:
-		buildPwmsResponse(_data, _models);
-		break;
-
-	default:
-		break;
-	}
-}
-
-Communication::Abstractions::BaseDeserializableObject* Services::JsonService::deserializeRequestByType(
-	Communication::Enums::RequestType _requestType, JsonObject data)
-{
-	Communication::Abstractions::BaseDeserializableObject* content;
 	switch (_requestType)
 	{
-	case Communication::Enums::RequestType::unknown :
-		break;
 	case Communication::Enums::RequestType::configuration:
-		content = deserializeConfiguration(data);
-		break;
+		return deserializeConfigurationRequest(data);
+	case Communication::Enums::RequestType::softReset:
+		return deserializeSoftResetCommand();
+	case Communication::Enums::RequestType::updateConfiguration:
+		return deserializeUpdateConfigurationCommand(data, Communication::Enums::RequestType::updateConfiguration);
+	case Communication::Enums::RequestType::updateAndApplyConfiguration:
+		return deserializeUpdateConfigurationCommand(data, Communication::Enums::RequestType::updateAndApplyConfiguration);
+	case Communication::Enums::RequestType::updateTempConfiguration:
+		return deserializeUpdateTempConfigurationCommand(data);
+	case Communication::Enums::RequestType::resetTempConfiguration:
+		return deserializeResetTempConfigurationCommand();
+	case Communication::Enums::RequestType::unknown:
 	default:
-		break;
-	}
-	return content;
-}
-
-#pragma region buildResponse
-
-void Services::JsonService::buildTemperatureSensorsResponse(JsonObject& _data,
-	Models::Abstractions::KeyValuePair<Communication::Abstractions::BaseSerializableObject**, uint8_t> _models)
-{
-	JsonArray temperatureSensors = _data.createNestedArray("TemperatureSensors");
-	for (int i = 0; i < _models.value; i++)
-	{
-		temperatureSensors.add((*_models.key[i]).createPayload());
+		String emptyString = String();
+		return new Communication::Models::Requests::ErrorRequest(_requestType,
+			request.c_str(), emptyString.c_str());
 	}
 }
-
-void Services::JsonService::buildPwmsResponse(JsonObject& _data,
-	Models::Abstractions::KeyValuePair<Communication::Abstractions::BaseSerializableObject**, uint8_t> _models)
-{
-	JsonArray temperatureSensors = _data.createNestedArray("Pwms");
-	for (int i = 0; i < _models.value; i++)
-	{
-		temperatureSensors.add((*_models.key[i]).createPayload());
-	}
-}
-
-#pragma endregion buildResponse
 
 #pragma region Deserializers
 
 #pragma region Configurations
+
+Communication::Models::Requests::ConfigurationRequest* Services::JsonService::deserializeConfigurationRequest(JsonObject data)
+{
+	return new Communication::Models::Requests::ConfigurationRequest(deserializeConfiguration(data));
+}
 
 Communication::Models::Configurations::Configuration* Services::JsonService::deserializeConfiguration(JsonObject data)
 {
@@ -210,9 +109,21 @@ Communication::Models::Configurations::Configuration* Services::JsonService::des
 	Communication::Models::Configurations::PwmsConfiguration* pwmsConfiguration =
 		deserializePwmsConfiguration(pwmsJson);
 
+<<<<<<<< HEAD:PeltierChiller.Esp32/JsonService.cpp
 	configuration->init(chillerType, targetTemperature, voltmeterThreshold, voltmeterR1, voltmeterR2,
 		isDelayEnablingPc, pinsConfiguration, timersConfiguration, chillerConfiguration, 
 		temperatureSensorsConfiguration, pwmsConfiguration);
+========
+	JsonObject wifiConfigurationJson = data["Wifi"];
+	Communication::Models::Configurations::WifiConfiguration* wifiConfiguration = deserializeWifiConfiguration(wifiConfigurationJson);
+
+	JsonObject logConfigurationJson = data["Log"];
+	Communication::Models::Configurations::LogConfiguration* logConfiguration = deserializeLogConfiguration(logConfigurationJson);
+
+	configuration->init(chillerType, targetTemperature, voltmeterThreshold, voltmeterR1, voltmeterR2,
+		isDelayEnablingPc, pinsConfiguration, timersConfiguration, chillerConfiguration, 
+		temperatureSensorsConfiguration, pwmsConfiguration, wifiConfiguration, logConfiguration);
+>>>>>>>> develop:src/Services/JsonService.cpp
 
 	return configuration;
 }
@@ -300,10 +211,11 @@ Services::JsonService::deserializeBme280ListConfiguration(JsonObject data)
 			Communication::Models::Configurations::TemperatureSensors::Bme280Configuration* _bme280Configuration =
 				new Communication::Models::Configurations::TemperatureSensors::Bme280Configuration();
 			uint16_t address = items[i]["Address"];
+			String name = items[i]["Name"];
 			uint8_t digitTarget = items[i]["Target"];
 			TemperatureSensorTarget target = static_cast<TemperatureSensorTarget>(digitTarget);
 
-			_bme280Configuration->init(address, target);
+			_bme280Configuration->init(address, name, target);
 			_bme280Items->add(_bme280Configuration);
 		}
 	}
@@ -328,6 +240,7 @@ Services::JsonService::deserializeNtcListConfiguration(JsonObject data)
 			Communication::Models::Configurations::TemperatureSensors::NtcConfiguration* _ntcConfiguration =
 				new Communication::Models::Configurations::TemperatureSensors::NtcConfiguration();
 			uint16_t address = items[i]["Address"];
+			String name = items[i]["Name"];
 			uint8_t digitTarget = items[i]["Target"];
 			TemperatureSensorTarget target = static_cast<TemperatureSensorTarget>(digitTarget);
 			uint32_t resistance = items[i]["Resistance"];
@@ -336,7 +249,7 @@ Services::JsonService::deserializeNtcListConfiguration(JsonObject data)
 			float baseTemperature = items[i]["BaseTemperature"];
 			float supplyVoltage = items[i]["SupplyVoltage"];
 
-			_ntcConfiguration->init(address, target, resistance, resistanceNtc,
+			_ntcConfiguration->init(address, name, target, resistance, resistanceNtc,
 				bCoefficient, baseTemperature, supplyVoltage);
 			_ntcItems->add(_ntcConfiguration);
 		}
@@ -364,6 +277,7 @@ Services::JsonService::deserializeDs18b20ListConfiguration(JsonObject data)
 			Communication::Models::Configurations::TemperatureSensors::Ds18b20Configuration* _ds18b20Configuration =
 				new Communication::Models::Configurations::TemperatureSensors::Ds18b20Configuration();
 			JsonArray addressJson = items[i]["Address"];
+			String name = items[i]["Name"];
 			DeviceAddress address;
 			for (int j = 0; j < addressJson.size(); j++)
 			{
@@ -373,7 +287,7 @@ Services::JsonService::deserializeDs18b20ListConfiguration(JsonObject data)
 			uint8_t digitTarget = items[i]["Target"];
 			TemperatureSensorTarget target = static_cast<TemperatureSensorTarget>(digitTarget);
 
-			_ds18b20Configuration->init(address, target);
+			_ds18b20Configuration->init(address, name, target);
 			_ds18b20Items->add(_ds18b20Configuration);
 		}
 	}
@@ -417,6 +331,70 @@ Communication::Models::Configurations::PwmsConfiguration* Services::JsonService:
 	return pwmsConfiguration;
 }
 
+Communication::Models::Configurations::WifiConfiguration* Services::JsonService::deserializeWifiConfiguration(JsonObject data)
+{
+	Communication::Models::Configurations::WifiConfiguration* wifiConfiguration = new Communication::Models::Configurations::WifiConfiguration();
+
+	String ssid = data["SSID"];
+	String password = data["Password"];
+	uint32_t reconnectionTimeout = data["ReconnectionTimeout"];
+	String ntpServer = data["NtpServer"];
+	wifiConfiguration->init(ssid, password, reconnectionTimeout, ntpServer);
+
+	return wifiConfiguration;
+}
+
+Communication::Models::Configurations::LogConfiguration* Services::JsonService::deserializeLogConfiguration(JsonObject data)
+{
+	Communication::Models::Configurations::LogConfiguration* logConfiguration = new Communication::Models::Configurations::LogConfiguration();
+
+	bool isEnabled = data["IsEnabled"];
+	uint32_t logDelay = data["Delay"];
+	String createNewLogTime = data["CreateNewLogTime"];
+	uint16_t logExpiration = data["LogExpiration"];
+
+	logConfiguration->init(isEnabled, logDelay, logExpiration, createNewLogTime);
+
+	return logConfiguration;
+}
+
 #pragma endregion Configurations
+
+#pragma region SoftReset
+
+Communication::Models::Requests::Commands::SoftResetCommand* Services::JsonService::deserializeSoftResetCommand()
+{
+	return new Communication::Models::Requests::Commands::SoftResetCommand();
+}
+
+#pragma endregion SoftReset
+
+#pragma region UpdateConfigurationCommand
+
+Communication::Models::Requests::Commands::UpdateConfigurationCommand* Services::JsonService::deserializeUpdateConfigurationCommand(
+	JsonObject data, Communication::Enums::RequestType requestType)
+{
+	return new Communication::Models::Requests::Commands::UpdateConfigurationCommand(deserializeConfiguration(data), requestType);
+}
+
+#pragma endregion UpdateConfigurationCommand
+
+#pragma region UpdateTempConfigurationCommand
+
+Communication::Models::Requests::Commands::UpdateTempConfigurationCommand* Services::JsonService::deserializeUpdateTempConfigurationCommand(JsonObject data)
+{
+	return new Communication::Models::Requests::Commands::UpdateTempConfigurationCommand(deserializeConfiguration(data));
+}
+
+#pragma endregion UpdateTempConfigurationCommand
+
+#pragma region ResetTempConfigurationCommand
+
+Communication::Models::Requests::Commands::ResetTempConfigurationCommand* Services::JsonService::deserializeResetTempConfigurationCommand()
+{
+	return new Communication::Models::Requests::Commands::ResetTempConfigurationCommand();
+}
+
+#pragma endregion ResetTempConfigurationCommand
 
 #pragma endregion Deserializers

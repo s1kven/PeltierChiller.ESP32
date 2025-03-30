@@ -16,8 +16,6 @@ Services::ChillerService::ChillerService(Communication::Models::Configurations::
 	pinMode(_chillerSignalPin, OUTPUT);
 	pinMode(_powerSignalPin, OUTPUT);
 
-	_temperatureService = new Services::TemperatureService(_configuration->getTemperatureSensorsConfiguration());
-
 	_powerButton = new Models::Button(_powerButtonPin, "POWER");
 	_powerButton->setLastPressTime(0);
 }
@@ -27,13 +25,22 @@ void Services::ChillerService::manageChiller()
 	handlePcVoltage();
 	handlePowerButton();
 	manageChillerLoad();
+<<<<<<<< HEAD:PeltierChiller.Esp32/ChillerService.cpp
 	(*_temperatureService).requestSensors(_sensorsRequestDelay);
+========
+	_temperatureService->requestSensors(_sensorsRequestDelay);
+>>>>>>>> develop:src/Services/ChillerService.cpp
 	handleChillerState(_vin);
 }
 
-Services::TemperatureService* Services::ChillerService::getTemperatureService()
+uint8_t Services::ChillerService::getChillerLoadPercentage()
 {
-	return _temperatureService;
+	return _chillerLoadPercentage;
+}
+
+void Services::ChillerService::clear()
+{
+	delete _powerButton;
 }
 
 uint8_t Services::ChillerService::getChillerLoadPercentage()
@@ -58,7 +65,10 @@ void Services::ChillerService::initConfiguration()
 	_pcVoltagePin = pinsConfiguration->getPcVoltage();
 
 	_voltmeterThreshold = _configuration->getVoltmeterThreshold();
+<<<<<<<< HEAD:PeltierChiller.Esp32/ChillerService.cpp
 	_adc.attach(_pcVoltagePin);
+========
+>>>>>>>> develop:src/Services/ChillerService.cpp
 	_voltmeterR1 = _configuration->getVoltmeterR1();
 	_voltmeterR2 = _configuration->getVoltmeterR2();
 	_isDelayEnablingPc = _configuration->getIsDelayEnablingPc();
@@ -82,8 +92,13 @@ void Services::ChillerService::initConfiguration()
 }
 
 void Services::ChillerService::handlePcVoltage()
+<<<<<<<< HEAD:PeltierChiller.Esp32/ChillerService.cpp
 {
 	_vin = _adc.readVoltage() / (float(_voltmeterR2) / (float(_voltmeterR1) + float(_voltmeterR2)));
+========
+{    
+	_vin = ((float)analogReadMilliVolts(_pcVoltagePin) / 1000.0) / (float(_voltmeterR2) / (float(_voltmeterR1) + float(_voltmeterR2)));
+>>>>>>>> develop:src/Services/ChillerService.cpp
 }
 
 void Services::ChillerService::handlePowerButton()

@@ -1,8 +1,11 @@
 #pragma once
+#ifndef _ChillerService_
+#define _ChillerService_ 
 
 #include <Wire.h>
 #include <LinkedList.h>
 #include "TemperatureService.h"
+<<<<<<<< HEAD:PeltierChiller.Esp32/ChillerService.h
 #include "ChillerState.cpp"
 #include "PinsConfiguration.h"
 #include "TimersConfiguration.h"
@@ -11,6 +14,17 @@
 #include "Button.h"
 #include "ChillerType.cpp"
 #include <ESP32AnalogRead.h>
+========
+#include "Models/Enums/ChillerState.cpp"
+#include "Communication/Models/Configurations/PinsConfiguration.h"
+#include "Communication/Models/Configurations/TimersConfiguration.h"
+#include "Communication/Models/Configurations/ChillerConfiguration.h"
+#include "Communication/Models/Configurations/Configuration.h"
+#include "Models/Button.h"
+#include "Models/Enums/ChillerType.cpp"
+
+extern Services::TemperatureService* _temperatureService;
+>>>>>>>> develop:src/Services/ChillerService.h
 
 namespace Services
 {
@@ -20,7 +34,10 @@ namespace Services
 		Models::Enums::ChillerType _chillerType;
 		float _setTemperature;
 		uint8_t _pcVoltagePin;
+<<<<<<<< HEAD:PeltierChiller.Esp32/ChillerService.h
 		ESP32AnalogRead _adc;
+========
+>>>>>>>> develop:src/Services/ChillerService.h
 		float _vin = 0;
 		float _voltmeterThreshold;
 		uint32_t _voltmeterR1;
@@ -49,7 +66,6 @@ namespace Services
 		uint8_t _powerSignalPin;
 
 		Communication::Models::Configurations::Configuration* _configuration;
-		Services::TemperatureService* _temperatureService;
 		Models::Enums::ChillerState _state;
 		Models::Button* _powerButton;
 
@@ -77,7 +93,13 @@ namespace Services
 		ChillerService(Communication::Models::Configurations::Configuration* configuration);
 
 		void manageChiller();
+<<<<<<<< HEAD:PeltierChiller.Esp32/ChillerService.h
 		Services::TemperatureService* getTemperatureService();
 		uint8_t getChillerLoadPercentage();
+========
+		uint8_t getChillerLoadPercentage();
+		void clear();
+>>>>>>>> develop:src/Services/ChillerService.h
 	};
 }
+#endif
