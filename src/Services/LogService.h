@@ -12,7 +12,6 @@
 #include "TimeService.h"
 #include "WifiService.h"
 #include "Communication/Models/Configurations/LogConfiguration.h"
-#include "Abstractions/BaseTimerCallback.h"
 #include "Helpers/TimerHandler.h"
 
 extern Services::FileService* _fileService;
@@ -23,10 +22,12 @@ extern Helpers::TimerHandler* _timerHandler;
 
 namespace Services
 {
-	class LogService :
-		public Abstractions::BaseTimerCallback
+	class LogService
 	{
     private:
+		static bool _isLogFileInit;
+		static bool _isOnTimer;
+
 		String _defaultLogFile = "/Latest.txt";
         String _logsFolder = "/Logs";
 		String _currentFileToLog;
@@ -35,8 +36,6 @@ namespace Services
 		uint16_t _logExpiration;
 		struct tm _createNewLogTime;
 		uint32_t _logFileInitDelay;
-		bool _isLogFileInit = false;
-		bool _isOnTimer = false;
 		std::queue<String> _logQueue;
 		static const uint16_t _filesIgnoredToDeleteCount = 1;
 		String _filesIgnoredToDelete[_filesIgnoredToDeleteCount] = { _defaultLogFile };
@@ -50,10 +49,12 @@ namespace Services
 
 		void addToLogQueue(String content);
 		void pushContentToLog();
-		void onTimer() override;
 
 		uint32_t getLogDelay();
 		bool getIsEnabled();
+
+		static void setLogFileInit(bool isLogFileInit);
+		static void setOnTimer(bool isOnTimer);
 	};
 }
 #endif

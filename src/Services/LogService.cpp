@@ -23,6 +23,7 @@ void Services::LogService::setNewFileToLog()
         _currentFileToLog = _defaultLogFile;
     }
     _fileService->createFile(_logsFolder.c_str(), _currentFileToLog.c_str());
+    _fileService->listFiles(_fileService->getRoot(), 0);
     if(!_currentFileToLog.equals(_defaultLogFile))
     {
         _fileService->setFileTimestamp((_logsFolder + _currentFileToLog).c_str(), startupTime);
@@ -47,12 +48,12 @@ Services::LogService::LogService(Communication::Models::Configurations::LogConfi
     _logExpiration = logConfig->getLogExpiration();
     strptime(logConfig->getCreateNewLogTime().c_str(), "%H:%M:%S", &_createNewLogTime);
     _logFileInitDelay = logFileInitDelay;
-    setTimerInfo(TIMER_GROUP_1, TIMER_1);
+    _initMillis = millis();
 }
 
 Services::LogService::~LogService()
 {
-    releaseCurrentTimer();
+    _isLogFileInit = false;
 }
 
 void Services::LogService::addToLogQueue(String content)
@@ -93,7 +94,7 @@ void Services::LogService::pushContentToLog()
             setNewFileToLog();
             if(_timeService->isValidTime(_timeService->getCurrentTime()))
             {
-                _timerHandler = new Helpers::TimerHandler(this, _createNewLogTime, getTimerInfo());
+                _timerHandler = new Helpers::TimerHandler(_createNewLogTime);
             }
             _isLogFileInit = true;
         }
@@ -110,12 +111,6 @@ void Services::LogService::pushContentToLog()
     }
 }
 
-void Services::LogService::onTimer()
-{
-    _isLogFileInit = false;
-    _isOnTimer = true;
-}
-
 uint32_t Services::LogService::getLogDelay()
 {
     return _logDelay;
@@ -124,4 +119,14 @@ uint32_t Services::LogService::getLogDelay()
 bool Services::LogService::getIsEnabled()
 {
     return _isEnabled;
+}
+
+void Services::LogService::setLogFileInit(bool isLogFileInit)
+{
+    _isLogFileInit = isLogFileInit;
+}
+
+void Services::LogService::setOnTimer(bool isOnTimer)
+{
+    _isOnTimer = isOnTimer;
 }

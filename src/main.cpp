@@ -61,6 +61,7 @@ Services::LogService* _logService;
 uint64_t _initMillis = 0;
 
 Helpers::TimerHandler* _timerHandler;
+uint64_t _timerReleaseMillis = 0;
 
 struct {
 	SemaphoreHandle_t _communicationMutex;
@@ -68,6 +69,11 @@ struct {
 	SemaphoreHandle_t _wifiMutex;
 	SemaphoreHandle_t _logMutex;
 } Mutexes;
+
+const Helpers::TimerInfo Services::TimeService::_logTimerInfo = {TIMER_GROUP_1, TIMER_1};
+bool Services::TimeService::_isLogTimerInit = false;
+bool Services::LogService::_isLogFileInit = false;
+bool Services::LogService::_isOnTimer = false;
 
 void manageChillerTask(void* argument);
 void handlePwmsTask(void* argument);
@@ -173,7 +179,7 @@ void loop()
 {
 	if(_timerHandler != nullptr && _timeService != nullptr)
 	{
-		_timeService->startTimer(_timerHandler->getOnTimerInstance(), _timerHandler->getInterruptTime(), _timerHandler->getTimerInfo());
+		_timeService->startLogTimer(_timerHandler->getInterruptTime());
 		delete _timerHandler;
 		_timerHandler = nullptr;
 	}

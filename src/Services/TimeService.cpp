@@ -1,4 +1,5 @@
 #include "TimeService.h"
+#include "Services/LogService.h"
 
 #define FAT_YEAR(date) (((date) >> 9) + 1980)
 #define FAT_MONTH(date) (((date) >> 5) & 0x0F)
@@ -10,6 +11,11 @@
 Services::TimeService::TimeService(String ntpServer)
 {
     _ntpServer = ntpServer;
+}
+
+Services::TimeService::~TimeService()
+{
+    releaseLogTimer();
 }
 
 void Services::TimeService::configTime()
@@ -77,16 +83,29 @@ struct tm Services::TimeService::getEmptyTime()
         0};
 }
 
-void IRAM_ATTR Services::TimeService::onTimer(void* arg)
+void IRAM_ATTR Services::TimeService::onLogTimer(void* arg)
 {
-    Abstractions::BaseTimerCallback* instance = static_cast<Abstractions::BaseTimerCallback*>(arg);
-    instance->onTimer();
-    instance->releaseCurrentTimer();
+    releaseLogTimer();
+    Services::LogService::setLogFileInit(false);
+    Services::LogService::setOnTimer(true);
 }
 
 time_t Services::TimeService::timeToSeconds(uint64_t hours, uint64_t minutes, uint64_t seconds)
 {
     return (hours * 3600) + (minutes * 60) + seconds;
+}
+
+void Services::TimeService::releaseLogTimer()
+{
+    if(_isLogTimerInit)
+    {
+        timer_pause(_logTimerInfo.timerGroup, _logTimerInfo.timerIdx);
+        timer_disable_intr(_logTimerInfo.timerGroup, _logTimerInfo.timerIdx);
+        timer_group_clr_intr_status_in_isr(_logTimerInfo.timerGroup, _logTimerInfo.timerIdx);
+        timer_isr_callback_remove(_logTimerInfo.timerGroup, _logTimerInfo.timerIdx);
+        timer_deinit(_logTimerInfo.timerGroup, _logTimerInfo.timerIdx);
+        _isLogTimerInit = false;
+    }
 }
 
 struct tm Services::TimeService::subtractMilliseconds(const tm &timeStruct, uint64_t milliseconds)
@@ -99,7 +118,7 @@ struct tm Services::TimeService::subtractMilliseconds(const tm &timeStruct, uint
     return *newTimeStruct;
 }
 
-void Services::TimeService::startTimer(Abstractions::BaseTimerCallback* instance, const struct tm &time, const Helpers::TimerInfo &timerInfo)
+bool Services::TimeService::startLogTimer(const struct tm &time)
 {
     time_t dailyTime = timeToSeconds(24, 0, 0);
     time_t interruptTime = timeToSeconds(time.tm_hour, time.tm_min, time.tm_sec);
@@ -124,11 +143,18 @@ void Services::TimeService::startTimer(Abstractions::BaseTimerCallback* instance
         .divider = 80
     };
 
+    bool init = false;
     uint64_t waitMicros = (uint64_t)waitTime * (uint64_t)1000000;
-    timer_init(timerInfo.timerGroup, timerInfo.timerIdx, &config);
-    timer_set_counter_value(timerInfo.timerGroup, timerInfo.timerIdx, 0x00000000ULL);
-    timer_set_alarm_value(timerInfo.timerGroup, timerInfo.timerIdx, waitMicros);
-    timer_enable_intr(timerInfo.timerGroup, timerInfo.timerIdx);
-    timer_isr_register(timerInfo.timerGroup, timerInfo.timerIdx, onTimer, instance, ESP_INTR_FLAG_IRAM, NULL);
-    timer_start(timerInfo.timerGroup, timerInfo.timerIdx);
+    int8_t initResult = timer_init(_logTimerInfo.timerGroup, _logTimerInfo.timerIdx, &config);
+    if(initResult == 0)
+    {
+        init = true;
+    }
+    timer_set_counter_value(_logTimerInfo.timerGroup, _logTimerInfo.timerIdx, 0x00000000ULL);
+    timer_set_alarm_value(_logTimerInfo.timerGroup, _logTimerInfo.timerIdx, waitMicros);
+    timer_enable_intr(_logTimerInfo.timerGroup, _logTimerInfo.timerIdx);
+    timer_isr_register(_logTimerInfo.timerGroup, _logTimerInfo.timerIdx, onLogTimer, NULL, ESP_INTR_FLAG_IRAM, NULL);
+    timer_start(_logTimerInfo.timerGroup, _logTimerInfo.timerIdx);
+    _isLogTimerInit = init;
+    return init;
 }
