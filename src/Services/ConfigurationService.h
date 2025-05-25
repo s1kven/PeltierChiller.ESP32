@@ -1,4 +1,5 @@
 #pragma once
+
 #ifndef _ConfigurationService_
 #define _ConfigurationService_ 
 
@@ -40,6 +41,7 @@ namespace Services
 	class ConfigurationService
 	{
 	private:
+	
 		const char* _configPath = "/Configuration.json";
 
 		bool _isChangeConfiguration = false;
@@ -57,7 +59,9 @@ namespace Services
 		bool anyBmeTargetToRoom(Communication::Models::Configurations::TemperatureSensors::Bme280ListConfiguration* bme280ListConfiguration);
 		void initConfiguration(Communication::Models::Configurations::Configuration* configuration);
 		void clearConfiguration(Communication::Models::Configurations::Configuration* configuration);
+
 	public:
+
 		ConfigurationService();
 
 		const char* getConfigPath();

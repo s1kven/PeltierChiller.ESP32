@@ -1,5 +1,3 @@
-#pragma once
-
 #include "BaseSensor.h"
 
 Models::TemperatureSensors::BaseSensor::BaseSensor(Models::Enums::TemperatureSensorTarget sensorTarget,

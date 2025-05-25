@@ -1,4 +1,5 @@
 #pragma once
+
 #ifndef _DS18B20_
 #define _DS18B20_ 
 
@@ -19,7 +20,6 @@ namespace Models
 			uint8_t* _sensorAddress;
 
 		protected:
-
 
 		public:
 

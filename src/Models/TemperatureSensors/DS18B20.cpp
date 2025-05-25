@@ -1,5 +1,3 @@
-#pragma once
-
 #include "DS18B20.h"
 
 Models::TemperatureSensors::DS18B20::DS18B20(uint8_t* sensorAddress, Models::Enums::TemperatureSensorTarget sensorTarget, String name) :

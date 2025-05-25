@@ -1,4 +1,5 @@
 #pragma once
+
 #ifndef _BME280_
 #define _BME280_ 
 
@@ -21,7 +22,6 @@ namespace Models
 			float _pressure = 0.0;
 
 		protected:
-
 
 		public:
 

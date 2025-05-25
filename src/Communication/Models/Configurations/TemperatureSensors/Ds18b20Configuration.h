@@ -1,8 +1,9 @@
 #pragma once
+
 #ifndef _Ds18b20Configuration_
 #define _Ds18b20Configuration_ 
 #if defined(ARDUINO) && ARDUINO >= 100
-#include "arduino.h"
+#include "Arduino.h"
 #else
 #include "WProgram.h"
 #endif

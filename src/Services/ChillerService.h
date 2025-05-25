@@ -1,4 +1,5 @@
 #pragma once
+
 #ifndef _ChillerService_
 #define _ChillerService_ 
 
@@ -71,7 +72,6 @@ namespace Services
 		void setPotentiometerValue(uint16_t address, uint16_t value);
 
 	protected:
-
 
 	public:
 

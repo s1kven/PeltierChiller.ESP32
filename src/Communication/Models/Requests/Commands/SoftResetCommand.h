@@ -1,4 +1,5 @@
 #pragma once
+
 #ifndef _SoftResetCommand_
 #define _SoftResetCommand_ 
 

@@ -1,4 +1,5 @@
 #pragma once
+
 #ifndef _NTC_
 #define _NTC_ 
 
@@ -299,7 +300,6 @@ namespace Models
 			};
 
 		protected:
-
 
 		public:
 

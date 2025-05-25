@@ -1,5 +1,3 @@
-#pragma once
-
 #include "Rele.h"
 
 Models::Rele::Rele()

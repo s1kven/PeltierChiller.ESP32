@@ -1,4 +1,5 @@
 #pragma once
+
 #ifndef _TemperatureService_
 #define _TemperatureService_ 
 
@@ -16,6 +17,7 @@ namespace Services
 	class TemperatureService
 	{
 	private:
+
 		float const a = 17.27;
 		float const b = 237.7;
 		uint8_t _temperaturePrecision;
@@ -32,6 +34,8 @@ namespace Services
 		void initConfiguration();
 
 	public:
+
+		TemperatureService(Communication::Models::Configurations::TemperatureSensors::TemperatureSensorsConfiguration* configuration);
 		float getTemperatureForSpecificTarget(Models::Enums::TemperatureSensorTarget);
 		float getHumidityForSpecificTarget(Models::Enums::TemperatureSensorTarget);
 		float getPressureForSpecificTarget(Models::Enums::TemperatureSensorTarget);
@@ -40,7 +44,6 @@ namespace Services
 		String getSensorTarget(uint8_t);
 		const char* getTemperatureSensorTargetName(Models::Enums::TemperatureSensorTarget);
 		void requestSensors(uint16_t _sensorsRequestDelay);
-		TemperatureService(Communication::Models::Configurations::TemperatureSensors::TemperatureSensorsConfiguration* configuration);
 		LinkedList<Models::TemperatureSensors::BaseSensor*>* getTemperatureSensors();
 
 		void clear();

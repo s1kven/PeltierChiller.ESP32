@@ -1,8 +1,9 @@
 #pragma once
+
 #ifndef _GetTemperatureSensorsData_
 #define _GetTemperatureSensorsData_ 
 #if defined(ARDUINO) && ARDUINO >= 100
-#include "arduino.h"
+#include "Arduino.h"
 #else
 #include "WProgram.h"
 #endif

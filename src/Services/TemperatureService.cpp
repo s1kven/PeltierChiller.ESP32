@@ -1,5 +1,3 @@
-#pragma once
-
 #include "TemperatureService.h"
 
 Services::TemperatureService::TemperatureService(
@@ -35,9 +33,9 @@ float Services::TemperatureService::getTemperatureForSpecificTarget(Models::Enum
 	float _temperature = 0;
 	uint8_t _sensorsCounter = 0;
 
-	for (uint8_t index = 0; index < (*_temperatureSensors).size(); index++)
+	for (uint8_t index = 0; index < _temperatureSensors->size(); index++)
 	{
-		if ((*(*_temperatureSensors).get(index)).getSensorTarget() == _sensorsTarget)
+		if (_temperatureSensors->get(index)->getSensorTarget() == _sensorsTarget)
 		{
 			_temperature = _temperature + getSensorTemperature(index);
 			_sensorsCounter++;
@@ -52,12 +50,12 @@ float Services::TemperatureService::getHumidityForSpecificTarget(Models::Enums::
 	float _humidity = 0;
 	uint8_t _sensorsCounter = 0;
 
-	for (uint8_t index = 0; index < (*_temperatureSensors).size(); index++)
+	for (uint8_t index = 0; index < _temperatureSensors->size(); index++)
 	{
-		if ((*(*_temperatureSensors).get(index)).getSensorTarget() == _sensorsTarget && 
-			(*(*_temperatureSensors).get(index)).getSensorType() == Models::Enums::TemperatureSensorType::BME280)
+		if (_temperatureSensors->get(index)->getSensorTarget() == _sensorsTarget && 
+			_temperatureSensors->get(index)->getSensorType() == Models::Enums::TemperatureSensorType::BME280)
 		{
-			Models::TemperatureSensors::BME280* bme = (Models::TemperatureSensors::BME280*)(*_temperatureSensors).get(index);
+			Models::TemperatureSensors::BME280* bme = (Models::TemperatureSensors::BME280*)_temperatureSensors->get(index);
 			_humidity = _humidity + bme->getHumidity();
 			_sensorsCounter++;
 		}
@@ -116,12 +114,12 @@ float Services::TemperatureService::getPressureForSpecificTarget(Models::Enums::
 	float _pressure = 0;
 	uint8_t _sensorsCounter = 0;
 
-	for (uint8_t index = 0; index < (*_temperatureSensors).size(); index++)
+	for (uint8_t index = 0; index < _temperatureSensors->size(); index++)
 	{
-		if ((*(*_temperatureSensors).get(index)).getSensorTarget() == _sensorsTarget &&
-			(*(*_temperatureSensors).get(index)).getSensorType() == Models::Enums::TemperatureSensorType::BME280)
+		if (_temperatureSensors->get(index)->getSensorTarget() == _sensorsTarget &&
+			_temperatureSensors->get(index)->getSensorType() == Models::Enums::TemperatureSensorType::BME280)
 		{
-			Models::TemperatureSensors::BME280* bme = (Models::TemperatureSensors::BME280*)(*_temperatureSensors).get(index);
+			Models::TemperatureSensors::BME280* bme = (Models::TemperatureSensors::BME280*)_temperatureSensors->get(index);
 			_pressure = _pressure + bme->getPressure();
 			_sensorsCounter++;
 		}
@@ -143,25 +141,25 @@ float Services::TemperatureService::getDewPointTemperature(Models::Enums::Temper
 
 float Services::TemperatureService::getSensorTemperature(uint8_t sensorIndex)
 {
-	Models::TemperatureSensors::BaseSensor* sensor = (*_temperatureSensors).get(sensorIndex);
+	Models::TemperatureSensors::BaseSensor* sensor = _temperatureSensors->get(sensorIndex);
 	return sensor->getTemperature();
 }
 
 String Services::TemperatureService::getSensorTarget(uint8_t sensorIndex)
 {
-	return getTemperatureSensorTargetName((*_temperatureSensors).get(sensorIndex)->getSensorTarget());
+	return getTemperatureSensorTargetName(_temperatureSensors->get(sensorIndex)->getSensorTarget());
 }
 
 const char* Services::TemperatureService::getTemperatureSensorTargetName(Models::Enums::TemperatureSensorTarget target)
 {
 	switch (target)
 	{
-	case Models::Enums::TemperatureSensorTarget::none: return "None";
 	case Models::Enums::TemperatureSensorTarget::room: return "Room";
 	case Models::Enums::TemperatureSensorTarget::pcCase: return "PC case";
 	case Models::Enums::TemperatureSensorTarget::coldCircuit: return "Cold";
 	case Models::Enums::TemperatureSensorTarget::hotCircuit: return "Hot";
 	}
+	return "None";
 }
 
 void Services::TemperatureService::requestSensors(uint16_t _sensorsRequestDelay)
@@ -170,9 +168,9 @@ void Services::TemperatureService::requestSensors(uint16_t _sensorsRequestDelay)
 	{
 		_sensorsRequestTimer = millis();
 
-		for (uint8_t index = 0; index < (*_temperatureSensors).size(); index++)
+		for (uint8_t index = 0; index < _temperatureSensors->size(); index++)
 		{
-			(*(*_temperatureSensors).get(index)).sensorRequest();
+			_temperatureSensors->get(index)->sensorRequest();
 		}
 	}
 }

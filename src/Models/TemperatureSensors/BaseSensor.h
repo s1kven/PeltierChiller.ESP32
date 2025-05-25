@@ -1,4 +1,5 @@
 #pragma once
+
 #ifndef _BaseSensor_
 #define _BaseSensor_ 
 

@@ -1,4 +1,5 @@
 #pragma once
+
 #ifndef _BaseDeserializableObject_
 #define _BaseDeserializableObject_ 
 

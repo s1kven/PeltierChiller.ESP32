@@ -1,5 +1,3 @@
-#pragma once
-
 #include "NTC.h"
 
 Models::TemperatureSensors::NTC::NTC(uint8_t sensorAddress, uint32_t resistance, uint16_t bCoefficient,

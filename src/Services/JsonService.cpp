@@ -1,5 +1,3 @@
-#pragma once
-
 #include "JsonService.h"
 
 String Services::JsonService::serializeObject(Communication::Abstractions::BaseSerializableObject* response)

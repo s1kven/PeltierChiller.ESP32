@@ -1,5 +1,3 @@
-#pragma once
-
 #include "Button.h"
 
 Models::Button::Button(uint8_t signalPin, String name)

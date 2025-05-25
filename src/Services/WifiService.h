@@ -1,8 +1,9 @@
 #pragma once
+
 #ifndef _WifiService_
 #define _WifiService_ 
 #if defined(ARDUINO) && ARDUINO >= 100
-#include "arduino.h"
+#include "Arduino.h"
 #else
 #include "WProgram.h"
 #endif
@@ -19,6 +20,7 @@ namespace Services
     class WifiService
     {
     private:
+    
         bool _isFirstConnection = true;
         String _ssid;
         String _password;
@@ -27,6 +29,7 @@ namespace Services
         bool isSuccessfullyConfigured();
 
     public:
+
         WifiService(Communication::Models::Configurations::WifiConfiguration* wifiConfig);
         ~WifiService();
 

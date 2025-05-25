@@ -1,8 +1,9 @@
 #pragma once
+
 #ifndef _PinsConfiguration_
 #define _PinsConfiguration_ 
 #if defined(ARDUINO) && ARDUINO >= 100
-#include "arduino.h"
+#include "Arduino.h"
 #else
 #include "WProgram.h"
 #endif

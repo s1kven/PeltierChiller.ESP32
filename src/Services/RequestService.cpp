@@ -1,5 +1,3 @@
-#pragma once
-
 #include "RequestService.h"
 #include "Communication/Enums/ResponseType.cpp"
 

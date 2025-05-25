@@ -1,4 +1,5 @@
 #pragma once
+
 #ifndef _JsonService_
 #define _JsonService_ 
 
@@ -28,6 +29,7 @@ namespace Services
 	class JsonService
 	{
 	private:
+	
 		Communication::Models::Requests::BaseRequest* deserializeRequestByType(
 			Communication::Enums::RequestType _requestType, JsonObject data, String request);
 

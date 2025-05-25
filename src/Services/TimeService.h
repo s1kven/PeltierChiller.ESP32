@@ -1,8 +1,9 @@
 #pragma once
+
 #ifndef _TimeService_
 #define _TimeService_ 
 #if defined(ARDUINO) && ARDUINO >= 100
-#include "arduino.h"
+#include "Arduino.h"
 #else
 #include "WProgram.h"
 #endif
@@ -24,6 +25,7 @@ namespace Services
     class TimeService
     {
     private:
+
         static const Helpers::TimerInfo _logTimerInfo;
 		static bool _isLogTimerInit;
 
@@ -37,6 +39,7 @@ namespace Services
         static void releaseLogTimer();
 
     public:
+    
         TimeService(String ntpServer);
         ~TimeService();
 

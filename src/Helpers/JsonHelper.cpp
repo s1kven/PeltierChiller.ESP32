@@ -1,4 +1,3 @@
-#pragma once
 #include "JsonHelper.h"
 
 uint16_t Helpers::JsonHelper::getFloatJsonSizeWorkaround(uint16_t objectsCount)

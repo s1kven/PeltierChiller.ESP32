@@ -23,7 +23,6 @@ void Services::LogService::setNewFileToLog()
         _currentFileToLog = _defaultLogFile;
     }
     _fileService->createFile(_logsFolder.c_str(), _currentFileToLog.c_str());
-    _fileService->listFiles(_fileService->getRoot(), 0);
     if(!_currentFileToLog.equals(_defaultLogFile))
     {
         _fileService->setFileTimestamp((_logsFolder + _currentFileToLog).c_str(), startupTime);

@@ -1,4 +1,3 @@
-#pragma once
 #include "Services/JsonService.h"
 #include "Services/LogService.h"
 #include "SerialCommunicationService.h"

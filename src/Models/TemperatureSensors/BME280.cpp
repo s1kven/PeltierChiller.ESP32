@@ -1,5 +1,3 @@
-#pragma once
-
 #include "BME280.h"
 
 Models::TemperatureSensors::BME280::BME280(uint8_t sensorAddress, Models::Enums::TemperatureSensorTarget sensorTarget, String name) :

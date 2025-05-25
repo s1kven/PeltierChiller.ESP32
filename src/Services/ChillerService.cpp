@@ -1,5 +1,3 @@
-#pragma once
-
 #include "ChillerService.h"
 
 Services::ChillerService::ChillerService(Communication::Models::Configurations::Configuration* configuration)
@@ -116,17 +114,17 @@ void Services::ChillerService::manageChillerLoad()
 		}
 		else
 		{
-			float coldT = (*_temperatureService).getTemperatureForSpecificTarget(Models::Enums::TemperatureSensorTarget::coldCircuit);
+			float coldT = _temperatureService->getTemperatureForSpecificTarget(Models::Enums::TemperatureSensorTarget::coldCircuit);
 
 			if (_chillerType == ChillerType::deltaTemperature)
 			{
-				_targetTemperature = (*_temperatureService)
-					.getTemperatureForSpecificTarget(Models::Enums::TemperatureSensorTarget::room) + _setTemperature;
+				_targetTemperature = _temperatureService->
+					getTemperatureForSpecificTarget(Models::Enums::TemperatureSensorTarget::room) + _setTemperature;
 			}
 			else if (_chillerType == ChillerType::dewPointTemperature)
 			{
-				_targetTemperature = (*_temperatureService)
-					.getDewPointTemperature(Models::Enums::TemperatureSensorTarget::room) + _setTemperature;
+				_targetTemperature = _temperatureService->
+					getDewPointTemperature(Models::Enums::TemperatureSensorTarget::room) + _setTemperature;
 			}
 			_varResistorValue = computePID(coldT, _targetTemperature,
 				_kp, _ki, _kd, _dt) + _pidRatio;
