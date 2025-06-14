@@ -29,6 +29,7 @@ namespace Communication
 			public:
 				virtual void invoke() = 0;
 				virtual void clear() = 0;
+				virtual bool isIndependentToConfig() = 0;
 				Communication::Enums::RequestType getCommandType();
 			};
 		}

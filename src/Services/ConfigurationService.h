@@ -45,6 +45,8 @@ namespace Services
 		const char* _configPath = "/Configuration.json";
 
 		bool _isChangeConfiguration = false;
+		bool _isInit = false;
+		bool _isMainConfigInit = false;
 
 		String _emptySensorsListError = "Failed to configure chiller. Empty temperature sensors list! Add at least one sensor to cold circuit.";
 		String _noColdCircuitSensorsError = "Failed to configure chiller. No temperature sensor was found for the cold circuit.";
@@ -74,8 +76,11 @@ namespace Services
 		void resetTempConfiguration();
 
 		void initConfiguration();
+		void initTempConfiguration();
 
 		bool isChangeConfiguration();
+		bool isInit();
+		bool isMainConfigInit();
 	};
 }
 #endif

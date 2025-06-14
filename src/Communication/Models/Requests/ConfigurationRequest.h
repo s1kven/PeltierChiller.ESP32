@@ -30,6 +30,7 @@ namespace Communication
 				ConfigurationRequest(Communication::Models::Configurations::Configuration* configuration);
 				void invoke() override;
 				void clear() override;
+				bool isIndependentToConfig() override;
 				Communication::Models::Configurations::Configuration* getConfiguration();
 			};
 		}

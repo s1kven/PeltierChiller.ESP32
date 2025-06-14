@@ -5,8 +5,10 @@
 
 #include "Communication/Models/Requests/BaseRequest.h"
 #include "Communication/Services/CommunicationService.h"
+#include "Services/ConfigurationService.h"
 
 extern Communication::Services::CommunicationService* _communicationService;
+extern Services::ConfigurationService* _configurationService;
 
 namespace Communication
 {

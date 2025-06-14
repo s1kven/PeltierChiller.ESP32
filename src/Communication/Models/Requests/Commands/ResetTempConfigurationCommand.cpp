@@ -22,3 +22,8 @@ void Communication::Models::Requests::Commands::ResetTempConfigurationCommand::i
 void Communication::Models::Requests::Commands::ResetTempConfigurationCommand::clear()
 {
 }
+
+bool Communication::Models::Requests::Commands::ResetTempConfigurationCommand::isIndependentToConfig()
+{
+	return false;
+}

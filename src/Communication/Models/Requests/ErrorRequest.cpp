@@ -23,6 +23,11 @@ void Communication::Models::Requests::ErrorRequest::clear()
 {
 }
 
+bool Communication::Models::Requests::ErrorRequest::isIndependentToConfig()
+{
+	return true;
+}
+
 String Communication::Models::Requests::ErrorRequest::getMessage()
 {
 	return String(_errorMessage) + String(_payload);

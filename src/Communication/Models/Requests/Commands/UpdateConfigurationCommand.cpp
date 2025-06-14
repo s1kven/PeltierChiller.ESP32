@@ -63,3 +63,8 @@ void Communication::Models::Requests::Commands::UpdateConfigurationCommand::clea
 	_configuration->clear();
 	delete _configuration;
 }
+
+bool Communication::Models::Requests::Commands::UpdateConfigurationCommand::isIndependentToConfig()
+{
+	return false;
+}

@@ -59,11 +59,27 @@ void Services::ConfigurationService::resetTempConfiguration()
 void Services::ConfigurationService::initConfiguration()
 {
 	initConfiguration(_currentConfiguration);
+	_isMainConfigInit = true;
+}
+
+void Services::ConfigurationService::initTempConfiguration()
+{
+	initConfiguration(_currentTempConfiguration);
 }
 
 bool Services::ConfigurationService::isChangeConfiguration()
 {
 	return _isChangeConfiguration;
+}
+
+bool Services::ConfigurationService::isInit()
+{
+    return _isInit;
+}
+
+bool Services::ConfigurationService::isMainConfigInit()
+{
+    return _isMainConfigInit;
 }
 
 Communication::Models::Responses::Response*
@@ -213,6 +229,7 @@ void Services::ConfigurationService::initConfiguration(Communication::Models::Co
 	}
 
 	_isChangeConfiguration = false;
+	_isInit = true;
 	_initMillis = millis();
 }
 
@@ -222,5 +239,6 @@ void Services::ConfigurationService::clearConfiguration(Communication::Models::C
 	{
 		configuration->clear();
 		delete configuration;
+		_isInit = false;
 	}
 }

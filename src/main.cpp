@@ -64,6 +64,7 @@ Helpers::TimerHandler* _timerHandler;
 uint64_t _timerReleaseMillis = 0;
 
 struct {
+	SemaphoreHandle_t _setupBlockerMutex;
 	SemaphoreHandle_t _communicationMutex;
 	SemaphoreHandle_t _chillerMutex;
 	SemaphoreHandle_t _wifiMutex;
@@ -75,12 +76,14 @@ bool Services::TimeService::_isLogTimerInit = false;
 bool Services::LogService::_isLogFileInit = false;
 bool Services::LogService::_isOnTimer = false;
 
+void trySetupConfigTask(void* argument);
 void manageChillerTask(void* argument);
 void handlePwmsTask(void* argument);
 void sendCommunicationDataTask(void* argument);
 void readCommunicationDataTask(void* argument);
 void wifiConnectionTask(void* argument);
 void logTask(void* argument);
+void createConfigDependentTasks();
 
 void setup()  
 {
@@ -105,8 +108,8 @@ void setup()
 	_jsonService = new Services::JsonService();
 
 	_configurationService = new Services::ConfigurationService();
-	Communication::Models::Responses::Response* configurationResponse = _configurationService->readConfigurationFromSd();
 
+	Mutexes._setupBlockerMutex = xSemaphoreCreateMutex();
 	Mutexes._communicationMutex = xSemaphoreCreateMutex();
 	Mutexes._chillerMutex = xSemaphoreCreateMutex();
 	Mutexes._wifiMutex = xSemaphoreCreateMutex();
@@ -120,57 +123,13 @@ void setup()
 		3,
 		NULL
 	);
-
-	if (!configurationResponse->getSuccess())
-	{
-		_communicationService->sendResponse(configurationResponse);
-		return;
-	}
-
-	_configurationService->initConfiguration();
-
+	
 	xTaskCreate(
-		manageChillerTask,
-		"manageChillerTask",
+		trySetupConfigTask,
+		"trySetupConfigTask",
 		4096,
 		NULL,
-		3,
-		NULL
-	);
-
-	xTaskCreate(
-		handlePwmsTask,
-		"handlePwmsTask",
-		4096,
-		NULL,
-		3,
-		NULL
-	);
-
-	xTaskCreate(
-		sendCommunicationDataTask,
-		"sendCommunicationDataTask",
-		4096,
-		NULL,
-		3,
-		NULL
-	);
-
-	xTaskCreate(
-		wifiConnectionTask,
-		"wifiConnectionTask",
-		4096,
-		NULL,
-		3,
-		NULL
-	);
-
-	xTaskCreate(
-		logTask,
-		"logTask",
-		4096,
-		NULL,
-		3,
+		4,
 		NULL
 	);
 }
@@ -182,6 +141,37 @@ void loop()
 		_timeService->startLogTimer(_timerHandler->getInterruptTime());
 		delete _timerHandler;
 		_timerHandler = nullptr;
+	}
+}
+
+void trySetupConfigTask(void* argument)
+{
+	Communication::Models::Responses::Response* configurationResponse;
+	while(true)
+	{
+		vTaskDelay(100 / portTICK_PERIOD_MS);
+		xSemaphoreTake(Mutexes._setupBlockerMutex, portMAX_DELAY);
+		xSemaphoreTake(Mutexes._communicationMutex, portMAX_DELAY);
+		configurationResponse = _configurationService->readConfigurationFromSd();
+		_communicationService->sendResponse(configurationResponse);
+		xSemaphoreGive(Mutexes._communicationMutex);
+
+		if(configurationResponse->getSuccess())
+		{
+			xSemaphoreGive(Mutexes._setupBlockerMutex);
+			_configurationService->initConfiguration();
+			createConfigDependentTasks();
+			vTaskDelete(NULL);
+		}
+		else if(_configurationService->isInit())
+		{
+			xSemaphoreGive(Mutexes._setupBlockerMutex);
+			_configurationService->initTempConfiguration();
+			createConfigDependentTasks();
+			vTaskDelete(NULL);
+		}
+		xSemaphoreGive(Mutexes._setupBlockerMutex);
+		taskYIELD();
 	}
 }
 
@@ -244,6 +234,7 @@ void readCommunicationDataTask(void* argument)
 {
 	while (true)
 	{
+		xSemaphoreTake(Mutexes._setupBlockerMutex, portMAX_DELAY);
 		xSemaphoreTake(Mutexes._communicationMutex, portMAX_DELAY);
 		xSemaphoreTake(Mutexes._chillerMutex, portMAX_DELAY);
 		xSemaphoreTake(Mutexes._wifiMutex, portMAX_DELAY);
@@ -257,6 +248,7 @@ void readCommunicationDataTask(void* argument)
 		xSemaphoreGive(Mutexes._wifiMutex);
 		xSemaphoreGive(Mutexes._chillerMutex);
 		xSemaphoreGive(Mutexes._communicationMutex);
+		xSemaphoreGive(Mutexes._setupBlockerMutex);
 		taskYIELD();
 	}
 }
@@ -293,6 +285,54 @@ void logTask(void* argument)
 		vTaskDelay(_logService->getLogDelay() / portTICK_PERIOD_MS);
 		taskYIELD();
 	}
+}
+
+void createConfigDependentTasks()
+{
+	xTaskCreate(
+		manageChillerTask,
+		"manageChillerTask",
+		4096,
+		NULL,
+		3,
+		NULL
+	);
+
+	xTaskCreate(
+		handlePwmsTask,
+		"handlePwmsTask",
+		4096,
+		NULL,
+		3,
+		NULL
+	);
+
+	xTaskCreate(
+		sendCommunicationDataTask,
+		"sendCommunicationDataTask",
+		4096,
+		NULL,
+		3,
+		NULL
+	);
+
+	xTaskCreate(
+		wifiConnectionTask,
+		"wifiConnectionTask",
+		4096,
+		NULL,
+		3,
+		NULL
+	);
+
+	xTaskCreate(
+		logTask,
+		"logTask",
+		4096,
+		NULL,
+		3,
+		NULL
+	);
 }
 
 #endif

@@ -24,6 +24,7 @@ namespace Communication
 					SoftResetCommand();
 					void invoke() override;
 					void clear() override;
+					bool isIndependentToConfig() override;
 				};
 			}
 		}

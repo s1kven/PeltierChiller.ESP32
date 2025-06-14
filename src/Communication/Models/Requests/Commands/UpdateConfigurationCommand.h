@@ -47,6 +47,7 @@ namespace Communication
 				public:
 					void invoke() override;
 					void clear() override;
+					bool isIndependentToConfig() override;
 					UpdateConfigurationCommand(Communication::Models::Configurations::Configuration* configuration,
 						Communication::Enums::RequestType request);
 				};

@@ -17,3 +17,8 @@ void Communication::Models::Requests::Commands::SoftResetCommand::invoke()
 void Communication::Models::Requests::Commands::SoftResetCommand::clear()
 {
 }
+
+bool Communication::Models::Requests::Commands::SoftResetCommand::isIndependentToConfig()
+{
+	return true;
+}

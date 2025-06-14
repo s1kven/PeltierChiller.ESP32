@@ -40,6 +40,7 @@ namespace Communication
 				ErrorRequest(Communication::Enums::RequestType requestType, const char* payload, const char* errorMessage);
 				void invoke() override;
 				void clear() override;
+				bool isIndependentToConfig() override;
 				String getMessage();
 			};
 		}

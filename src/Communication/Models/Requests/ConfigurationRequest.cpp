@@ -19,6 +19,11 @@ void Communication::Models::Requests::ConfigurationRequest::clear()
 {
 }
 
+bool Communication::Models::Requests::ConfigurationRequest::isIndependentToConfig()
+{
+	return true;
+}
+
 Communication::Models::Configurations::Configuration* Communication::Models::Requests::ConfigurationRequest::getConfiguration()
 {
 	return _configuration;

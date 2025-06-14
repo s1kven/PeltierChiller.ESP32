@@ -40,6 +40,7 @@ namespace Communication
 				public:
 					void invoke() override;
 					void clear() override;
+					bool isIndependentToConfig() override;
 					UpdateTempConfigurationCommand(Communication::Models::Configurations::Configuration* configuration);
 				};
 			}

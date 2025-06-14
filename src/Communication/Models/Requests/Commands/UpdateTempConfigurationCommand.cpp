@@ -26,3 +26,8 @@ void Communication::Models::Requests::Commands::UpdateTempConfigurationCommand::
 {
 
 }
+
+bool Communication::Models::Requests::Commands::UpdateTempConfigurationCommand::isIndependentToConfig()
+{
+	return true;
+}
