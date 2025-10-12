@@ -23,6 +23,7 @@
 #include "Communication/Models/Requests/Commands/UpdateConfigurationCommand.h"
 #include "Communication/Models/Requests/Commands/UpdateTempConfigurationCommand.h"
 #include "Communication/Models/Requests/Commands/ResetTempConfigurationCommand.h"
+#include "Communication/Models/Requests/SdConfigurationRequest.h"
 
 namespace Services
 {
@@ -49,6 +50,8 @@ namespace Services
 		Communication::Models::Configurations::PwmsConfiguration* deserializePwmsConfiguration(JsonArray items);
 		Communication::Models::Configurations::WifiConfiguration* deserializeWifiConfiguration(JsonObject data);
 		Communication::Models::Configurations::LogConfiguration* deserializeLogConfiguration(JsonObject data);
+
+		Communication::Models::Requests::SdConfigurationRequest* deserializeSdConfigurationRequest();
 
 		Communication::Models::Requests::Commands::SoftResetCommand* deserializeSoftResetCommand();
 		Communication::Models::Requests::Commands::UpdateConfigurationCommand* deserializeUpdateConfigurationCommand(JsonObject data, Communication::Enums::RequestType requestType);

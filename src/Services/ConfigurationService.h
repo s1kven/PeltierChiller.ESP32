@@ -70,6 +70,7 @@ namespace Services
 
 		Communication::Models::Responses::Response* readConfigurationFromSd();
 
+		Communication::Models::Configurations::Configuration* getSdConfiguration();
 		Communication::Models::Configurations::Configuration* getConfiguration();
 
 		void changeConfiguration(Communication::Models::Configurations::Configuration* newConfiguration);

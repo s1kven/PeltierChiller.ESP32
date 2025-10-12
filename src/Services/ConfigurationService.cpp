@@ -36,7 +36,31 @@ Communication::Models::Responses::Response* Services::ConfigurationService::read
 	return new Communication::Models::Responses::Response(Communication::Enums::ResponseType::errorConfiguration, "");
 }
 
-Communication::Models::Configurations::Configuration* Services::ConfigurationService::getConfiguration()
+Communication::Models::Configurations::Configuration *Services::ConfigurationService::getSdConfiguration()
+{
+    String content = _fileService->readFile(_configPath);
+
+	Communication::Models::Requests::BaseRequest* request = _jsonService->deserializeRequest(content);
+	Communication::Models::Requests::ErrorRequest* errorRequest = dynamic_cast<Communication::Models::Requests::ErrorRequest*>(request);
+	Communication::Models::Requests::ConfigurationRequest* configurationRequest = dynamic_cast<Communication::Models::Requests::ConfigurationRequest*>(request);
+	if (errorRequest != nullptr)
+	{
+		errorRequest->clear();
+		delete errorRequest;
+		return nullptr;
+	}
+	else if (configurationRequest != nullptr)
+	{
+	    Communication::Models::Configurations::Configuration* sdConfiguration = 
+			static_cast<Communication::Models::Configurations::Configuration*>(configurationRequest->getConfiguration());
+		configurationRequest->clear();
+		delete configurationRequest;
+		return sdConfiguration;
+	}
+	return nullptr;
+}
+
+Communication::Models::Configurations::Configuration *Services::ConfigurationService::getConfiguration()
 {
 	return _currentConfiguration;
 }

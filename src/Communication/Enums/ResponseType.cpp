@@ -7,6 +7,8 @@ namespace Communication
             unknown = 0,
             temperatureSensors = 1,
             pwms = 2,
+            //requests
+            sdConfiguration = 20,
             //commands
             softReset = 50,
             updateConfiguration = 51,

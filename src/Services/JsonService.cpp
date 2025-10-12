@@ -51,6 +51,10 @@ Communication::Models::Requests::BaseRequest* Services::JsonService::deserialize
 	{
 	case Communication::Enums::RequestType::configuration:
 		return deserializeConfigurationRequest(data);
+	//Requests
+	case Communication::Enums::RequestType::sdConfiguration:
+		return deserializeSdConfigurationRequest();
+	//Commands
 	case Communication::Enums::RequestType::softReset:
 		return deserializeSoftResetCommand();
 	case Communication::Enums::RequestType::updateConfiguration:
@@ -351,6 +355,15 @@ Communication::Models::Configurations::LogConfiguration* Services::JsonService::
 }
 
 #pragma endregion Configurations
+
+#pragma region SdConfiguration
+
+Communication::Models::Requests::SdConfigurationRequest* Services::JsonService::deserializeSdConfigurationRequest()
+{
+	return new Communication::Models::Requests::SdConfigurationRequest();
+}
+
+#pragma endregion SdConfiguration
 
 #pragma region SoftReset
 
