@@ -85,13 +85,13 @@ DynamicJsonDocument Communication::Models::Configurations::ChillerConfiguration:
 	document["PotentiometerAddress"] = _potentiometerAddress;
 	document["MaxPotentiometerValue"] = _maxPotentiometerValue;
 	document["MinPotentiometerValue"] = _minPotentiometerValue;
-	document["Kp"] = serialized(String(_kp, 1));
-	document["Ki"] = serialized(String(_ki, 1));
-	document["Kd"] = serialized(String(_kd, 1));
-	document["Dt"] = serialized(String(_dt, 1));
-	document["PidRatio"] = serialized(String(_pidRatio, 1));
-	document["MinIntegral"] = serialized(String(_minIntegral, 1));
-	document["MaxIntegral"] = serialized(String(_maxIntegral, 1));
+	document["Kp"] = _kp;
+	document["Ki"] = _ki;
+	document["Kd"] = _kd;
+	document["Dt"] = _dt;
+	document["PidRatio"] = _pidRatio;
+	document["MinIntegral"] = _minIntegral;
+	document["MaxIntegral"] = _maxIntegral;
 	document["ComputePidDelay"] = _computePidDelay;
 
 	return document;

@@ -26,7 +26,7 @@ DynamicJsonDocument Communication::Models::Configurations::PwmValueConfiguration
 {
 	DynamicJsonDocument document(Communication::Abstractions::BaseSerializableObject::getJsonSize());
 
-	document["Temperature"] = serialized(String(_temperature, 1));
+	document["Temperature"] = _temperature;
 	document["Load"] = _load;
 
 	return document;

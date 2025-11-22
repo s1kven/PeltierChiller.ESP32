@@ -76,8 +76,8 @@ DynamicJsonDocument Communication::Models::Configurations::Configuration::create
 	pinsConfiguration.set(_pinsConfiguration->createPayload().as<JsonObjectConst>());
 
 	payload["ChillerType"] = static_cast<uint16_t>(_chillerType);
-	payload["TargetTemperature"] = serialized(String(_targetCircuitTemperature, 1));
-	payload["VoltmeterThreshold"] = serialized(String(_voltmeterThreshold, 1));
+	payload["TargetTemperature"] = _targetCircuitTemperature;
+	payload["VoltmeterThreshold"] = _voltmeterThreshold;
 	payload["VoltmeterR1"] = _voltmeterR1;
 	payload["VoltmeterR2"] = _voltmeterR2;
 	payload["StartupPcAfterFeatTargetTemperature"] = _isDelayEnablingPc;

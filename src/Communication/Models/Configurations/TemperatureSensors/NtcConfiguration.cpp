@@ -76,7 +76,7 @@ DynamicJsonDocument Communication::Models::Configurations::TemperatureSensors::N
 	payload["ResistanceNTC"] = _resistanceNtc;
 	payload["BCoefficient"] = _bCoefficient;
 	payload["BaseTemperature"] = _baseTemperature;
-	payload["SupplyVoltage"] = serialized(String(_supplyVoltage, 1));
+	payload["SupplyVoltage"] = _supplyVoltage;
 
 
 	return document;

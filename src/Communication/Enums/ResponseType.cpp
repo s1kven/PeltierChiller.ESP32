@@ -9,6 +9,7 @@ namespace Communication
             pwms = 2,
             //requests
             sdConfiguration = 20,
+            currentConfiguration = 21,
             //commands
             softReset = 50,
             updateConfiguration = 51,

@@ -24,6 +24,7 @@
 #include "Communication/Models/Requests/Commands/UpdateTempConfigurationCommand.h"
 #include "Communication/Models/Requests/Commands/ResetTempConfigurationCommand.h"
 #include "Communication/Models/Requests/SdConfigurationRequest.h"
+#include "Communication/Models/Requests/CurrentConfigurationRequest.h"
 
 namespace Services
 {
@@ -52,6 +53,7 @@ namespace Services
 		Communication::Models::Configurations::LogConfiguration* deserializeLogConfiguration(JsonObject data);
 
 		Communication::Models::Requests::SdConfigurationRequest* deserializeSdConfigurationRequest();
+		Communication::Models::Requests::CurrentConfigurationRequest* deserializeCurrentConfigurationRequest();
 
 		Communication::Models::Requests::Commands::SoftResetCommand* deserializeSoftResetCommand();
 		Communication::Models::Requests::Commands::UpdateConfigurationCommand* deserializeUpdateConfigurationCommand(JsonObject data, Communication::Enums::RequestType requestType);
@@ -63,6 +65,8 @@ namespace Services
 		String serializeObject(Communication::Abstractions::BaseSerializableObject* response);
 		String serializeRequest(Communication::Abstractions::BaseSerializableObject* request, Communication::Enums::RequestType requestType);
 		Communication::Models::Requests::BaseRequest* deserializeRequest(String content);
+		Communication::Models::Configurations::Configuration* getConfigurationDeepCopy
+		(Communication::Models::Configurations::Configuration* configuration);
 	};
 }
 #endif

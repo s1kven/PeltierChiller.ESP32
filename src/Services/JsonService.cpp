@@ -44,6 +44,13 @@ Communication::Models::Requests::BaseRequest* Services::JsonService::deserialize
 	return request;
 }
 
+Communication::Models::Configurations::Configuration* Services::JsonService::getConfigurationDeepCopy(
+	Communication::Models::Configurations::Configuration* configuration)
+{
+	DynamicJsonDocument configurationDocument = configuration->createPayload();
+	return deserializeConfiguration(configurationDocument.as<JsonObject>());
+}
+
 Communication::Models::Requests::BaseRequest* Services::JsonService::deserializeRequestByType(
 	Communication::Enums::RequestType _requestType, JsonObject data, String request)
 {
@@ -54,6 +61,8 @@ Communication::Models::Requests::BaseRequest* Services::JsonService::deserialize
 	//Requests
 	case Communication::Enums::RequestType::sdConfiguration:
 		return deserializeSdConfigurationRequest();
+	case Communication::Enums::RequestType::currentConfiguration:
+		return deserializeCurrentConfigurationRequest();
 	//Commands
 	case Communication::Enums::RequestType::softReset:
 		return deserializeSoftResetCommand();
@@ -364,6 +373,15 @@ Communication::Models::Requests::SdConfigurationRequest* Services::JsonService::
 }
 
 #pragma endregion SdConfiguration
+
+#pragma region CurrentConfiguration
+
+Communication::Models::Requests::CurrentConfigurationRequest* Services::JsonService::deserializeCurrentConfigurationRequest()
+{
+    return new Communication::Models::Requests::CurrentConfigurationRequest();
+}
+
+#pragma endregion CurrentConfiguration
 
 #pragma region SoftReset
 
